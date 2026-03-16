@@ -125,7 +125,7 @@
 	<section class="chapter-hero">
 		<p class="eyebrow">第0章 — Docker</p>
 		<h1>環境のしくみを理解する</h1>
-		<p>Quickstart で「動いた」ことを確認しましたか？ ここでは、あのとき実行したコマンドが <strong>何をしていたのか</strong> を理解します。</p>
+		<p>Quickstart で「動いた」ことを確認しましたか？ ここでは、あのとき作った <code>compose.yaml</code> が <strong>何をしていたのか</strong> を1行ずつ理解します。</p>
 	</section>
 
 	<div class="info-box">
@@ -145,34 +145,131 @@
 			<div style="background: #FCE4EC; border: 1px solid #EF9A9A; border-radius: 0 0 8px 8px; padding: 10px 16px; text-align: center;">🖥️ <strong>GPU ハードウェア</strong></div>
 		</div>
 		<p><strong>コンテナとは:</strong> 「使い捨ての作業箱」のようなものです。中で何をしてもホスト(自分の PC) 環境には影響しません。うまくいかなかったらコンテナを消して作り直せます。</p>
-		<p><code>--device</code> や <code>--group-add</code> フラグは、この「Docker の境界」を越えて GPU へのアクセスを通すためのものです。</p>
 	</div>
 
-	<!-- docker run のフラグの意味 -->
+	<!-- compose.yaml の段階的理解 -->
 	<div class="explain-card">
-		<h2>docker run のフラグ — なぜあのオプションが要るのか</h2>
+		<h2>compose.yaml を1行ずつ理解する</h2>
+		<p>Quickstart で作った <code>compose.yaml</code> は、実はいくつかの設定を重ねたものです。段階的に見てみましょう。</p>
 
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
-  --device=/dev/kfd \
-  --device=/dev/dri \
-  --group-add video \
-  rocm/pytorch:latest</code></pre></div>
-
+		<h3>Stage 1: 最小の compose — Docker だけ</h3>
+		<p>最もシンプルな compose.yaml はこれだけです。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
+  rocm:
+    image: ubuntu:22.04
+    tty: true</code></pre></div>
 		<div class="meaning-box">
 			<strong>💡 それぞれの意味:</strong><br>
-			<code>--device=/dev/kfd</code> — ROCm のカーネルドライバ（KFD）をコンテナに渡す。これがないと GPU にアクセスできない。<br>
-			<code>--device=/dev/dri</code> — DRM（Direct Rendering Manager）デバイスを渡す。GPU のレンダリング機能へのアクセスに使う。<br>
-			<code>--group-add video</code> — コンテナ内のプロセスに <code>video</code> グループの権限を追加する。GPU デバイスへのアクセスに必要。<br>
-			<code>-it</code> — 対話モード。コマンドを打てるようにする。<br>
-			<code>--rm</code> — 終了後にコンテナを自動削除。やり直しやすくなる。
+			<code>services:</code> — 「使いたいコンテナの一覧」を書く場所<br>
+			<code>rocm:</code> — このコンテナに付ける名前（好きな名前でOK）<br>
+			<code>image:</code> — 使う Docker イメージ<br>
+			<code>tty: true</code> — コマンドを打てる対話モードにする
+		</div>
+		<p>これだけでも <code>docker compose run --rm rocm</code> でコンテナに入れます。ただし中身はただの Ubuntu で、Python も GPU も使えません。</p>
+
+		<h3>Stage 2: Python + ROCm を足す</h3>
+		<p>イメージを AMD が公開している <code>rocm/pytorch</code> に変えるだけで、Python と ROCm と PyTorch が全部入ります。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true</code></pre></div>
+		<p>これでコンテナ内で <code>python3</code> や <code>import torch</code> が使えます。<br>ただし、まだ GPU デバイスをコンテナに渡していないので、<code>rocminfo</code> では GPU が見えません。</p>
+
+		<h3>Stage 3: GPU を渡す</h3>
+		<p>コンテナの「境界」を越えてホストの GPU にアクセスするために、デバイスと権限を明示的に渡します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+      - render</code></pre></div>
+		<div class="meaning-box">
+			<strong>💡 追加した行の意味:</strong><br>
+			<code>devices: /dev/kfd</code> — ROCm のカーネルドライバ（KFD）をコンテナに渡す。これがないと GPU にアクセスできない。<br>
+			<code>devices: /dev/dri</code> — DRM（Direct Rendering Manager）デバイスを渡す。GPU のレンダリング機能に必要。<br>
+			<code>group_add: video</code> — デバイスファイルの読み書き権限を追加。<br>
+			<code>group_add: render</code> — 同上。環境によってはこれがないと Permission denied になる。
 		</div>
 
 		<div class="mascot-row">
 			<img src="../../media/aktk-chan/aktk-chan-detective.png" alt="アカツキちゃん">
 			<div class="speech">
-				つまり、Docker コンテナの中からホストの GPU にアクセスするために、デバイスファイルと権限を明示的に渡しているわけです。普通の Docker コンテナは GPU が見えないので、このフラグがないと <code>rocminfo</code> で何も出ません。
+				普通の Docker コンテナは GPU が見えません。<code>devices</code> と <code>group_add</code> は、上のレイヤー図の「🐳 Docker コンテナの境界」を越えて GPU へのアクセスを通すための設定です。
 			</div>
 		</div>
+
+		<p>この段階で <code>rocminfo</code> と <code>torch.cuda.is_available()</code> が動きます。</p>
+
+		<h3>Stage 4: ホストとファイルを共有する</h3>
+		<p>最後に、ホスト側のフォルダをコンテナ内で使えるようにします。Quickstart で作った compose.yaml はこの状態です。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+      - render
+    volumes:
+      - .:/workspace</code></pre></div>
+		<div class="meaning-box">
+			<strong>💡 volumes の意味:</strong><br>
+			<code>. :/workspace</code> — <code>compose.yaml</code> があるフォルダ（<code>.</code>）をコンテナ内の <code>/workspace</code> に結びつける。<br>
+			ホスト側でファイルを編集すると、コンテナ内にも反映されます。逆もまた同じです。
+		</div>
+		<p>これが Quickstart で使った完成形です。たった12行ですが、<strong>GPU アクセス・Python 環境・ファイル共有</strong>がすべて揃っています。</p>
+	</div>
+
+	<!-- docker run との対応 -->
+	<div class="explain-card">
+		<h2>docker run との対応 — compose.yaml は何を省略しているのか</h2>
+		<p><code>compose.yaml</code> がやっていることを <code>docker run</code> で書き直すと、こうなります:</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  --group-add video \
+  --group-add render \
+  -v "$PWD":/workspace \
+  rocm/pytorch:latest</code></pre></div>
+
+		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0;">
+			<thead>
+				<tr style="border-bottom: 2px solid var(--line);">
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">compose.yaml</th>
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">docker run フラグ</th>
+				</tr>
+			</thead>
+			<tbody style="color: var(--muted); line-height: 1.7;">
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>image: rocm/pytorch:latest</code></td>
+					<td style="padding: 8px 10px;"><code>rocm/pytorch:latest</code>（末尾）</td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>tty: true</code></td>
+					<td style="padding: 8px 10px;"><code>-it</code></td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>devices: - /dev/kfd</code></td>
+					<td style="padding: 8px 10px;"><code>--device=/dev/kfd</code></td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>group_add: - video</code></td>
+					<td style="padding: 8px 10px;"><code>--group-add video</code></td>
+				</tr>
+				<tr>
+					<td style="padding: 8px 10px;"><code>volumes: - .:/workspace</code></td>
+					<td style="padding: 8px 10px;"><code>-v "$PWD":/workspace</code></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p><code>compose.yaml</code> に書いておけば毎回フラグを打たなくて済みます。<strong>繰り返す設定は設定ファイルに寄せる</strong> — これは Docker に限らず、開発全般で使える考え方です。</p>
 	</div>
 
 	<!-- rocminfo の意味 -->
@@ -256,6 +353,11 @@
 					<td style="padding: 8px 10px;">venv を消して作り直す</td>
 					<td style="padding: 8px 10px;">コンテナを消して起動し直す</td>
 				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px; font-weight: 700;">起動コマンド</td>
+					<td style="padding: 8px 10px;"><code>source ~/rocm-env/bin/activate</code></td>
+					<td style="padding: 8px 10px;"><code>docker compose run --rm rocm</code></td>
+				</tr>
 				<tr>
 					<td style="padding: 8px 10px; font-weight: 700;">向いている人</td>
 					<td style="padding: 8px 10px;">Linux をそのまま使いたい</td>
@@ -304,7 +406,8 @@
 	<div class="checklist">
 		<h2>✅ 第0章のチェックリスト</h2>
 		<ul>
-			<li><code>--device</code> と <code>--group-add</code> が「GPU をコンテナに渡す」フラグだとわかった</li>
+			<li><code>compose.yaml</code> の <code>devices</code> と <code>group_add</code> が「GPU をコンテナに渡す」設定だとわかった</li>
+			<li>compose.yaml を段階的に育てる（最小 → Python → GPU → volumes）流れが理解できた</li>
 			<li><code>rocminfo</code> が「ROCm のランタイムから GPU が見えるかの確認」だとわかった</li>
 			<li><code>rocm/pytorch</code> イメージに ROCm と PyTorch がすでに入っていることがわかった</li>
 			<li><code>torch.version.hip</code> が「ROCm 版 PyTorch かどうかの目安」だとわかった</li>
