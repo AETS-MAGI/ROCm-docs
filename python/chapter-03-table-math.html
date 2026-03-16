@@ -5,6 +5,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>第3章 表どうしを計算したい | Python and ROCm 教室</title>
 	<link rel="stylesheet" href="./python-course.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FbBReR1CAHNaQ+JyP0u6xHVd/WL7l6VxMu1uQ" crossorigin="anonymous"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrKUSYJyBMzLMBSgSfMBv0LiOf06GPYlPONMwxJXHjkN1O3bTwsqdxH4megDs" crossorigin="anonymous" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 </head>
 <body>
 <main class="page">
@@ -65,6 +68,12 @@ print(c)</code></pre>
 		<p><span class="code-inline">a</span> は <span class="code-inline">(2, 3)</span>、<span class="code-inline">b</span> は <span class="code-inline">(3, 2)</span> です。結果の <span class="code-inline">c</span> は <span class="code-inline">(2, 2)</span> になります。</p>
 		<p><strong>shape のルール（重要）:</strong> 行列積 <span class="code-inline">(m, n) @ (n, p) → (m, p)</span><br>
 		「内側」の数字（a の列数 と b の行数）が一致していなければ計算できません。一致していれば、結果の shape は「外側」の2つの数字になります。</p>
+
+		<!-- KaTeX 行列積の補助表示 -->
+		<div style="text-align: center; margin: 16px 0; font-size: 16px;">
+			$$A_{2 \times 3} \times B_{3 \times 2} = C_{2 \times 2}$$
+		</div>
+		<div style="text-align: center; margin: 0 0 16px; font-size: 13px; color: var(--muted);">内側の $3$ が一致 → 外側の $2$ と $2$ が残る</div>
 		<pre class="code-block" style="background:#F5F5F5; font-size:13px; padding:10px 14px; border-radius:6px; margin:8px 0;">a: (2, <strong>3</strong>)
 b:    (<strong>3</strong>, 2)
           ↑ ここが一致している必要がある
@@ -95,7 +104,7 @@ c.shape: (2, 2)
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>この「表どうしを掛ける」計算は、PyTorch では <span class="code-inline">torch.matmul()</span> や同じ <span class="code-inline">@</span> 記号で書けます。そしてその裏では <strong>rocBLAS</strong>（AMD GPU 向け行列計算ライブラリ）が動いています。</p>
+		<p>この「表どうしを掛ける」計算は、PyTorch では <span class="code-inline">torch.matmul()</span> や同じ <span class="code-inline">@</span> 記号で書けます。そしてその裏では <strong>rocBLAS</strong>（AMD GPU 向けの行列計算エンジン）が動いています。</p>
 		<p>つまり <span class="code-inline">a @ b</span> という1行が、GPU 上では rocBLAS の高速な行列積カーネルに変換されて実行されます。ROCm を使う意味のひとつは、この変換経路が整備されていることです。</p>
 		<p>この章は CPU 上の NumPy ですが、次の章で PyTorch テンソルに移ると、同じ <span class="code-inline">@</span> の書き方のまま GPU 計算に接続できます。</p>
 	</section>
@@ -105,6 +114,37 @@ c.shape: (2, 2)
 		<ul class="point-list">
 			<li><span class="code-inline">@</span> は「行列どうしの掛け算（行列積）」です。<span class="code-inline">np.matmul(a, b)</span> と書いても同じ意味で、PyTorch では <span class="code-inline">torch.matmul(a, b)</span> や <span class="code-inline">a @ b</span> で使います。</li>
 			<li><span class="code-inline">@</span> は「1個ずつ掛ける（要素ごとの掛け算）」ではありません。要素ごとの掛け算は <span class="code-inline">a * b</span> と書きますが、行列積とは全く別の計算になります。</li>
+		</ul>
+
+		<!-- * と @ の比較表 -->
+		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0;">
+			<thead>
+				<tr style="border-bottom: 2px solid #D8E0E8;">
+					<th style="text-align: left; padding: 8px 10px; color: #173a56;"></th>
+					<th style="text-align: left; padding: 8px 10px; color: #173a56;"><code>a * b</code>（要素ごと）</th>
+					<th style="text-align: left; padding: 8px 10px; color: #173a56;"><code>a @ b</code>（行列積）</th>
+				</tr>
+			</thead>
+			<tbody style="color: #5d6a75; line-height: 1.7;">
+				<tr style="border-bottom: 1px solid #D8E0E8;">
+					<td style="padding: 8px 10px; font-weight: 700;">計算内容</td>
+					<td style="padding: 8px 10px;">同じ位置の要素を 1 個ずつ掛ける</td>
+					<td style="padding: 8px 10px;">行と列を掛けて足す（行列積）</td>
+				</tr>
+				<tr style="border-bottom: 1px solid #D8E0E8;">
+					<td style="padding: 8px 10px; font-weight: 700;">shape の条件</td>
+					<td style="padding: 8px 10px;">同じ shape が必要</td>
+					<td style="padding: 8px 10px;">内側が一致すればOK</td>
+				</tr>
+				<tr>
+					<td style="padding: 8px 10px; font-weight: 700;">結果の shape</td>
+					<td style="padding: 8px 10px;">入力と同じ</td>
+					<td style="padding: 8px 10px;">外側が残る</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="point-list">
 			<li><span class="code-inline">c = a @ b</span> は「計算結果を c に入れる」という意味です。</li>
 			<li><span class="code-inline">print("a.shape:", a.shape)</span> のように、文字と値を一緒に表示できます。</li>
 			<li><span class="code-inline">shape</span> は「(行, 列)」の順です。行列積のルールは <span class="code-inline">(m, n) @ (n, p) → (m, p)</span> — 内側が一致、外側が結果になります。</li>

@@ -129,7 +129,7 @@
 		<p>まず、お使いの GPU が ROCm の対応リストに載っているか調べます。</p>
 		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html" target="_blank" rel="noopener">AMD 公式: 対応 GPU・OS 一覧</a></p>
 		<p>自分の GPU 名がわからないときは、ターミナルで確認できます。</p>
-		<code class="cmd">lspci | grep -i vga</code>
+		<code class="cmd">lspci | grep -Ei "vga|display|3d"</code>
 		<div class="warn-box">
 			<strong>⚠ 載っていない場合:</strong> 旧世代の GPU（Vega 系など）では、動くこともありますが公式サポート外です。まずは対応 GPU で試すのがおすすめです。
 		</div>
@@ -177,6 +177,8 @@ source ~/rocm-env/bin/activate</code>
 		<p>👉 <a class="aside-link" href="https://pytorch.org/get-started/locally/" target="_blank" rel="noopener">PyTorch 公式: Get Started</a></p>
 		<p>たとえば ROCm 6.x 用の場合（バージョンは公式で確認してください）:</p>
 		<code class="cmd">pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2</code>
+		<p>AMD 側のインストールガイドも参考になります:</p>
+		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/develop/install/3rd-party/pytorch-install.html" target="_blank" rel="noopener">AMD 公式: PyTorch on ROCm インストール</a></p>
 
 		<div class="warn-box">
 			<strong>CPU 版を掴まないように注意:</strong> <code>--index-url</code> を付けないと CPU 版が入ることがあります。必ず ROCm 用の URL を使ってください。
