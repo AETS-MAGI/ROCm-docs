@@ -19,10 +19,24 @@
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>NumPy の配列と PyTorch の tensor が、どちらも shape や dtype を持つ「数字のまとまり」だと分かることが目標です。まずは似ているところを見て、あとで GPU に進みやすくします。</p>
+		<ul class="point-list">
+			<li>この章のゴールは <strong>NumPy 配列 → PyTorch tensor への変換を確認する</strong> ことです。</li>
+			<li>shape / dtype の読み方は第2・3章と同じです。新しいのは <span class="code-inline">.device</span> という属性だけです。</li>
+			<li>ROCm の本番（GPU に乗せる）は次章です。この章は「乗せる前の準備」にあたります。</li>
+		</ul>
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>実行前チェック（20秒）</h2>
+		<ul class="point-list">
+			<li>第1章で確認した Python 環境を使います（例: <span class="code-inline">./.venv/bin/python</span>）。</li>
+			<li><span class="code-inline">pip show torch</span> で torch が入っていて、バージョンに <span class="code-inline">+rocm</span> が付いていることを確認します（第1章で確認済みなら不要）。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>確認コード</h2>
+		<p><strong>コードを見る前に一点:</strong> <span class="code-inline">torch.tensor(x_np)</span> は NumPy 配列のデータをコピーして PyTorch tensor を作ります。コピーなので、この後 NumPy 側を変えても tensor は変わりません（メモリを共有したい場合は <span class="code-inline">torch.from_numpy(x_np)</span> を使いますが、変更が連動するため混乱しやすく、最初は <span class="code-inline">torch.tensor()</span> を使うのが安全です）。</p>
 		<pre class="code-block"><code>import numpy as np
 import torch
 
@@ -30,14 +44,54 @@ x_np = np.array([[1, 2],
                  [3, 4]], dtype=np.float32)
 x_t = torch.tensor(x_np)
 
+print("--- NumPy ---")
 print(x_np.shape, x_np.dtype)
+
+print("--- PyTorch tensor ---")
 print(x_t.shape, x_t.dtype, x_t.device)</code></pre>
-		<p>形はほぼ同じでも、PyTorch の tensor にはあとで GPU へ送れるという広がりがあります。いまはまず、<span class="code-inline">shape</span> と <span class="code-inline">dtype</span> を同じ気分で読めることが大事です。</p>
+		<p>形はほぼ同じでも、PyTorch の tensor には <span class="code-inline">.device</span> という属性が加わっています。いまはまず、shape と dtype を同じ気分で読めることが大事です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>実行コマンド（コピペ用）</h2>
+		<pre class="code-block"><code>./.venv/bin/python -c 'import numpy as np, torch; x_np=np.array([[1,2],[3,4]],dtype=np.float32); x_t=torch.tensor(x_np); print("NumPy:", x_np.shape, x_np.dtype); print("Tensor:", x_t.shape, x_t.dtype, x_t.device)'</code></pre>
+	</section>
+
+	<section class="content-section">
+		<h2>実行すると何が出る？</h2>
+		<pre class="code-block"><code>--- NumPy ---
+(2, 2) float32
+--- PyTorch tensor ---
+torch.Size([2, 2]) torch.float32 cpu</code></pre>
+		<ul class="point-list">
+			<li><span class="code-inline">shape</span> の見え方が少し違います。NumPy は <span class="code-inline">(2, 2)</span>（タプル）、PyTorch は <span class="code-inline">torch.Size([2, 2])</span> と表示されますが、意味は同じです。<span class="code-inline">x_t.shape[0]</span> で行数を取り出すのも NumPy と同じ書き方です。</li>
+			<li><span class="code-inline">dtype</span> も表示が違います。NumPy は <span class="code-inline">float32</span>、PyTorch は <span class="code-inline">torch.float32</span> と出ます。同じ型を指しています。</li>
+			<li><span class="code-inline">device: cpu</span> と出ています。tensor を作っただけではまだ CPU 上にあります。<strong>GPU に乗っていない</strong>ことを確認してください（次章で <span class="code-inline">cuda</span> に変わります）。</li>
+		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>NumPy 配列は基本的に CPU 側ですが、PyTorch tensor はそのまま GPU へ動かせます。ROCm の出番がはっきり見えてくるのは、この tensor が GPU に乗ったあとです。</p>
+		<p>NumPy 配列は CPU 専用ですが、PyTorch tensor は <span class="code-inline">.to("cuda")</span> または <span class="code-inline">.cuda()</span> を呼ぶだけで GPU へ移動できます。ROCm 版 PyTorch では、この「cuda」という名前が AMD GPU（ROCm）への転送口になっています（第1章の <span class="code-inline">torch.cuda</span> と同じ理由です）。</p>
+		<p>現在 <span class="code-inline">device: cpu</span> と出ているのは「まだ GPU を使っていない」状態です。次章でこれを <span class="code-inline">device: cuda:0</span> に変えると、第1章で確認した AMD GPU が実際に動き始めます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>PyTorch で tensor を直接作る方法</h2>
+		<p>NumPy を経由せずに tensor を作ることもできます。演習で使うので確認しておきましょう。</p>
+		<pre class="code-block"><code># リストから直接作る（NumPy の np.array() に相当）
+t1 = torch.tensor([[1, 2, 3],
+                   [4, 5, 6]], dtype=torch.float32)
+
+# ゼロで埋めた表を作る（NumPy の np.zeros() に相当）
+t2 = torch.zeros(2, 3, dtype=torch.float32)
+
+# 1 で埋めた表を作る
+t3 = torch.ones(3, 4, dtype=torch.float32)
+
+print(t1.shape, t1.device)
+print(t2.shape, t2.device)</code></pre>
+		<p>どれも作った直後は <span class="code-inline">device: cpu</span> です。shape / dtype の考え方は NumPy と同じです。</p>
 	</section>
 
 	<section class="content-section">
@@ -46,21 +100,33 @@ print(x_t.shape, x_t.dtype, x_t.device)</code></pre>
 			<li>2 つのライブラリを <span class="code-inline">import</span> する</li>
 			<li>変数名を分けて、NumPy と PyTorch の値を見比べる</li>
 			<li><span class="code-inline">.shape</span>、<span class="code-inline">.dtype</span>、<span class="code-inline">.device</span> のような属性を読む</li>
+			<li><span class="code-inline">torch.tensor([[...]])</span> で直接 tensor を作る。<span class="code-inline">dtype=torch.float32</span> の指定方法に注意（NumPy は <span class="code-inline">np.float32</span>、PyTorch は <span class="code-inline">torch.float32</span>）。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>結果パターン別の次の一手</h2>
+		<ul class="point-list">
+			<li><strong>パターンA:</strong> <span class="code-inline">device: cpu</span> と出た → 正常です。この章はクリア。次章で GPU に移動します。</li>
+			<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named torch</span> → torch 未導入。ROCm 版のインストールコマンドを PyTorch 公式サイトで確認して再実行します（<span class="code-inline">pip install torch</span> は CUDA 版が入るので注意）。</li>
+			<li><strong>パターンC:</strong> <span class="code-inline">dtype</span> 表示が <span class="code-inline">torch.float32</span> ではなく <span class="code-inline">torch.float64</span> と出た → NumPy 配列の dtype が float64 のままです。<span class="code-inline">dtype=np.float32</span> を明示して作り直します。</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li>PyTorch の tensor を作っただけでは、まだ GPU には乗っていません。</li>
-			<li><span class="code-inline">dtype</span> の見え方が少し違っても、まずは「数字の種類」と分かれば十分です。</li>
-			<li>NumPy と PyTorch を別世界だと思わず、「表を持つ仲間」と考えると整理しやすくなります。</li>
+			<li>tensor を作っただけでは GPU には乗っていません。<span class="code-inline">device: cpu</span> と出ていれば CPU 上です。GPU に移すのは次章です。</li>
+			<li>NumPy は <span class="code-inline">float32</span>、PyTorch は <span class="code-inline">torch.float32</span> と表示が違いますが同じ型を指しています。</li>
+			<li>NumPy の <span class="code-inline">shape</span> はタプル <span class="code-inline">(2, 2)</span>、PyTorch は <span class="code-inline">torch.Size([2, 2])</span> と表示が違いますが、<span class="code-inline">[0]</span> でインデックスアクセスできるなど動作は同じです。</li>
+			<li><span class="code-inline">torch.tensor(x_np)</span> はデータをコピーします。NumPy 側を書き換えても tensor は変わりません（意図しない連動バグを防げます）。</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>NumPy を使わず、PyTorch だけで <span class="code-inline">2 行 3 列</span> の tensor を直接作って、<span class="code-inline">shape</span> と <span class="code-inline">device</span> を表示してみましょう。</p>
+		<p>NumPy を使わず、PyTorch だけで <span class="code-inline">2 行 3 列</span> の tensor を直接作って、<span class="code-inline">shape</span> と <span class="code-inline">device</span> を表示してみましょう。上の「PyTorch で tensor を直接作る方法」セクションを参考にしてください。</p>
+		<p>確認したい点: ① shape が <span class="code-inline">torch.Size([2, 3])</span> になっているか、② device が <span class="code-inline">cpu</span> と出ているか（この時点ではまだ cpu が正解です）。</p>
 	</section>
 
 	<nav class="chapter-nav">
