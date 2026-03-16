@@ -223,6 +223,22 @@ body {
 	color: #fff;
 }
 
+/* ── info-box: 前提条件・注意枠 ── */
+.info-box {
+	margin: 0 0 20px;
+	padding: 14px 18px;
+	border-radius: 12px;
+	background: #FFF3E0;
+	border-left: 5px solid #E65100;
+	font-size: 14px;
+	line-height: 1.7;
+	color: var(--ink);
+}
+
+.info-box strong {
+	color: #BF360C;
+}
+
 /* ── flow-steps: 横並び流れ図 ── */
 .flow-steps {
 	display: flex;
