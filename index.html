@@ -1,1 +1,214 @@
-test
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./styles/mermaid-layout.css">
+	<title>ROCm-docs | ROCm learning and notes hub</title>
+	<style>
+		:root {
+			--navy: #0B3C5D;
+			--teal: #00796B;
+			--blue: #1565C0;
+			--amber: #C56A00;
+			--green: #2E7D32;
+			--purple: #5B4B8A;
+			--ink: #1F2933;
+			--muted: #5F6C7B;
+			--line: #D8E0E8;
+			--bg: #F5F8FB;
+			--card: #FFFFFF;
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: 'Calibri', 'Arial', sans-serif;
+			color: var(--ink);
+			background: radial-gradient(circle at top right, rgba(0,121,107,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(91,75,138,0.07), transparent 26%), var(--bg);
+		}
+		.page { max-width: 980px; margin: 0 auto; padding: 32px 24px 60px; }
+		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+		.site-link { display: inline-flex; align-items: center; gap: 8px; color: var(--navy); font-size: 14px; font-weight: 700; text-decoration: none; }
+		.site-link:hover { text-decoration: underline; }
+		.lang-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--navy); background: transparent; color: var(--navy); transition: all 0.2s; }
+		.lang-btn.active { background: var(--navy); color: #fff; }
+		.hero {
+			background: linear-gradient(135deg, #004D40 0%, #00796B 55%, #26A69A 100%);
+			color: #fff;
+			border-radius: 18px;
+			padding: 40px 36px 34px;
+			margin-bottom: 32px;
+		}
+		.hero h1 { margin: 0 0 10px; font-size: 30px; line-height: 1.25; }
+		.hero .subtitle { margin: 0 0 14px; opacity: 0.84; font-size: 16px; }
+		.hero p { margin: 0; font-size: 16px; line-height: 1.7; opacity: 0.94; }
+		.section-title {
+			font-size: 21px;
+			font-weight: 700;
+			color: var(--navy);
+			border-left: 5px solid var(--teal);
+			padding-left: 14px;
+			margin: 42px 0 8px;
+		}
+		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.65; }
+		.fact-box, .warn-box, .info-box {
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin: 16px 0;
+			font-size: 15px;
+			line-height: 1.7;
+		}
+		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
+		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); }
+		.info-box { background: #E3F2FD; border-left: 5px solid var(--blue); }
+		.fact-box strong { color: var(--green); }
+		.warn-box strong { color: var(--amber); }
+		.info-box strong { color: var(--blue); }
+		.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+		.card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 22px 22px 18px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+		.card h3 { margin: 0; font-size: 19px; color: var(--navy); line-height: 1.35; }
+		.card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+		.card .filename { font-family: monospace; font-size: 12px; color: #90A4AE; }
+		.card .actions { margin-top: auto; padding-top: 6px; }
+		.card .btn {
+			display: inline-block;
+			padding: 7px 16px;
+			border-radius: 7px;
+			text-decoration: none;
+			color: #fff;
+			background: var(--teal);
+			font-weight: 700;
+			font-size: 13px;
+		}
+		.card .btn.alt { background: var(--blue); }
+		.list-box {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 18px 22px;
+			font-size: 15px;
+			line-height: 1.75;
+		}
+		.list-box ul { margin: 0; padding-left: 20px; }
+		.list-box li { margin: 0 0 8px; }
+		.list-box li:last-child { margin-bottom: 0; }
+		.footer { margin-top: 34px; color: var(--muted); text-align: center; font-size: 13px; }
+		[data-lang] { display: none; }
+		html[data-language="ja"] [data-lang="ja"] { display: initial; }
+		html[data-language="en"] [data-lang="en"] { display: initial; }
+		html[data-language="ja"] div[data-lang="ja"], html[data-language="en"] div[data-lang="en"] { display: block; }
+		html[data-language="ja"] p[data-lang="ja"], html[data-language="en"] p[data-lang="en"] { display: block; }
+		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"],
+		html[data-language="ja"] h2[data-lang="ja"], html[data-language="en"] h2[data-lang="en"],
+		html[data-language="ja"] h3[data-lang="ja"], html[data-language="en"] h3[data-lang="en"] { display: block; }
+		html[data-language="ja"] span[data-lang="ja"], html[data-language="en"] span[data-lang="en"] { display: inline; }
+		@media (max-width: 720px) {
+			.card-grid { grid-template-columns: 1fr; }
+			.hero { padding: 30px 22px 24px; }
+			.hero h1 { font-size: 25px; }
+		}
+	</style>
+</head>
+<body>
+<div class="page">
+	<div class="toolbar">
+		<a class="site-link" href="https://aets-magi.github.io/ROCm-docs/" target="_blank" rel="noopener noreferrer">ROCm-docs ↗</a>
+		<div>
+			<button class="lang-btn active" id="btn-ja" type="button">JP</button>
+			<button class="lang-btn" id="btn-en" type="button">EN</button>
+		</div>
+	</div>
+
+	<section class="hero">
+		<h1 data-lang="ja">ROCm-docs</h1>
+		<h1 data-lang="en">ROCm-docs</h1>
+		<p class="subtitle" data-lang="ja">ROCm learning and notes hub</p>
+		<p class="subtitle" data-lang="en">ROCm learning and notes hub</p>
+		<p data-lang="ja">このサイトは、ROCm を中学生や初学者にも追いやすい形で説明するページ群と、補助的な整理用ディレクトリをまとめた入口です。公開 URL は <a href="https://aets-magi.github.io/ROCm-docs/" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;">https://aets-magi.github.io/ROCm-docs/</a> です。</p>
+		<p data-lang="en">This site is the entry point for beginner-friendly ROCm explanations and a few supporting directories used to organize the project. The public URL is <a href="https://aets-magi.github.io/ROCm-docs/" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;">https://aets-magi.github.io/ROCm-docs/</a>.</p>
+	</section>
+
+	<div class="info-box">
+		<p data-lang="ja"><strong>まず見る場所:</strong> 公開コンテンツの中心は <a href="./theory/index.html">theory/index.html</a> です。ここに GPU / ROCm / NumPy / PyTorch / training / inference の説明ページをまとめています。</p>
+		<p data-lang="en"><strong>Where to start:</strong> The main public content starts from <a href="./theory/index.html">theory/index.html</a>, which collects the GPU / ROCm / NumPy / PyTorch / training / inference pages.</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">公開ページ</h2>
+	<h2 class="section-title" data-lang="en">Public Pages</h2>
+	<p class="section-lead" data-lang="ja">普段の閲覧で使うのはこの 2 つです。理論ページ群は `theory/`、Python 説明は `python/` に置きます。</p>
+	<p class="section-lead" data-lang="en">These are the main public entry points. Theory pages live under `theory/`, and Python explanations live under `python/`.</p>
+
+	<div class="card-grid">
+		<div class="card">
+			<h3 data-lang="ja">理論ページもくじ</h3>
+			<h3 data-lang="en">Theory Index</h3>
+			<p class="filename">theory/index.html</p>
+			<p data-lang="ja">GPU の基礎、ROCm の全体像、NumPy / PyTorch の入口、学習 / 推論 / Attention までの説明ページを集めた中心入口です。</p>
+			<p data-lang="en">The main index for GPU basics, the ROCm stack, NumPy / PyTorch introductions, and pages on training, inference, and attention.</p>
+			<div class="actions"><a class="btn" href="./theory/index.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a></div>
+		</div>
+		<div class="card">
+			<h3 data-lang="ja">Python 説明ページ</h3>
+			<h3 data-lang="en">Python Explanation Pages</h3>
+			<p class="filename">python/index.html</p>
+			<p data-lang="ja">`python/` は Python スクリプト置き場ではなく、Python の文法や考え方を説明するための公開ページ用ディレクトリです。</p>
+			<p data-lang="en">`python/` is not for Python scripts. It is the public directory for pages that explain Python syntax and mental models.</p>
+			<div class="actions"><a class="btn alt" href="./python/index.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a></div>
+		</div>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">ディレクトリの役割</h2>
+	<h2 class="section-title" data-lang="en">Directory Roles</h2>
+	<p class="section-lead" data-lang="ja">迷いやすいディレクトリだけ、先に意味を固定しておきます。</p>
+	<p class="section-lead" data-lang="en">These are the directories that benefit most from explicit role definitions.</p>
+
+	<div class="list-box">
+		<ul>
+			<li data-lang="ja"><strong>`theory/`</strong> : ROCm / GPU / AI の説明ページ本体。</li>
+			<li data-lang="en"><strong>`theory/`</strong> : Main explanation pages for ROCm / GPU / AI.</li>
+			<li data-lang="ja"><strong>`python/`</strong> : Python の説明を書くための場所。実行用スクリプト置き場ではありません。</li>
+			<li data-lang="en"><strong>`python/`</strong> : A place for Python explanation pages. It is not a storage area for runnable scripts.</li>
+			<li data-lang="ja"><strong>`scripts/`</strong> : サイト生成や補助処理のためのスクリプト。</li>
+			<li data-lang="en"><strong>`scripts/`</strong> : Helper scripts for site generation and supporting tasks.</li>
+			<li data-lang="ja"><strong>`__tmp/`</strong> : 運用メモ、一時メモ、下書き、整理前のメモを置く場所。公開コンテンツの本体はここに置かない方針です。</li>
+			<li data-lang="en"><strong>`__tmp/`</strong> : Temporary operational notes, drafts, and unpolished working memos. This is not intended to hold the main public content.</li>
+		</ul>
+	</div>
+
+	<div class="warn-box">
+		<p data-lang="ja"><strong>運用メモの置き場所:</strong> 作業途中のメモや運用メモは <code>/home/limonene/ROCm-project/vega-hbmx-investigations/ROCm-docs/__tmp</code> 以下に保存します。`python/` には説明ページだけを置きます。</p>
+		<p data-lang="en"><strong>Where to store working notes:</strong> Operational notes and in-progress memos should go under <code>/home/limonene/ROCm-project/vega-hbmx-investigations/ROCm-docs/__tmp</code>. Keep `python/` for explanation pages only.</p>
+	</div>
+
+	<p class="footer">
+		<span data-lang="ja">公開 URL: https://aets-magi.github.io/ROCm-docs/</span>
+		<span data-lang="en">Public URL: https://aets-magi.github.io/ROCm-docs/</span>
+	</p>
+</div>
+
+<script>
+	const root = document.documentElement;
+	const btnJa = document.getElementById('btn-ja');
+	const btnEn = document.getElementById('btn-en');
+	btnJa.addEventListener('click', () => {
+		root.setAttribute('data-language', 'ja');
+		btnJa.classList.add('active');
+		btnEn.classList.remove('active');
+	});
+	btnEn.addEventListener('click', () => {
+		root.setAttribute('data-language', 'en');
+		btnEn.classList.add('active');
+		btnJa.classList.remove('active');
+	});
+</script>
+</body>
+</html>

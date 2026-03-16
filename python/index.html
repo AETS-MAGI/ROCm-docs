@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Python explanations | ROCm-docs</title>
+	<style>
+		:root {
+			--navy: #0B3C5D;
+			--teal: #00796B;
+			--blue: #1565C0;
+			--amber: #C56A00;
+			--ink: #1F2933;
+			--muted: #5F6C7B;
+			--line: #D8E0E8;
+			--bg: #F5F8FB;
+			--card: #FFFFFF;
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: 'Calibri', 'Arial', sans-serif;
+			color: var(--ink);
+			background: radial-gradient(circle at top right, rgba(0,121,107,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(21,101,192,0.07), transparent 26%), var(--bg);
+		}
+		.page { max-width: 920px; margin: 0 auto; padding: 32px 24px 60px; }
+		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+		.home-link { color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 700; }
+		.home-link:hover { text-decoration: underline; }
+		.lang-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--navy); background: transparent; color: var(--navy); }
+		.lang-btn.active { background: var(--navy); color: #fff; }
+		.hero {
+			background: linear-gradient(135deg, #1565C0 0%, #1E88E5 55%, #64B5F6 100%);
+			color: #fff;
+			border-radius: 18px;
+			padding: 40px 36px 30px;
+			margin-bottom: 28px;
+		}
+		.hero h1 { margin: 0 0 10px; font-size: 30px; }
+		.hero p { margin: 0; line-height: 1.7; font-size: 16px; }
+		.box {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 20px 22px;
+			margin: 16px 0;
+			line-height: 1.75;
+			font-size: 15px;
+		}
+		.info { background: #E3F2FD; border-left: 5px solid var(--blue); }
+		.warn { background: #FFF8E1; border-left: 5px solid var(--amber); }
+		.box strong { color: var(--navy); }
+		.footer { margin-top: 32px; color: var(--muted); text-align: center; font-size: 13px; }
+		[data-lang] { display: none; }
+		html[data-language="ja"] [data-lang="ja"] { display: initial; }
+		html[data-language="en"] [data-lang="en"] { display: initial; }
+		html[data-language="ja"] div[data-lang="ja"], html[data-language="en"] div[data-lang="en"] { display: block; }
+		html[data-language="ja"] p[data-lang="ja"], html[data-language="en"] p[data-lang="en"] { display: block; }
+		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"] { display: block; }
+	</style>
+</head>
+<body>
+<div class="page">
+	<div class="toolbar">
+		<a class="home-link" href="../index.html">← <span data-lang="ja">トップへ</span><span data-lang="en">Back to index</span></a>
+		<div>
+			<button class="lang-btn active" id="btn-ja" type="button">JP</button>
+			<button class="lang-btn" id="btn-en" type="button">EN</button>
+		</div>
+	</div>
+
+	<section class="hero">
+		<h1 data-lang="ja">Python 説明ページ</h1>
+		<h1 data-lang="en">Python Explanation Pages</h1>
+		<p data-lang="ja">このディレクトリは Python スクリプト置き場ではなく、Python の文法や考え方を説明する公開ページを置くための場所です。</p>
+		<p data-lang="en">This directory is not for Python scripts. It is meant for public pages that explain Python syntax and Python thinking.</p>
+	</section>
+
+	<div class="box info">
+		<p data-lang="ja"><strong>この場所の役割:</strong> `import`、変数、関数、クラス、配列、shape の読み方など、ROCm や PyTorch を読む前に必要な Python の説明ページをここに置きます。</p>
+		<p data-lang="en"><strong>Role of this place:</strong> This is where explanation pages about `import`, variables, functions, classes, arrays, and reading shapes should live before a reader moves on to ROCm or PyTorch.</p>
+	</div>
+
+	<div class="box warn">
+		<p data-lang="ja"><strong>置かないもの:</strong> 実行用スクリプト、運用メモ、雑多な作業メモはここに置きません。そうしたものは `scripts/` か `__tmp/` 側で扱います。</p>
+		<p data-lang="en"><strong>What should not go here:</strong> Runnable scripts, operational notes, and rough working memos do not belong here. Those should go under `scripts/` or `__tmp/` instead.</p>
+	</div>
+
+	<p class="footer">
+		<span data-lang="ja">まだページ本体は追加前です。ここは用途を明確にするための入口です。</span>
+		<span data-lang="en">The actual pages are not added yet. This file exists to make the intended purpose clear.</span>
+	</p>
+</div>
+
+<script>
+	const root = document.documentElement;
+	const btnJa = document.getElementById('btn-ja');
+	const btnEn = document.getElementById('btn-en');
+	btnJa.addEventListener('click', () => {
+		root.setAttribute('data-language', 'ja');
+		btnJa.classList.add('active');
+		btnEn.classList.remove('active');
+	});
+	btnEn.addEventListener('click', () => {
+		root.setAttribute('data-language', 'en');
+		btnEn.classList.add('active');
+		btnJa.classList.remove('active');
+	});
+</script>
+</body>
+</html>
