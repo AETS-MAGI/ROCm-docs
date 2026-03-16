@@ -10,6 +10,30 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
+<!--
+Claude review 2026-03-17:
+この章は概ね良好。CANONICAL構造への準拠度は全章中最も高い。
+第0章/Quickstart済み前提の info-box あり、出力例・torch.cuda 説明・つまずき・演習いずれも揃っている。
+実行コマンドセクションがないが、第1章は「確認コードを貼り付けて実行する」前提であり、
+ワンライナー版がつまずきのdetailsに入っている。不足感は低い。
+
+CANONICAL準拠:
+- 実行コマンド: 実質あり（ワンライナーをつまずきdetailsに記載）。独立セクションとしては存在しない
+- 出力例: あり（output-example div、現実的な値）
+- どこがROCm: あり（torch.cuda と HIP の関係まで説明）
+- つまずき: あり（HIP None / False / 偽 Device の三パターン）
+
+初心者・数学苦手・挫折経験者への懸念点:
+- ワンライナーが「つまずき」詳細の中に隠れているため、「どのコマンドで動かすのか」が本文から見えにくい。
+  ファイルに保存して python check.py で実行する手順を本文に一言加えると親切。
+- `sys.version.split()[0]` の解説は details 内にあるが、ファイル保存→実行の流れが省略されている。
+- 「1分演習」の内容がメモを促すだけで、手を動かす操作がない。次章に進む前に動かす演習を加えると完成度が上がる。
+
+改善候補:
+- 確認コード直後に「このファイルを check01.py として保存し、python check01.py で実行します」を1行追加
+- 1分演習に「HIP の値を変えたらどうなるか試す」などの能動的な操作を追加
+- safe-box の torch.cuda 説明は現状で良いが、詳細リンク（将来の Appendix A）があるとさらに良い
+-->
 	<header class="chapter-hero">
 		<p class="eyebrow">第1章</p>
 		<h1>GPUが見えるか確かめたい</h1>
