@@ -298,6 +298,39 @@ source ~/rocm-env/bin/activate</code>
 		<p>第1章以降は、どちらのルートでも同じコードで進めます。</p>
 	</div>
 
+	<!-- 確認コマンド比較表 -->
+	<div class="explain-card">
+		<h2>確認コマンドの使い分け</h2>
+		<p>ここまでに出てきた 3 つの確認方法を整理します。</p>
+		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0;">
+			<thead>
+				<tr style="border-bottom: 2px solid var(--line);">
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">コマンド</th>
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">確認できること</th>
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">確認する層</th>
+				</tr>
+			</thead>
+			<tbody style="color: var(--muted); line-height: 1.7;">
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>rocminfo</code></td>
+					<td style="padding: 8px 10px;">ROCm ランタイムから GPU が見えるか</td>
+					<td style="padding: 8px 10px;">ドライバ〜ランタイム</td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px;"><code>torch.version.hip</code></td>
+					<td style="padding: 8px 10px;">PyTorch が ROCm 版かどうか</td>
+					<td style="padding: 8px 10px;">PyTorch</td>
+				</tr>
+				<tr>
+					<td style="padding: 8px 10px;"><code>torch.cuda.is_available()</code></td>
+					<td style="padding: 8px 10px;">PyTorch から GPU が使えるか</td>
+					<td style="padding: 8px 10px;">PyTorch〜ランタイム〜ドライバ</td>
+				</tr>
+			</tbody>
+		</table>
+		<p><code>rocminfo</code> は Python なしで使えるので、まずはここから。<code>torch.version.hip</code> は PyTorch の種類判定。<code>torch.cuda.is_available()</code> は全層を通した最終チェックです。</p>
+	</div>
+
 	<!-- チェックリスト -->
 	<div class="checklist">
 		<h2>✅ 第0章のチェックリスト</h2>
