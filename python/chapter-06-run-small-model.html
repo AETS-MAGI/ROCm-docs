@@ -60,6 +60,10 @@ print("出力 shape:", y.shape)</code></pre></div>
 		<div class="output-example">入力 shape: torch.Size([1, 4])
 出力 shape: torch.Size([1, 2])</div>
 		<p>数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
+
+		<div class="safe-box">
+			モデルを通したら shape が変わった — それが確認できればこの章は OK です。数値の中身は気にしなくて大丈夫です。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -70,10 +74,14 @@ print("出力 shape:", y.shape)</code></pre></div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li>オブジェクトを作って変数に入れる</li>
-			<li><span class="code-inline">nn.Sequential(...)</span> のように部品を順につなぐ</li>
-			<li><span class="code-inline">model(x)</span> のように、モデルを関数のように呼ぶ</li>
+			<li><span class="code-inline">nn.Sequential(...)</span> — 部品を順につなぐ</li>
+			<li><span class="code-inline">model(x)</span> — モデルを関数のように呼ぶ</li>
 		</ul>
+
+		<details>
+			<summary>ReLU と Linear の補足（クリックで開く）</summary>
+			<p><span class="code-inline">ReLU</span> は「マイナスを 0 にする簡単な部品」くらいに思えば十分です。<span class="code-inline">Linear(4, 8)</span> の 4 は入力の数、8 は出力の数です。次の層の入力もこの 8 に合わせます。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

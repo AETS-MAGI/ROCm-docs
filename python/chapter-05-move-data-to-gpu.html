@@ -36,6 +36,10 @@ print("after :", x.device)</code></pre></div>
 		<div class="output-example">before: cpu
 after : cuda:0</div>
 		<p><span class="code-inline">before</span> と <span class="code-inline">after</span> を見比べるだけで、データがどこにあるかを追えるようになります。</p>
+
+		<div class="safe-box">
+			<span class="code-inline">cuda:0</span> と出ていれば、GPU への転送は成功です。<span class="code-inline">cpu</span> のままでもエラーではありません — GPU がない環境ではそれが正常です。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -61,6 +65,8 @@ after : cuda:0</div>
 		</ul>
 
 		<p>device が混ざるとどうなるか、見てみましょう。</p>
+		<details>
+			<summary>device 不一致のエラー例（クリックで開く）</summary>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># device 不一致の例
 import torch
 import torch.nn as nn
@@ -75,6 +81,7 @@ except RuntimeError as e:
     print(e)</code></pre></div>
 		<div class="output-example">Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!</div>
 		<p><span class="code-inline">model.to(device)</span> を足すか、<span class="code-inline">x</span> を CPU に戻せば解消します。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

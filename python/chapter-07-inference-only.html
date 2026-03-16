@@ -51,7 +51,11 @@ print(y)
 print(y.requires_grad)</code></pre></div>
 		<div class="output-example">tensor([[ 0.1532, -0.0478]], device='cuda:0')
 False</div>
-		<p><span class="code-inline">requires_grad</span> が <span class="code-inline">False</span> であることから、勾配計算が省略されていると分かります。ここでやっているのは forward だけです。</p>
+		<p><span class="code-inline">requires_grad</span> が <span class="code-inline">False</span> — 勾配計算が省略されていると分かります。ここでやっているのは forward だけです。</p>
+
+		<div class="safe-box">
+			<span class="code-inline">eval()</span> + <span class="code-inline">no_grad()</span> のセットで「推論だけ」の姿勢になります。学習との違いは次章で見比べます。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -62,10 +66,15 @@ False</div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">with ...:</span> の形で、一時的なモードを作る</li>
-			<li>メソッドを順番に呼んで動作を切り替える</li>
-			<li>最後の結果だけを受け取って表示する</li>
+			<li><span class="code-inline">with ...:</span> — 一時的なモードを作る</li>
+			<li><span class="code-inline">model.eval()</span> — 推論モードへ切り替え</li>
+			<li><span class="code-inline">torch.no_grad()</span> — 勾配計算を省略</li>
 		</ul>
+
+		<details>
+			<summary>eval() と no_grad() の使い分け（クリックで開く）</summary>
+			<p><span class="code-inline">eval()</span> は Dropout や BatchNorm の動きを推論向けに切り替えます。<span class="code-inline">no_grad()</span> は勾配計算を省略し、メモリと速度が少し楽になります。推論だけの場面では両方をセットで使うのが基本です。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
