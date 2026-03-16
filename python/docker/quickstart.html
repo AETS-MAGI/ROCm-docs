@@ -114,6 +114,16 @@
 </head>
 <body>
 <div class="page">
+	<!--
+	Codex review 2026-03-16:
+	Docker ルート分離は CANONICAL 準拠。
+	追加改善案:
+	1. `rocm/pytorch:latest` は将来の差分で挙動が変わりやすい。
+	   安定性を重視するなら、検証済みタグを例示する案もある
+	2. Docker 未経験者向けに「コンテナ = 使い捨ての作業箱」の一文があると、
+	   ルート選択後の心理コストがさらに下がる
+	3. ここも将来 Appendix B への失敗時導線を置きたい
+	-->
 	<a class="back-link" href="../quickstart.html">← ルート選択に戻る</a>
 
 	<section class="chapter-hero">
