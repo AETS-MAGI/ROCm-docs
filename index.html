@@ -62,7 +62,7 @@
 		}
 		.info-box { background: #E3F2FD; border-left: 5px solid var(--blue); }
 		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
-		.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+		.card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 		.card {
 			background: var(--card);
 			border: 1px solid var(--line);
@@ -124,17 +124,17 @@
 	</div>
 
 	<section class="hero">
-		<h1 data-lang="ja">ROCm を学ぶ入口</h1>
-		<h1 data-lang="en">A Friendly Starting Point for ROCm</h1>
-		<p class="subtitle" data-lang="ja">GPU・NumPy・PyTorch・ROCm を、やさしくつなげて学ぶサイト</p>
-		<p class="subtitle" data-lang="en">A beginner-friendly site that connects GPU basics, NumPy, PyTorch, and ROCm</p>
-		<p data-lang="ja">このサイトでは、GPU の基本から始めて、NumPy や PyTorch を通して ROCm に近づいていきます。難しい言葉を先に暗記するよりも、「何ができるのか」「どう読むのか」を小さなページで少しずつつかめる構成にしています。</p>
-		<p data-lang="en">This site starts from GPU basics and gradually leads you toward ROCm through NumPy and PyTorch. Instead of memorising terminology first, it focuses on what you can do and how to read the code step by step.</p>
+		<h1 data-lang="ja">ROCm で GPU と遊ぶ入口</h1>
+		<h1 data-lang="en">Your Starting Point for ROCm</h1>
+		<p class="subtitle" data-lang="ja">まず動かして、それからわかる。初心者のための ROCm 実践ガイド</p>
+		<p class="subtitle" data-lang="en">Run it first, understand it next. A practical ROCm guide for beginners</p>
+		<p data-lang="ja">このサイトでは、まず GPU で計算を 1 回動かすところからはじめます。そのあと、PyTorch と ROCm を使った「やりたいこと」ベースのコースで、少しずつ読めるようになっていきます。</p>
+		<p data-lang="en">This site starts by running one GPU calculation. Then, through a goal-based course using PyTorch and ROCm, you’ll gradually learn to read and write GPU code.</p>
 	</section>
 
 	<div class="info-box">
-		<p data-lang="ja"><strong>はじめてなら:</strong> まずは <a href="./theory/theory-index.html">理論ページ</a> で GPU と ROCm の全体像をつかみ、そのあと <a href="./python/python-index.html">Python and ROCm 教室</a> に進むのがおすすめです。</p>
-		<p data-lang="en"><strong>If you're new:</strong> start with the <a href="./theory/theory-index.html">theory pages</a> to get the big picture, then move on to the <a href="./python/python-index.html">Python and ROCm course</a>.</p>
+		<p data-lang="ja"><strong>✨ はじめての方へ:</strong> まずは <a href="./python/quickstart.html">Quickstart</a> で GPU を 1 回動かしてみましょう。そのあと <a href="./python/python-index.html">Python and ROCm 教室</a> へ進むのがおすすめです。</p>
+		<p data-lang="en"><strong>✨ If you're new:</strong> Start with the <a href="./python/quickstart.html">Quickstart</a> to run your first GPU calculation, then move on to the <a href="./python/python-index.html">Python and ROCm course</a>.</p>
 	</div>
 
 	<h2 class="section-title" data-lang="ja">このサイトで学べること</h2>
@@ -144,36 +144,43 @@
 
 	<div class="card-grid">
 		<div class="card">
-			<h2 data-lang="ja">理論ページ</h2>
-			<h2 data-lang="en">Theory Pages</h2>
-			<p data-lang="ja">GPU のしくみ、メモリと帯域幅、ROCm の全体像、NumPy / PyTorch の入口、学習と推論のちがいなどを、図やたとえを使って説明します。</p>
-			<p data-lang="en">Learn GPU basics, memory and bandwidth, the ROCm stack, NumPy / PyTorch introductions, and the difference between training and inference through analogies and diagrams.</p>
-			<a class="btn" href="./theory/theory-index.html"><span data-lang="ja">理論ページへ</span><span data-lang="en">Open theory pages</span></a>
+			<h2 data-lang="ja">まず GPU で遊ぶ（Quickstart）</h2>
+			<h2 data-lang="en">Quickstart</h2>
+			<p data-lang="ja">10〜30分で GPU 計算を 1 回動かします。ネイティブ Linux と Docker の 2 つのルートから選べます。</p>
+			<p data-lang="en">Run your first GPU calculation in 10–30 minutes. Choose between native Linux or Docker.</p>
+			<a class="btn" href="./python/quickstart.html"><span data-lang="ja">まず動かす →</span><span data-lang="en">Get started →</span></a>
 		</div>
 		<div class="card">
 			<h2 data-lang="ja">Python and ROCm 教室</h2>
 			<h2 data-lang="en">Python and ROCm Course</h2>
-			<p data-lang="ja">Python の文法を先に全部やるのではなく、「GPU が見えるか確かめたい」「行列を計算したい」「小さなモデルを動かしたい」から入る学習コースです。</p>
-			<p data-lang="en">This course does not begin with abstract grammar. It starts from goals such as checking the GPU, doing matrix math, and running a small model.</p>
-			<a class="btn alt" href="./python/python-index.html"><span data-lang="ja">Python コースへ</span><span data-lang="en">Open Python course</span></a>
+			<p data-lang="ja">「GPU が見えるか確かめたい」「行列を計算したい」「小さなモデルを動かしたい」—— やりたいことから入る 13 章の学習コースです。</p>
+			<p data-lang="en">A 13-chapter course that starts from goals like checking the GPU, doing matrix math, and running a small model.</p>
+			<a class="btn alt" href="./python/python-index.html"><span data-lang="ja">教室へ →</span><span data-lang="en">Open course →</span></a>
+		</div>
+		<div class="card">
+			<h2 data-lang="ja">しくみをやさしく知る（theory）</h2>
+			<h2 data-lang="en">Theory Pages</h2>
+			<p data-lang="ja">GPU のしくみ、ROCm の全体像、学習と推論のちがいなどを、図やたとえを使って説明します。必要になったら読む — のスタイルで。</p>
+			<p data-lang="en">Learn GPU basics, the ROCm stack, and the difference between training and inference through analogies and diagrams. Read when you need it.</p>
+			<a class="btn" href="./theory/theory-index.html" style="background: var(--amber);"><span data-lang="ja">理論ページへ</span><span data-lang="en">Open theory</span></a>
 		</div>
 	</div>
 
 	<h2 class="section-title" data-lang="ja">おすすめの進み方</h2>
 	<h2 class="section-title" data-lang="en">Suggested Reading Order</h2>
-	<p class="section-lead" data-lang="ja">迷ったら、次の順で読むとつながりやすいです。</p>
-	<p class="section-lead" data-lang="en">If you're not sure where to begin, this order works well.</p>
+	<p class="section-lead" data-lang="ja">迷ったら、この順で進めてみてください。</p>
+	<p class="section-lead" data-lang="en">If you're not sure where to begin, follow this path.</p>
 
 	<div class="path-box">
 		<ol>
-			<li data-lang="ja"><a href="./theory/gpu-basics.html">GPU のしくみ</a> で、CPU と GPU の違いをつかむ</li>
-			<li data-lang="en"><a href="./theory/gpu-basics.html">GPU Basics</a> to understand the difference between CPU and GPU</li>
-			<li data-lang="ja"><a href="./theory/rocm-overview-for-beginners.html">ROCm の全体構造</a> で、アプリから GPU までの流れを見る</li>
-			<li data-lang="en"><a href="./theory/rocm-overview-for-beginners.html">ROCm Overview</a> to see the path from the app down to the GPU</li>
-			<li data-lang="ja"><a href="./theory/numpy-express.html">NumPy特急便</a> と <a href="./theory/pytorch-express.html">PyTorch特急便</a> で、数字の表と tensor の読み方に慣れる</li>
-			<li data-lang="en"><a href="./theory/numpy-express.html">NumPy Express</a> and <a href="./theory/pytorch-express.html">PyTorch Express</a> to get comfortable with number tables and tensors</li>
-			<li data-lang="ja"><a href="./python/python-index.html">Python and ROCm 教室</a> で、やりたいことベースの 13 章をたどる</li>
-			<li data-lang="en"><a href="./python/python-index.html">Python and ROCm Course</a> to follow the 13-chapter goal-based learning path</li>
+			<li data-lang="ja"><a href="./python/quickstart.html">Quickstart</a> で GPU を 1 回動かす</li>
+			<li data-lang="en"><a href="./python/quickstart.html">Quickstart</a> — run one GPU calculation</li>
+			<li data-lang="ja"><a href="./python/native/chapter-00-setup.html">第0章</a> で環境の意味を理解する</li>
+			<li data-lang="en"><a href="./python/native/chapter-00-setup.html">Chapter 0</a> — understand your setup</li>
+			<li data-lang="ja"><a href="./python/python-index.html">Python and ROCm 教室</a> の 13 章をたどる</li>
+			<li data-lang="en"><a href="./python/python-index.html">Python and ROCm Course</a> — follow the 13 chapters</li>
+			<li data-lang="ja">必要になったら <a href="./theory/theory-index.html">理論ページ</a> で背景を補う</li>
+			<li data-lang="en">Read <a href="./theory/theory-index.html">theory pages</a> when you need background</li>
 		</ol>
 	</div>
 
