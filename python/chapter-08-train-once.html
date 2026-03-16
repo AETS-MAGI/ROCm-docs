@@ -15,21 +15,31 @@
 		<h1>学習してみたい</h1>
 		<p>ここでは、答えを出すだけでなく「少し直す」までを 1 回だけ体験します。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1 の最上位候補。
-	学習は概念負荷が高いのに、現状ページはかなり薄く、初心者が「loss / backward / step が何者か分からないまま通り過ぎる」危険がある。
-	将来の補強候補:
-	- pred -> loss -> backward -> step の流れ図
-	- step の前後で loss がどう見えるかの最小出力例
-	- 「1回で良くならなくても普通」という安心導線の明示
-	- 重みが更新されることを確認する最小観察ポイント
-	この章は後半群の中でも事故率が高いので、優先的に厚くしたい。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>学習では、まず答えを出し、そのずれを測り、そのずれを小さくする向きへ重みを少し動かします。この 1 回分を短いコードで見て、<span class="code-inline">loss</span> と <span class="code-inline">backward()</span> と <span class="code-inline">step()</span> の役目をつかみます。</p>
+
+		<p>学習 1 回の流れは、この 4 ステップです。</p>
+		<div class="flow-steps">
+			<span class="step">pred = model(x)</span>
+			<span class="arrow">→</span>
+			<span class="step">loss = loss_fn(pred, y_true)</span>
+			<span class="arrow">→</span>
+			<span class="step">loss.backward()</span>
+			<span class="arrow">→</span>
+			<span class="step">optimizer.step()</span>
+		</div>
+		<dl class="term-card">
+			<dt>pred</dt>
+			<dd>モデルが出した予測値。まだ正解とは離れている。</dd>
+			<dt>loss</dt>
+			<dd>予測と正解のずれを 1 個の数にしたもの。小さいほどよい。</dd>
+			<dt>backward()</dt>
+			<dd>ずれを「どの重みをどっちに直せばいいか」に変換する。</dd>
+			<dt>step()</dt>
+			<dd>重みを実際に少し動かす。ここで学習が進む。</dd>
+		</dl>
 	</section>
 
 	<section class="content-section">
@@ -46,15 +56,35 @@ y_true = torch.tensor([[2.0]], device=device)
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 
+# -- 重みの変化を見る --
+print("重み（学習前）:", model.weight.item())
+
 pred = model(x)
 loss = loss_fn(pred, y_true)
+print("loss（1回目）:", loss.item())
 
 optimizer.zero_grad()
 loss.backward()
 optimizer.step()
 
-print(loss.item())</code></pre></div>
-		<p>学習の流れは、ざっくり言うと「答えを出す → ずれを数にする → 直す」です。この章ではそれを 1 回だけ回しています。</p>
+print("重み（学習後）:", model.weight.item())
+
+# -- もう1回やると loss が変わる --
+pred2 = model(x)
+loss2 = loss_fn(pred2, y_true)
+print("loss（2回目）:", loss2.item())</code></pre></div>
+		<p>学習の流れは、ざっくり言うと「答えを出す → ずれを数にする → 直す」です。上のコードでは 1 回やった後にもう 1 回繰り返して、loss の変化と重みの変化を両方見ています。</p>
+
+		<p>実行すると、たとえばこう表示されます。</p>
+		<div class="output-example">重み（学習前）: 0.3127
+loss（1回目）: 2.8452
+重み（学習後）: 0.6502
+loss（2回目）: 1.8228</div>
+		<p>数値は毎回少し変わりますが、loss が小さくなっていれば学習が進んでいます。</p>
+
+		<div class="safe-box">
+			1 回の学習で loss がほとんど変わらないこともあります。それは普通のことです。学習は「少しずつ直す」ものなので、1 回で完璧になることは期待しなくて大丈夫です。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -77,12 +107,13 @@ print(loss.item())</code></pre></div>
 			<li><span class="code-inline">optimizer.zero_grad()</span> を忘れると、前の勾配が残って見え方が分かりにくくなります。</li>
 			<li>1 回の学習で全部よくなるとは限りません。ここでは流れをつかむのが目的です。</li>
 			<li><span class="code-inline">loss</span> は「ずれの大きさ」です。小さいほどよい、とまず考えれば大丈夫です。</li>
+			<li><span class="code-inline">backward()</span> を 2 回呼ぶとエラーになります。<span class="code-inline">zero_grad → backward → step</span> のセットを 1 回ずつ繰り返すのが基本です。</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p><span class="code-inline">optimizer.step()</span> のあとに、もう 1 回同じ流れを足してみましょう。<span class="code-inline">loss.item()</span> がどう変わるかを見ます。</p>
+		<p>上のコードで、学習の繰り返しを 5 回に増やしてみましょう。<span class="code-inline">for i in range(5):</span> で囲んで、毎回の loss を <span class="code-inline">print</span> します。回を重ねるごとに loss が下がっていくのを見届けてみてください。</p>
 	</section>
 
 	<nav class="chapter-nav">

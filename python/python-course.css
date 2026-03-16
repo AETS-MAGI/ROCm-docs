@@ -223,6 +223,142 @@ body {
 	color: #fff;
 }
 
+/* ── flow-steps: 横並び流れ図 ── */
+.flow-steps {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin: 14px 0;
+}
+
+.flow-steps .step {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 14px;
+	border-radius: 10px;
+	background: var(--blue-soft);
+	color: var(--blue-deep);
+	font-size: 14px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.flow-steps .arrow {
+	font-size: 16px;
+	color: var(--muted);
+	user-select: none;
+}
+
+/* ── output-example: 実行結果例 ── */
+.output-example {
+	margin: 10px 0 12px;
+	padding: 12px 16px;
+	border-radius: 12px;
+	background: #f0f4f8;
+	border: 1px solid var(--line);
+	font-family: 'Consolas', 'Menlo', monospace;
+	font-size: 13px;
+	line-height: 1.7;
+	color: var(--ink);
+	white-space: pre-wrap;
+}
+
+/* ── safe-box: 安心導線 ── */
+.safe-box {
+	margin: 12px 0;
+	padding: 14px 18px;
+	border-radius: 12px;
+	background: #eaf7ec;
+	border-left: 4px solid #4caf50;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #2e5c31;
+}
+
+/* ── term-card: 用語カード ── */
+.term-card {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 4px 14px;
+	margin: 12px 0;
+	padding: 14px 18px;
+	border-radius: 12px;
+	background: var(--blue-soft);
+	border: 1px solid var(--line);
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.term-card dt {
+	font-weight: 700;
+	color: var(--blue-deep);
+}
+
+.term-card dd {
+	margin: 0;
+	color: var(--ink);
+}
+
+/* ── shape-table: shape 対応表 ── */
+.shape-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 12px 0;
+	font-size: 14px;
+}
+
+.shape-table th,
+.shape-table td {
+	padding: 8px 12px;
+	border: 1px solid var(--line);
+	text-align: left;
+}
+
+.shape-table th {
+	background: var(--blue-soft);
+	color: var(--blue-deep);
+	font-weight: 700;
+}
+
+.shape-table td {
+	background: var(--card);
+}
+
+/* ── check-list: チェックリスト ── */
+.check-list {
+	margin: 10px 0;
+	padding-left: 0;
+	list-style: none;
+}
+
+.check-list li {
+	padding: 4px 0 4px 1.6em;
+	position: relative;
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.check-list li::before {
+	content: '☐';
+	position: absolute;
+	left: 0;
+	color: var(--blue);
+}
+
+/* ── error-line: エラー出力マーキング ── */
+.error-line {
+	display: block;
+	padding: 2px 8px;
+	margin: 0 -8px;
+	border-radius: 4px;
+}
+
+.error-line.highlight {
+	background: #fff3e0;
+	border-left: 3px solid #ff9800;
+}
+
 @media (max-width: 640px) {
 	.page { padding: 22px 16px 48px; }
 	.chapter-hero,
@@ -237,4 +373,7 @@ body {
 	}
 	.content-section h2 { font-size: 20px; }
 	.chapter-nav { justify-content: flex-start; }
+	.flow-steps { gap: 4px; }
+	.flow-steps .step { padding: 5px 10px; font-size: 13px; }
+	.term-card { grid-template-columns: 1fr; }
 }

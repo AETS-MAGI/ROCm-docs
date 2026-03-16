@@ -15,21 +15,39 @@
 		<h1>たたみこみを動かしてみたい</h1>
 		<p>画像っぽい shape を持つデータが、畳み込みでどう流れるかを見てみます。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1 の最上位候補。
-	畳み込みは初心者にとって shape の読み方が急に難しくなるのに、現状は NCHW の見え方と Conv2d の変化量がかなり省略されている。
-	将来の補強候補:
-	- N / C / H / W を箱や図で見せる
-	- 入力 shape -> Conv2d -> 出力 shape の1枚図
-	- in_channels mismatch の典型事故例を注釈付きで示す
-	- 出力例を置いて「どこが変わるか」を先に読ませる
-	この章は薄いままだと事故率が高いので、早めの肉付けが望ましい。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p><span class="code-inline">Conv2d</span> という部品を動かして、入力 shape と出力 shape を読めるようにします。いきなり画像認識の話を全部やるのではなく、まずは形の流れをつかむ章です。</p>
+
+		<p>畳み込みの shape は 4 つの数字で書きます。並び順は <strong>N, C, H, W</strong> です。</p>
+		<table class="shape-table">
+			<tr>
+				<th>記号</th><th>意味</th><th>この例の値</th>
+			</tr>
+			<tr>
+				<td><strong>N</strong></td><td>バッチ（何枚まとめて流すか）</td><td>1</td>
+			</tr>
+			<tr>
+				<td><strong>C</strong></td><td>チャネル（色の層の数）</td><td>1 → 2</td>
+			</tr>
+			<tr>
+				<td><strong>H</strong></td><td>高さ</td><td>5</td>
+			</tr>
+			<tr>
+				<td><strong>W</strong></td><td>幅</td><td>5</td>
+			</tr>
+		</table>
+
+		<p>入力と出力の shape は、こう流れます。</p>
+		<div class="flow-steps">
+			<span class="step">入力 (1, 1, 5, 5)</span>
+			<span class="arrow">→</span>
+			<span class="step">Conv2d(1, 2, 3, padding=1)</span>
+			<span class="arrow">→</span>
+			<span class="step">出力 (1, 2, 5, 5)</span>
+		</div>
+		<p>変わったのは 2 番目の数字（チャネル）だけです。<span class="code-inline">Conv2d(1, 2, ...)</span> の <strong>2</strong> が出力チャネル数になります。</p>
 	</section>
 
 	<section class="content-section">
@@ -43,9 +61,12 @@ conv = nn.Conv2d(1, 2, kernel_size=3, padding=1).to(device)
 x = torch.randn(1, 1, 5, 5, device=device)
 y = conv(x)
 
-print(x.shape)
-print(y.shape)</code></pre></div>
-		<p>ここでの shape は、ざっくり言うと「枚数、チャネル、高さ、幅」の順です。最初は 4 つの数字が並んでいる、と見られれば十分です。</p>
+print("入力 shape:", x.shape)
+print("出力 shape:", y.shape)</code></pre></div>
+
+		<div class="output-example">入力 shape: torch.Size([1, 1, 5, 5])
+出力 shape: torch.Size([1, 2, 5, 5])</div>
+		<p>最初は 4 つの数字が並んでいると見られれば十分です。</p>
 	</section>
 
 	<section class="content-section">
@@ -69,6 +90,18 @@ print(y.shape)</code></pre></div>
 			<li><span class="code-inline">in_channels</span> が合わないと止まります。ここでは入力の 2 番目の数字が 1 なので、<span class="code-inline">Conv2d(1, ...)</span> にしています。</li>
 			<li>画像そのものを理解する前に、まず shape の並び順だけ押さえると入りやすいです。</li>
 		</ul>
+
+		<p>たとえば入力のチャネルが 3 なのに <span class="code-inline">Conv2d(1, ...)</span> にすると、こうなります。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># in_channels が合わない例
+conv_wrong = nn.Conv2d(1, 2, kernel_size=3, padding=1).to(device)
+x_rgb = torch.randn(1, 3, 5, 5, device=device)  # チャネル 3
+
+try:
+    conv_wrong(x_rgb)
+except RuntimeError as e:
+    print(e)</code></pre></div>
+		<div class="output-example">Given groups=1, weight of size [2, 1, 3, 3], expected input[1, 3, 5, 5] to have 1 channels, but got 3 channels instead</div>
+		<p>エラーの「expected ... 1 channels, but got 3」が、入力チャネル数と <span class="code-inline">in_channels</span> のずれを教えてくれます。<span class="code-inline">Conv2d(3, 2, ...)</span> に直せば通ります。</p>
 	</section>
 
 	<section class="content-section">
