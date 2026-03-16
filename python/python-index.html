@@ -139,6 +139,45 @@
 			line-height: 1.75;
 			color: var(--muted);
 		}
+		.difficulty {
+			display: inline-block;
+			padding: 2px 8px;
+			border-radius: 6px;
+			font-size: 11px;
+			font-weight: 700;
+			margin-left: 8px;
+			vertical-align: middle;
+		}
+		.difficulty.easy {
+			background: #E8F5E9;
+			color: #2E7D32;
+		}
+		.difficulty.medium {
+			background: #FFF3E0;
+			color: #E65100;
+		}
+		.difficulty.hard {
+			background: #FFEBEE;
+			color: #C62828;
+		}
+		.group-header {
+			padding: 12px 20px 8px;
+			border-top: 1px solid var(--line);
+			background: var(--blue-soft);
+			font-size: 13px;
+			font-weight: 700;
+			color: var(--blue);
+		}
+		.group-header:first-child { border-top: 0; }
+		.milestone {
+			padding: 10px 20px;
+			border-top: 2px solid #4caf50;
+			background: #E8F5E9;
+			font-size: 13px;
+			font-weight: 700;
+			color: #2E7D32;
+			text-align: center;
+		}
 		.appendix-note {
 			margin-top: 16px;
 			font-size: 15px;
@@ -186,20 +225,6 @@
 			<p>このコースは、Python の文法を先に全部覚えるためのものではありません。「GPU でやりたいこと」を一つずつ進めながら、必要な Python をその都度拾っていくスタイルです。</p>
 		</div>
 	</section>
-	<!--
-	Codex review 2026-03-17:
-	優先度 3: 一覧ページの重みづけ。
-	現状は13章がほぼ同じ見た目・同じ重さに見えるため、「まずここまで」「ここは少し難しい」「後半の山場」といった誘導が弱い。
-	将来の候補:
-	- 章ごとの難易度ラベル
-	- 「まずここまででOK」マイルストーン
-	- 8 / 10 / 11 / 12 を少し難しめと分かる補助表示
-	- 1〜4 と 5〜9 と 10〜13 のまとまり感を出す導線
-	
-	優先度 4: 全体デザイン刷新。
-	配色や視覚表現の刷新は有効だが、現時点では内容の薄い章を厚くするほうが先。
-	中身の補強前に見た目だけ大きく変えると、課題の本体が隠れてしまう可能性がある。
-	-->
 
 	<section class="start-box" style="background: #E8F5E9; border-radius: 14px; padding: 18px 22px; margin-bottom: 24px;">
 		<p class="start-text" style="margin-bottom: 12px;"><strong style="color: #2E7D32;">✨ はじめての方へ:</strong> まずは GPU で 1 回計算を動かしてみましょう。</p>
@@ -218,97 +243,105 @@
 	<h2 class="section-title">13章の読む順番</h2>
 
 	<div class="chapter-list">
+		<div class="group-header">基礎 — 数の表と shape に慣れる</div>
 		<section class="chapter" id="chapter-1">
 			<span class="chapter-number">1</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-01-gpu-visible.html">GPUが見えるか確かめたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-01-gpu-visible.html">GPUが見えるか確かめたい</a><span class="difficulty easy">やさしい</span></h2>
 				<p>まずは ROCm と PyTorch から GPU が見えているかを確かめます。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">2</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-02-number-tables.html">数字を表として持ちたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-02-number-tables.html">数字を表として持ちたい</a><span class="difficulty easy">やさしい</span></h2>
 				<p>NumPy の配列を「数字の表」として読めるようになります。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">3</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-03-table-math.html">表どうしを計算したい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-03-table-math.html">表どうしを計算したい</a><span class="difficulty easy">やさしい</span></h2>
 				<p>行列の掛け算を shape といっしょに読めるようにします。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">4</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-04-numpy-to-pytorch.html">NumPyからPyTorchへ移りたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-04-numpy-to-pytorch.html">NumPyからPyTorchへ移りたい</a><span class="difficulty easy">やさしい</span></h2>
 				<p>NumPy の表が PyTorch の tensor にどうつながるかを見ます。</p>
 			</div>
 		</section>
+		<div class="milestone">🎯 ここまでで基礎OK — shape と tensor の読み方が分かった状態です</div>
+
+		<div class="group-header">GPU 操作と学習 — モデルを使い始める</div>
 		<section class="chapter">
 			<span class="chapter-number">5</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-05-move-data-to-gpu.html">データをGPUに送りたい</a></h2>
-				<p>CPU と GPU の置き場所の違いを、`.to(device)` からつかみます。</p>
+				<h2><a class="chapter-link" href="./chapter-05-move-data-to-gpu.html">データをGPUに送りたい</a><span class="difficulty easy">やさしい</span></h2>
+				<p>CPU と GPU の置き場所の違いを、<code>.to(device)</code> からつかみます。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">6</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-06-run-small-model.html">小さなモデルを動かしたい</a></h2>
-				<p>`model(x)` という一行が何をしているのかを読めるようにします。</p>
+				<h2><a class="chapter-link" href="./chapter-06-run-small-model.html">小さなモデルを動かしたい</a><span class="difficulty medium">ふつう</span></h2>
+				<p><code>model(x)</code> という一行が何をしているのかを読めるようにします。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">7</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-07-inference-only.html">推論だけしたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-07-inference-only.html">推論だけしたい</a><span class="difficulty medium">ふつう</span></h2>
 				<p>学習はせず、答えを出すだけの流れを見ます。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">8</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-08-train-once.html">学習してみたい</a></h2>
-				<p>`loss` と `backward()` と `step()` がどうつながるかを体験します。</p>
+				<h2><a class="chapter-link" href="./chapter-08-train-once.html">学習してみたい</a><span class="difficulty hard">じっくり</span></h2>
+				<p><code>loss</code> と <code>backward()</code> と <code>step()</code> がどうつながるかを体験します。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">9</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-09-training-vs-inference.html">学習と推論の違いを見比べたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-09-training-vs-inference.html">学習と推論の違いを見比べたい</a><span class="difficulty medium">ふつう</span></h2>
 				<p>「使うだけでは学習しない」を、自分の言葉で説明できるようにします。</p>
 			</div>
 		</section>
+		<div class="milestone">🎯 ここまでで実践OK — モデルの使い方と学習の流れが分かった状態です</div>
+
+		<div class="group-header">応用 — 仕組みをのぞいて読む力を付ける</div>
 		<section class="chapter">
 			<span class="chapter-number">10</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-10-run-convolution.html">たたみこみを動かしてみたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-10-run-convolution.html">たたみこみを動かしてみたい</a><span class="difficulty hard">じっくり</span></h2>
 				<p>Conv2d と画像っぽい shape を、コードの中で追ってみます。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">11</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-11-peek-attention.html">Attentionをのぞきたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-11-peek-attention.html">Attentionをのぞきたい</a><span class="difficulty hard">じっくり</span></h2>
 				<p>Q、K、V や softmax を、形と流れで見ていきます。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">12</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-12-read-logs-and-shapes.html">ログとshapeを読めるようになりたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-12-read-logs-and-shapes.html">ログとshapeを読めるようになりたい</a><span class="difficulty hard">じっくり</span></h2>
 				<p>shape mismatch やログを見て、どこで止まったかを追えるようにします。</p>
 			</div>
 		</section>
 		<section class="chapter">
 			<span class="chapter-number">13</span>
 			<div class="chapter-body">
-				<h2><a class="chapter-link" href="./chapter-13-read-small-rocm-script.html">小さなROCm実験コードを1本読めるようになりたい</a></h2>
+				<h2><a class="chapter-link" href="./chapter-13-read-small-rocm-script.html">小さなROCm実験コードを1本読めるようになりたい</a><span class="difficulty medium">ふつう</span></h2>
 				<p>短い実験コードを、最初から最後まで自分で追えるところまで進みます。</p>
 			</div>
 		</section>
+		<div class="milestone">🎯 完走 — ROCm + Python の基礎を一通り体験しました</div>
 	</div>
 
 	<p class="appendix-note">読みながら引っかかった言葉をすぐ戻って確かめたいときは、<a href="./appendix-help.html">Appendix A: 困ったときの補足集</a> も使えます。</p>

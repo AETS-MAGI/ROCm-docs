@@ -15,13 +15,6 @@
 		<h1>GPUが見えるか確かめたい</h1>
 		<p>最初の一歩は、「この環境で GPU が使えるのか」を自分の目で確かめることです。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 2: 第1章の軽量化候補。
-	現状は内容自体は丁寧で安全だが、入口章としては説明密度が高く、最初の成功体験に行く前の読書量がやや多い。
-	将来の改修では、成功判定までの最短導線を上に寄せ、深い説明は下段・補足・折りたたみに逃がす方向を検討したい。
-	特に「実行前チェック」「torch.cuda / HIP の説明」「結果パターン分岐」は価値が高い一方で、初回表示の圧を下げる余地がある。
-	-->
 
 	<div class="info-box" style="background: #FFF3E0; border-left: 5px solid #E65100; margin-bottom: 20px;">
 		<strong>📌 この章を始める前に:</strong>
@@ -30,28 +23,11 @@
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
-		<p>ROCm 版 PyTorch が入っていて、いまの PC から GPU が見えているかを短いコードで確認します。まずここが通ると、この先の章で「CPU だけで動いていた」という遠回りを減らせます。</p>
-		<ul class="point-list">
-			<li>この章のゴールは <strong>成功/失敗の判定</strong> です（最適化はまだ不要）。</li>
-			<li>迷ったら「HIP」「GPU available」「Device count」の3点だけ先に見ます。</li>
-			<li>失敗しても普通です。次に打つコマンドまでこの章に書いてあります。</li>
-		</ul>
+		<p>ROCm 版 PyTorch が入っていて、いまの PC から GPU が見えているかを短いコードで確認します。<strong>HIP</strong>・<strong>GPU available</strong>・<strong>Device count</strong> の 3 つが読めればこの章は完了です。</p>
 	</section>
 
 	<section class="content-section">
-		<h2>まずは実行前チェック（30秒）</h2>
-		<ul class="point-list">
-			<li>いま使う Python 環境を決める（例: <span class="code-inline">.venv/bin/python</span>）。</li>
-			<li><span class="code-inline">pip show torch</span> で torch が入っていることを確認する。</li>
-			<li>ROCm 環境なら、torch バージョンに <span class="code-inline">+rocm</span> が付くことが多いです。<br>
-				例: <span class="code-inline">Version: 2.5.0+rocm6.2</span> → ROCm 版　／　<span class="code-inline">Version: 2.5.0+cu121</span> → CUDA 版（AMD GPU では使えない）　／　<span class="code-inline">Version: 2.5.0</span> → CPU 版の可能性</li>
-		</ul>
-		<p><strong>venv（仮想環境）について:</strong> <span class="code-inline">.venv/bin/python</span> はプロジェクトごとに分離した Python 環境を指します。単に <span class="code-inline">python</span> と打つと、システムに複数の Python が入っている場合にどれが動くか分かりにくくなります。パスを明示することで「今どの torch が入っているか」がはっきりします。</p>
-	</section>
-
-	<section class="content-section">
-		<h2>確認コード（そのまま実行版）</h2>
-		<p><strong>コードを見る前に一点:</strong> 下のコードには <span class="code-inline">torch.cuda</span> という名前が出てきますが、これは NVIDIA 専用ではありません。ROCm 版 PyTorch も同じ名前を使って GPU を操作します（詳しくは後の「どこがROCm？」で説明します）。また <span class="code-inline">torch.version.hip</span> は ROCm に含まれる HIP という部品のバージョンを取得しています。<span class="code-inline">torch.cuda</span> と <span class="code-inline">torch.version.hip</span> が混在しているのはそういう理由です。</p>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import sys
 import torch
 
@@ -63,62 +39,48 @@ print("Device count:", torch.cuda.device_count())
 
 if torch.cuda.is_available():
     print("Device[0]:", torch.cuda.get_device_name(0))</code></pre></div>
-		<p>この章では、コードそのものよりも <strong>出てきた値をどう読むか</strong> が大事です。実行したら、まずは <span class="code-inline">HIP</span> と <span class="code-inline">GPU available</span> の 2 行を落ち着いて見ます。</p>
-	</section>
 
-	<section class="content-section">
-		<h2>実行コマンド（コピペ用）</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># 例: venv の Python を使う場合
-./.venv/bin/python -c 'import sys, torch; print("Python:", sys.version.split()[0]); print("Torch:", torch.__version__); print("HIP:", torch.version.hip); print("GPU available:", torch.cuda.is_available()); print("Device count:", torch.cuda.device_count()); print("Device[0]:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "(skip)")'</code></pre></div>
-		<p>1行で実行できるので、「ファイルを作る前にまず確認したい」ときに便利です。<br>
-		<strong><span class="code-inline">-c</span> オプションについて:</strong> <span class="code-inline">python -c '...'</span> は、Python ファイルを作らずに引用符の中のコードを直接実行する書き方です。</p>
-	</section>
-
-	<section class="content-section">
-		<h2>実行すると何が出る？</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>Python: 3.14.3
+		<p>実行すると、たとえばこう表示されます。</p>
+		<div class="output-example">Python: 3.14.3
 Torch: 2.9.1+rocm6.3
 HIP: 6.3.x
 GPU available: True
 Device count: 1
-Device[0]: AMD Radeon RX Vega</code></pre></div>
-		<p>このように出れば、まずは <strong>ROCm 版 PyTorch が入っていて、GPU も見えている</strong> と考えて大丈夫です。最後に GPU 名まで出ていれば、入口としてはかなり良い状態です。<br>
-		<strong>注:</strong> Python や Torch のバージョン番号は環境によって異なります。数字が違っても問題ありません。<span class="code-inline">Torch: xxxxxx+rocm...</span> の形式で出ていれば ROCm 版と判断できます。</p>
+Device[0]: AMD Radeon RX Vega</div>
+		<p>このように出れば、<strong>ROCm 版 PyTorch が入っていて、GPU も見えている</strong> と考えて大丈夫です。GPU 名まで出ていれば、次の章へ進めます。</p>
+		<p><small>Python や Torch のバージョン番号は環境によって異なります。<span class="code-inline">Torch: xxxxxx+rocm...</span> の形式で出ていれば ROCm 版です。</small></p>
+
+		<div class="safe-box">
+			<strong>torch.cuda という名前について:</strong> ROCm 版 PyTorch でも GPU の入口に <span class="code-inline">torch.cuda</span> という名前が使われています。NVIDIA 専用ではなく、GPU を使う API の名前がそのまま残っていると読んでください。
+		</div>
 	</section>
 
 	<section class="content-section">
-		<h2>どう読めばいい？</h2>
+		<h2>結果の読み方</h2>
 		<ul class="point-list">
 			<li><span class="code-inline">HIP:</span> に値がある → ROCm 版 PyTorch の可能性が高い</li>
 			<li><span class="code-inline">GPU available: True</span> → PyTorch から GPU が見えている</li>
 			<li><span class="code-inline">Device count: 1以上</span> → 利用可能 GPU を列挙できている</li>
-			<li><span class="code-inline">HIP: None</span> かつ <span class="code-inline">False</span> → ROCm 版ではない PyTorch の可能性がある</li>
-			<li><span class="code-inline">HIP:</span> に値があるのに <span class="code-inline">False</span> → ROCm 版だが GPU が見えていない可能性がある</li>
 		</ul>
-	</section>
 
-	<section class="content-section">
-		<h2>結果パターン別の次の一手</h2>
-		<ul class="point-list">
-			<li><strong>パターンA:</strong> HIPあり + True + count>=1 → この章はクリア。次章へ進んでOK。<br>
-				（<span class="code-inline">GPU available: True</span> であれば <span class="code-inline">Device count</span> は必ず 1 以上になります。）</li>
-			<li><strong>パターンB:</strong> HIPあり + False → ROCm 版 PyTorch は入っているが、GPU がまだ見えていない状態です。<br>
-				これは「Python から見えない」問題で、まずシステム（ドライバ）レベルで GPU を認識しているか確認します。<br>
-				→ ターミナルで <span class="code-inline">rocminfo</span> を実行し、出力の中に <span class="code-inline">amdgpu</span> や <span class="code-inline">gfx</span> で始まる行が出ていれば、ドライバは GPU を認識しています。それでも PyTorch から見えない場合は、ユーザを <span class="code-inline">video</span> / <span class="code-inline">render</span> グループに追加できているか確認します（<span class="code-inline">groups</span> コマンドで確認）。</li>
-			<li><strong>パターンC:</strong> HIP None + False → torch 自体が ROCm 版ではない可能性があります。<br>
-				<span class="code-inline">pip show torch</span> を実行し、<span class="code-inline">Version:</span> の行を確認します。<span class="code-inline">+rocm</span> が含まれていれば ROCm 版、<span class="code-inline">+cu</span> なら CUDA 版（AMD GPU では動作しません）、何も付いていなければ CPU 版です。<br>
-				ROCm 版を入れ直す場合は PyTorch 公式サイトの ROCm 向けインストールコマンドを使います。</li>
-			<li><strong>パターンD:</strong> True だが Device 名がおかしい → 一度 Python を再起動して再実行します。<br>
-				「おかしい Device 名」の例: <span class="code-inline">llvmpipe</span>、<span class="code-inline">cpu</span>、<span class="code-inline">Virtio GPU</span> など、AMD GPU の製品名らしくないものが出た場合です（正常例: <span class="code-inline">AMD Radeon RX ...</span>）。<br>
-				複数の Python 環境が混在している可能性があります。<span class="code-inline">which python</span> または <span class="code-inline">which python3</span> で今どの Python を使っているか確認し、意図した venv の Python を明示的に指定して実行し直します。</li>
-		</ul>
+		<details>
+			<summary>うまくいかなかったときの読み方（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><strong>HIP あり + False:</strong> ROCm 版だが GPU が見えていない。<span class="code-inline">rocminfo</span> で <span class="code-inline">amdgpu</span> や <span class="code-inline">gfx</span> の行が出るか確認。それでも見えない場合は <span class="code-inline">video</span> / <span class="code-inline">render</span> グループへの所属を確認。</li>
+				<li><strong>HIP None + False:</strong> ROCm 版ではない可能性。<span class="code-inline">pip show torch</span> の <span class="code-inline">Version:</span> に <span class="code-inline">+rocm</span> が付いているか確認。</li>
+				<li><strong>True だが Device 名がおかしい:</strong> <span class="code-inline">llvmpipe</span> や <span class="code-inline">Virtio GPU</span> のような名前が出たら、<span class="code-inline">which python</span> で意図した Python か確認。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>ROCm 版 PyTorch でも、GPU の入口に <span class="code-inline">torch.cuda</span> という名前が残っています。ここはたしかにややこしいのですが、<strong>NVIDIA 専用という意味で読むのではなく、GPU を使う入口の名前がそのまま残っている</strong> と考えると分かりやすいです。ROCm 環境でも、ここを通って GPU の状態を見ます。</p>
-		<p>これは意図的な設計で、もともと CUDA 用に書かれたコードが AMD GPU でもなるべくそのまま動くように、ROCm 版 PyTorch は <span class="code-inline">torch.cuda</span> という名前の API をそのまま引き継いでいます。</p>
-		<p><strong>HIP と ROCm の関係:</strong> ROCm はドライバ・ライブラリ・コンパイラなどをまとめた「大きなソフトウェアの集合体」です。HIP（ヒップ）はその中の一部品で、GPU 向けのプログラミング言語 API を担当します。<span class="code-inline">torch.version.hip</span> が返す値は HIP のバージョンです。「HIP のバージョンが分かる ≒ ROCm 環境にいる」と読むことができます。</p>
+		<p>ROCm は GPU を動かすためのソフトウェアの集合体で、HIP はその中のプログラミング API です。<span class="code-inline">torch.version.hip</span> に値が返れば「ROCm 環境にいる」と読めます。</p>
+
+		<details>
+			<summary>torch.cuda と HIP の関係（クリックで開く）</summary>
+			<p>もともと CUDA 用に書かれたコードが AMD GPU でもなるべく動くよう、ROCm 版 PyTorch は <span class="code-inline">torch.cuda</span> という名前をそのまま引き継いでいます。<span class="code-inline">torch.cuda</span> と <span class="code-inline">torch.version.hip</span> が混在しているのはそういう理由です。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
@@ -127,26 +89,35 @@ Device[0]: AMD Radeon RX Vega</code></pre></div>
 			<li><span class="code-inline">import</span> でライブラリを読み込む</li>
 			<li><span class="code-inline">print()</span> で確認したい値を出す</li>
 			<li><span class="code-inline">if</span> で「GPU が見えているときだけ」を分ける</li>
-			<li><span class="code-inline">torch.version.hip</span> のように、<strong>ドットでつながる名前</strong>をたどって情報を読む</li>
-			<li><span class="code-inline">sys.version.split()[0]</span> の読み方: <span class="code-inline">sys.version</span> は <span class="code-inline">"3.11.9 (main, Apr 2024, ...)"</span> のような長い文字列を返します。<span class="code-inline">.split()</span> で空白で分割してリストにし、<span class="code-inline">[0]</span> で先頭の要素（バージョン番号だけ）を取り出しています。</li>
+			<li><span class="code-inline">torch.version.hip</span> のように、ドットでつながる名前をたどって情報を読む</li>
 		</ul>
+
+		<details>
+			<summary>sys.version.split()[0] の読み方（クリックで開く）</summary>
+			<p><span class="code-inline">sys.version</span> は <span class="code-inline">"3.11.9 (main, Apr 2024, ...)"</span> のような長い文字列を返します。<span class="code-inline">.split()</span> で空白で分割してリストにし、<span class="code-inline">[0]</span> で先頭の要素（バージョン番号だけ）を取り出しています。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">GPU available: False</span> と出た → いまは GPU が使えていない、という意味です。</li>
-			<li><span class="code-inline">HIP: None</span> と出た → ROCm 版ではない PyTorch の可能性があります。</li>
-			<li><span class="code-inline">Device</span> の行で止まった → GPU 名を取る前の段階で何か引っかかっています。</li>
-			<li>GPU 名が出なくても慌てず、まずは「<span class="code-inline">HIP</span> はどうか」「<span class="code-inline">True / False</span> はどうか」を順番に見ます。</li>
-			<li><span class="code-inline">/opt/amdgpu/.../amdgpu.ids: No such file or directory</span> という警告だけ出る → 実行自体が成功していれば致命的ではありません（環境メッセージのことがあります）。</li>
+			<li><span class="code-inline">GPU available: False</span> → いまは GPU が使えていない状態。上の「うまくいかなかったとき」を参照。</li>
+			<li><span class="code-inline">HIP: None</span> → ROCm 版ではない PyTorch の可能性。</li>
+			<li>GPU 名が出なくても、まず <span class="code-inline">HIP</span> と <span class="code-inline">True / False</span> を順番に見れば切り分けられます。</li>
 		</ul>
+
+		<details>
+			<summary>実行前チェック・ワンライナー版（クリックで開く）</summary>
+			<p><span class="code-inline">pip show torch</span> で torch が入っているか、バージョンに <span class="code-inline">+rocm</span> が付いているかを確認できます。</p>
+			<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># ワンライナーで実行
+./.venv/bin/python -c 'import sys, torch; print("Python:", sys.version.split()[0]); print("Torch:", torch.__version__); print("HIP:", torch.version.hip); print("GPU available:", torch.cuda.is_available()); print("Device count:", torch.cuda.device_count()); print("Device[0]:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "(skip)")'</code></pre></div>
+			<p><span class="code-inline">python -c '...'</span> は、Python ファイルを作らずに引用符の中のコードを直接実行する書き方です。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>次の順で確認してみましょう。<span class="code-inline">GPU available</span>、<span class="code-inline">HIP</span>、<span class="code-inline">Device count</span> の3つを紙にメモすると、次章以降で迷いにくくなります。</p>
-		<p>この3つをメモしておく理由: 次章からテンソル（数値の表）を GPU に送る操作が出てきます。そのとき「そもそも GPU が見えているのか」「ROCm 版なのか」を出発点として把握しておくと、エラーが出たときに「GPU の問題なのか・コードの問題なのか」を素早く切り分けられます。</p>
+		<p><span class="code-inline">GPU available</span>、<span class="code-inline">HIP</span>、<span class="code-inline">Device count</span> の 3 つをメモしておきましょう。次章からテンソルを GPU に送る操作が出てくるので、出発点を把握しておくとエラーの切り分けが楽になります。</p>
 	</section>
 
 	<nav class="chapter-nav">
