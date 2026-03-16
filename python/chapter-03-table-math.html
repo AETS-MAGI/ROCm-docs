@@ -39,20 +39,16 @@
 			<li>Python 文法が未修でも読めるように、<span class="code-inline">@</span> 記号の意味をこの章で説明します。</li>
 			<li>結果の数字を全部追うより、まず <span class="code-inline">a.shape</span> / <span class="code-inline">b.shape</span> / <span class="code-inline">c.shape</span> を見ます。</li>
 		</ul>
-		<p><strong>なぜ行列の掛け算が大事なの？</strong><br>
-		AI の学習も推論も、中心にあるのは「大量の数字を行列として掛け算する」操作です。画像の特徴抽出、文章の意味変換、重みの更新——どれも内側では行列積（matmul）が動いています。GPU が AI に使われる理由のひとつは、この行列積を並列で高速に計算できるからです。</p>
+		<details>
+			<summary>なぜ行列の掛け算が大事なの？（クリックで開く）</summary>
+			<p>AI の学習も推論も、中心にあるのは「大量の数字を行列として掛け算する」操作です。画像の特徴抽出、文章の意味変換、重みの更新——どれも内側では行列積（matmul）が動いています。GPU が AI に使われる理由のひとつは、この行列積を並列で高速に計算できるからです。</p>
+		</details>
 	</section>
 
-	<section class="content-section">
-		<h2>実行前チェック（20秒）</h2>
-		<ul class="point-list">
-			<li>第2章と同じ Python 環境を使います（例: <span class="code-inline">./.venv/bin/python</span>）。</li>
-			<li><span class="code-inline">numpy</span> が未導入なら、先に <span class="code-inline">pip install numpy</span> を実行します。</li>
-		</ul>
-	</section>
+
 
 	<section class="content-section">
-		<h2>確認コード（文法未修でも読める版）</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 
 a = np.array([[1, 2, 3],
@@ -68,40 +64,41 @@ print("b.shape:", b.shape)
 print("c.shape:", c.shape)
 print(c)</code></pre></div>
 		<p><span class="code-inline">a</span> は <span class="code-inline">(2, 3)</span>、<span class="code-inline">b</span> は <span class="code-inline">(3, 2)</span> です。結果の <span class="code-inline">c</span> は <span class="code-inline">(2, 2)</span> になります。</p>
-		<p><strong>shape のルール（重要）:</strong> 行列積 <span class="code-inline">(m, n) @ (n, p) → (m, p)</span><br>
-		「内側」の数字（a の列数 と b の行数）が一致していなければ計算できません。一致していれば、結果の shape は「外側」の2つの数字になります。</p>
+		<p><strong>shape のルール:</strong> <span class="code-inline">(m, n) @ (n, p) → (m, p)</span> — 内側の数字が一致していれば掛け算できます。</p>
 
-		<!-- KaTeX 行列積の補助表示 -->
-		<div style="text-align: center; margin: 16px 0; font-size: 16px;">
-			$$A_{2 \times 3} \times B_{3 \times 2} = C_{2 \times 2}$$
+		<div class="flow-steps" style="justify-content: center;">
+			<span class="step">a (2, 3)</span>
+			<span class="arrow">×</span>
+			<span class="step">b (3, 2)</span>
+			<span class="arrow">=</span>
+			<span class="step">c (2, 2)</span>
 		</div>
-		<div style="text-align: center; margin: 0 0 16px; font-size: 13px; color: var(--muted);">内側の $3$ が一致 → 外側の $2$ と $2$ が残る</div>
-		<pre style="background:#F5F5F5; font-size:13px; padding:10px 14px; border-radius:6px; margin:8px 0;">a: (2, <strong>3</strong>)
-b:    (<strong>3</strong>, 2)
-          ↑ ここが一致している必要がある
-c: (2,       2)   ← 外側の2つが残る</pre>
-		<p><strong>なぜ内側が揃わないといけないの？</strong><br>
-		行列積では a の1行（3個の数字）と b の1列（3個の数字）を「順番に掛けて全部足す」操作を繰り返します。1行が 3個 なら相手の1列も 3個 でなければ掛け合わせられません。これが「内側の一致」が必要な理由です。</p>
+
+		<div class="safe-box">
+			内側の数字（a の列数と b の行数）が一致しているので掛け算できます。結果の shape は外側の2つの数字になります。
+		</div>
+
+		<details>
+			<summary>なぜ内側が揃わないといけないの？（クリックで開く）</summary>
+			<p>行列積では a の1行（3個の数字）と b の1列（3個の数字）を「順番に掛けて全部足す」操作を繰り返します。1行が 3個 なら相手の1列も 3個 でなければ掛け合わせられません。これが「内側の一致」が必要な理由です。</p>
+		</details>
 	</section>
 
-	<section class="content-section">
-		<h2>実行コマンド（コピペ用）</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np; a=np.array([[1,2,3],[4,5,6]],dtype=np.float32); b=np.array([[7,8],[9,10],[11,12]],dtype=np.float32); c=a@b; print("a.shape:",a.shape); print("b.shape:",b.shape); print("c.shape:",c.shape); print(c)'</code></pre></div>
-		<p>1行で実行して、まず shape が <span class="code-inline">(2, 3)</span> / <span class="code-inline">(3, 2)</span> / <span class="code-inline">(2, 2)</span> になるかを確認します。</p>
-	</section>
+
 
 	<section class="content-section">
-		<h2>実行すると何が出る？</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>a.shape: (2, 3)
+		<h2>実行するとこう出ます</h2>
+		<div class="output-example">a.shape: (2, 3)
 b.shape: (3, 2)
 c.shape: (2, 2)
 [[ 58.  64.]
- [139. 154.]]</code></pre></div>
-		<ul class="point-list">
-			<li>最重要は <span class="code-inline">c.shape: (2, 2)</span> です（数字の中身より先にここを確認）。</li>
-			<li>内側の次元が一致しているので、掛け算が成功しています。</li>
-			<li><span class="code-inline">58.</span> という値は、a の 1 行目 <span class="code-inline">[1, 2, 3]</span> と b の 1 列目 <span class="code-inline">[7, 9, 11]</span> を掛けて足した結果（1×7 + 2×9 + 3×11 = 58）です。数字の検証はしなくていいですが、仕組みが気になったときの参考にしてください。</li>
-		</ul>
+ [139. 154.]]</div>
+		<p>最重要は <span class="code-inline">c.shape: (2, 2)</span> です。数字の中身より先に shape を確認しましょう。</p>
+
+		<details>
+			<summary>数字の検算が気になる方へ（クリックで開く）</summary>
+			<p><span class="code-inline">58.</span> という値は、a の 1 行目 <span class="code-inline">[1, 2, 3]</span> と b の 1 列目 <span class="code-inline">[7, 9, 11]</span> を掛けて足した結果（1×7 + 2×9 + 3×11 = 58）です。数字の検算はしなくていいですが、仕組みが気になったときの参考にしてください。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
@@ -112,36 +109,38 @@ c.shape: (2, 2)
 	</section>
 
 	<section class="content-section">
-		<h2>ここで出てきたPython（未修向けミニ文法）</h2>
+		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">@</span> は「行列どうしの掛け算（行列積）」です。<span class="code-inline">np.matmul(a, b)</span> と書いても同じ意味で、PyTorch では <span class="code-inline">torch.matmul(a, b)</span> や <span class="code-inline">a @ b</span> で使います。</li>
-			<li><span class="code-inline">@</span> は「1個ずつ掛ける（要素ごとの掛け算）」ではありません。要素ごとの掛け算は <span class="code-inline">a * b</span> と書きますが、行列積とは全く別の計算になります。</li>
+			<li><span class="code-inline">@</span> — 行列積（<span class="code-inline">np.matmul(a, b)</span> と同じ）</li>
+			<li><span class="code-inline">*</span> — 要素ごとの掛け算（行列積とは別物）</li>
+			<li><span class="code-inline">c = a @ b</span> — 結果を c に入れて、shape を確認</li>
 		</ul>
+	</section>
 
 		<!-- * と @ の比較表 -->
-		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0;">
+		<table class="shape-table">
 			<thead>
-				<tr style="border-bottom: 2px solid #D8E0E8;">
-					<th style="text-align: left; padding: 8px 10px; color: #173a56;"></th>
-					<th style="text-align: left; padding: 8px 10px; color: #173a56;"><code>a * b</code>（要素ごと）</th>
-					<th style="text-align: left; padding: 8px 10px; color: #173a56;"><code>a @ b</code>（行列積）</th>
+				<tr>
+					<th></th>
+					<th><span class="code-inline">a * b</span>（要素ごと）</th>
+					<th><span class="code-inline">a @ b</span>（行列積）</th>
 				</tr>
 			</thead>
-			<tbody style="color: #5d6a75; line-height: 1.7;">
-				<tr style="border-bottom: 1px solid #D8E0E8;">
-					<td style="padding: 8px 10px; font-weight: 700;">計算内容</td>
-					<td style="padding: 8px 10px;">同じ位置の要素を 1 個ずつ掛ける</td>
-					<td style="padding: 8px 10px;">行と列を掛けて足す（行列積）</td>
-				</tr>
-				<tr style="border-bottom: 1px solid #D8E0E8;">
-					<td style="padding: 8px 10px; font-weight: 700;">shape の条件</td>
-					<td style="padding: 8px 10px;">同じ shape が必要</td>
-					<td style="padding: 8px 10px;">内側が一致すればOK</td>
+			<tbody>
+				<tr>
+					<td><strong>計算内容</strong></td>
+					<td>同じ位置の要素を 1 個ずつ掛ける</td>
+					<td>行と列を掛けて足す（行列積）</td>
 				</tr>
 				<tr>
-					<td style="padding: 8px 10px; font-weight: 700;">結果の shape</td>
-					<td style="padding: 8px 10px;">入力と同じ</td>
-					<td style="padding: 8px 10px;">外側が残る</td>
+					<td><strong>shape の条件</strong></td>
+					<td>同じ shape が必要</td>
+					<td>内側が一致すればOK</td>
+				</tr>
+				<tr>
+					<td><strong>結果の shape</strong></td>
+					<td>入力と同じ</td>
+					<td>外側が残る</td>
 				</tr>
 			</tbody>
 		</table>
@@ -154,13 +153,15 @@ c.shape: (2, 2)
 	</section>
 
 	<section class="content-section">
-		<h2>結果パターン別の次の一手</h2>
-		<ul class="point-list">
-			<li><strong>パターンA:</strong> <span class="code-inline">c.shape: (2, 2)</span> と出る → この章はクリア。次章へ進んでOK。</li>
-			<li><strong>パターンB:</strong> <span class="code-inline">ValueError: matmul: Input operand 1 has a mismatch...</span> のようなエラーが出る → 内側の次元が不一致です。<span class="code-inline">a.shape</span> と <span class="code-inline">b.shape</span> を print して「a の列数 = b の行数」になっているか確認します。例: <span class="code-inline">(2, 3) @ (2, 2)</span> は NG（3 ≠ 2）、<span class="code-inline">(2, 3) @ (3, 4)</span> は OK（3 = 3）。</li>
-			<li><strong>パターンC:</strong> <span class="code-inline">ModuleNotFoundError: numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
-			<li><strong>パターンD:</strong> 実行は通ったが不安 → 出力数値より先に shape だけ読んで合否判定する。</li>
-		</ul>
+		<h2>うまくいかなかったら</h2>
+		<details>
+			<summary>結果パターン別の次の一手（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><strong>パターンA:</strong> <span class="code-inline">c.shape: (2, 2)</span> と出る → この章はクリア。次章へ進んでOK。</li>
+				<li><strong>パターンB:</strong> <span class="code-inline">ValueError: matmul: Input operand 1 has a mismatch...</span> のようなエラーが出る → 内側の次元が不一致です。<span class="code-inline">a.shape</span> と <span class="code-inline">b.shape</span> を print して「a の列数 = b の行数」になっているか確認。</li>
+				<li><strong>パターンC:</strong> <span class="code-inline">ModuleNotFoundError: numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">

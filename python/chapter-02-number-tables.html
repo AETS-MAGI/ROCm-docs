@@ -39,25 +39,23 @@
 			<li>Python 文法が未修でも大丈夫なように、必要な記号だけこの章で説明します。</li>
 			<li>ROCm や GPU の本番利用は次章以降。ここでは「数字を表で扱う感覚」を作ります。</li>
 		</ul>
-		<p><strong>なぜ Python リストではなく NumPy を使うの？</strong><br>
-		Python にはもともとリスト（<span class="code-inline">[[1,2,3],[4,5,6]]</span>）という書き方があります。しかし「表の大きさを一発で調べる」「GPU にデータを送る」「行列の足し算・掛け算を一度に計算する」といった操作はリストが苦手です。NumPy はこれらを得意とする専用ライブラリで、shape・dtype（数字の型）をひとまとめに管理できます。次章以降で使う PyTorch テンソルも、この shape と dtype の考え方をそのまま引き継いでいます。</p>
+		<details>
+			<summary>なぜ Python リストではなく NumPy を使うの？（クリックで開く）</summary>
+			<p>Python にはもともとリスト（<span class="code-inline">[[1,2,3],[4,5,6]]</span>）という書き方があります。しかし「表の大きさを一発で調べる」「GPU にデータを送る」「行列の足し算・掛け算を一度に計算する」といった操作はリストが苦手です。NumPy はこれらを得意とする専用ライブラリで、shape・dtype（数字の型）をひとまとめに管理できます。次章以降で使う PyTorch テンソルも、この shape と dtype の考え方をそのまま引き継いでいます。</p>
+		</details>
 	</section>
 
-	<section class="content-section">
-		<h2>実行前チェック（20秒）</h2>
-		<ul class="point-list">
-			<li>第1章で使った Python をそのまま使います（例: <span class="code-inline">./.venv/bin/python</span>）。</li>
-			<li><span class="code-inline">numpy</span> が入っているか不安なら、<span class="code-inline">pip show numpy</span> を実行します。</li>
-		</ul>
-	</section>
+
 
 	<section class="content-section">
-		<h2>確認コード（文法未修でも読める版）</h2>
-		<p><strong>コードを見る前に2点:</strong></p>
-		<ul class="point-list">
-			<li><span class="code-inline">import numpy as np</span> の <span class="code-inline">as np</span> は「numpy を np という短縮名で使う」宣言です。<span class="code-inline">np</span> は世界中のコードで使われる慣習なので、自分で書くときも <span class="code-inline">np</span> にしておくと他の人のコードと読み合わせやすくなります。</li>
-			<li><span class="code-inline">dtype=np.float32</span> は「小数を 32 ビットで持つ型」の指定です。NumPy のデフォルトは 64 ビット（float64）ですが、GPU はメモリが有限で float32 を基本として最適化されているため、ROCm/GPU を使うコードでは最初から float32 を指定する習慣をつけておきます。</li>
-		</ul>
+		<h2>確認コード</h2>
+		<details>
+			<summary>コードを見る前に — as np と dtype の意味（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><span class="code-inline">import numpy as np</span> の <span class="code-inline">as np</span> は「numpy を np という短縮名で使う」宣言です。<span class="code-inline">np</span> は世界中のコードで使われる慣習なので、自分で書くときも <span class="code-inline">np</span> にしておくと他の人のコードと読み合わせやすくなります。</li>
+				<li><span class="code-inline">dtype=np.float32</span> は「小数を 32 ビットで持つ型」の指定です。NumPy のデフォルトは 64 ビット（float64）ですが、GPU はメモリが有限で float32 を基本として最適化されているため、ROCm/GPU を使うコードでは最初から float32 を指定する習慣をつけておきます。</li>
+			</ul>
+		</details>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 
 x = np.array([[1, 2, 3],
@@ -72,81 +70,104 @@ print("rows:", x.shape[0])
 print("cols:", x.shape[1])</code></pre></div>
 		<p>この例では、2 行 3 列の表を 1 つのまとまりとして持っています。<span class="code-inline">(2, 3)</span> と見えたら、「2 行 3 列」と読めば大丈夫です。</p>
 
-		<!-- 補助図: shape と行列の対応 -->
-		<div style="display: flex; align-items: center; gap: 32px; margin: 16px 0; flex-wrap: wrap; justify-content: center;">
-			<div style="text-align: center;">
-				<div style="font-size: 13px; color: var(--muted); margin-bottom: 6px;">Python の見た目</div>
-				<code style="font-size: 16px;">shape = (2, 3)</code>
-			</div>
-			<div style="font-size: 24px; color: var(--muted);">↔</div>
-			<div style="text-align: center;">
-				<div style="font-size: 13px; color: var(--muted); margin-bottom: 6px;">数学の見た目</div>
-				<div style="font-size: 18px;">$$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$$</div>
-				<div style="font-size: 13px; color: var(--muted); margin-top: 4px;">2行 × 3列</div>
-			</div>
+		<!-- shape と行列の対応 -->
+		<div class="flow-steps" style="justify-content: center;">
+			<span class="step">shape = (2, 3)</span>
+			<span class="arrow">↔</span>
+			<span class="step">2行 × 3列の表</span>
+		</div>
+		<div style="text-align: center; margin: 0 0 12px;">
+			<div style="font-size: 18px;">$$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$$</div>
 		</div>
 	</section>
 
-	<section class="content-section">
-		<h2>実行コマンド（コピペ用）</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np; x=np.array([[1,2,3],[4,5,6]],dtype=np.float32); print("x:"); print(x); print("shape:", x.shape); print("dtype:", x.dtype); print("rows:", x.shape[0]); print("cols:", x.shape[1])'</code></pre></div>
-		<p>まずはこの1行で、出力を見て「shape の読み方」を確認します。</p>
-	</section>
+
 
 	<section class="content-section">
-		<h2>実行すると何が出る？</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>x:
+		<h2>実行するとこう出ます</h2>
+		<div class="output-example">x:
 [[1. 2. 3.]
  [4. 5. 6.]]
 shape: (2, 3)
 dtype: float32
 rows: 2
-cols: 3</code></pre></div>
-		<ul class="point-list">
-			<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。<strong>行（横の並び）が先、列（縦の並び）が後</strong>という順は数学の行列の書き方（「m 行 n 列行列」）からきています。</li>
-			<li>数字が <span class="code-inline">1.</span> <span class="code-inline">2.</span> のように小数点付きで出るのは、<span class="code-inline">dtype=float32</span> を指定したため整数が小数に変換されたからです。エラーではありません。</li>
-			<li><span class="code-inline">dtype: float32</span> はこのデータが GPU に送れる形であることを示しています。float64 だと GPU での処理速度が落ちたり、一部の操作が使えなくなる場合があります。</li>
-			<li><span class="code-inline">rows</span> と <span class="code-inline">cols</span> を別で出すと、行列の向きで混乱しにくくなります。</li>
-		</ul>
+cols: 3</div>
+
+		<div class="safe-box">
+			<span class="code-inline">shape: (2, 3)</span> が読めれば、この章の目標はほぼ達成です。行が先、列が後 — 数学の「m 行 n 列」と同じ順番です。
+		</div>
+
+		<details>
+			<summary>出力の読み方をもっとくわしく（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。<strong>行（横の並び）が先、列（縦の並び）が後</strong>という順は数学の行列の書き方（「m 行 n 列行列」）からきています。</li>
+				<li>数字が <span class="code-inline">1.</span> <span class="code-inline">2.</span> のように小数点付きで出るのは、<span class="code-inline">dtype=float32</span> を指定したため整数が小数に変換されたからです。エラーではありません。</li>
+				<li><span class="code-inline">dtype: float32</span> はこのデータが GPU に送れる形であることを示しています。float64 だと GPU での処理速度が落ちたり、一部の操作が使えなくなる場合があります。</li>
+				<li><span class="code-inline">rows</span> と <span class="code-inline">cols</span> を別で出すと、行列の向きで混乱しにくくなります。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
 		<p>この章のコードは CPU 側ですが、ここで作る「shape を読む習慣」がそのまま PyTorch と GPU の章につながります。ROCm でも、まずは何行何列なのかを読めることが大事です。</p>
 		<p>第1章で確認した GPU は、次の章以降で「この形のデータをどう計算するか」に使います。つまり第2章は、GPU計算の前に必要な土台です。</p>
-		<p><strong>NumPy 配列 → PyTorch テンソルへの橋渡し:</strong> 次章から登場する PyTorch の「テンソル」は、NumPy 配列と非常によく似た構造です。<span class="code-inline">x.shape</span> で大きさを読む・<span class="code-inline">dtype</span> で型を管理する、という考え方はそのまま使えます。NumPy との大きな違いは「GPU に置ける」「自動微分（AI の学習に必要な計算）ができる」の2点だけです。この章で shape と dtype の読み方を身につけておけば、テンソルに移ったときに新しく覚えることが格段に減ります。</p>
-		<p><strong>float32 と ROCm の関係:</strong> GPU のメモリは CPU より少なく、float32 は float64 の半分のサイズです。ROCm/AMD GPU は float32 演算を前提として最適化されており、AI モデルのほとんどが float32 または それより小さい型を使います。この章から float32 を使っているのは、その習慣を最初から身につけるためです。</p>
+
+		<details>
+			<summary>NumPy → PyTorch テンソルへの橋渡し（クリックで開く）</summary>
+			<p>次章から登場する PyTorch の「テンソル」は、NumPy 配列と非常によく似た構造です。<span class="code-inline">x.shape</span> で大きさを読む・<span class="code-inline">dtype</span> で型を管理する、という考え方はそのまま使えます。NumPy との大きな違いは「GPU に置ける」「自動微分（AI の学習に必要な計算）ができる」の2点だけです。この章で shape と dtype の読み方を身につけておけば、テンソルに移ったときに新しく覚えることが格段に減ります。</p>
+		</details>
+
+		<details>
+			<summary>float32 と ROCm の関係（クリックで開く）</summary>
+			<p>GPU のメモリは CPU より少なく、float32 は float64 の半分のサイズです。ROCm/AMD GPU は float32 演算を前提として最適化されており、AI モデルのほとんどが float32 または それより小さい型を使います。この章から float32 を使っているのは、その習慣を最初から身につけるためです。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
-		<h2>ここで出てきたPython（未修向けミニ文法）</h2>
+		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">import numpy as np</span> は「NumPy を np という短い名前で使う」宣言です。以降のコードで <span class="code-inline">np.array()</span> と書けるのは、この宣言があるからです。</li>
-			<li><span class="code-inline">=</span> は「代入」。右側の結果を左側の変数に入れます。</li>
-			<li>入れ子の <span class="code-inline">[]</span> で表の形を作ります（1行が1つの <span class="code-inline">[]</span>）。</li>
-			<li><span class="code-inline">x.shape</span> や <span class="code-inline">x.dtype</span> は、x の情報を読む書き方です。</li>
-			<li><span class="code-inline">x.shape</span> が返す <span class="code-inline">(2, 3)</span> は「タプル」という型です。リストに似ていますが変更できません。<span class="code-inline">[0]</span> で先頭の値（行数）、<span class="code-inline">[1]</span> で次の値（列数）を取り出せるのはリストと同じ書き方です。</li>
+			<li><span class="code-inline">import numpy as np</span> — NumPy を np として使う宣言</li>
+			<li><span class="code-inline">=</span> — 代入（右を左に入れる）</li>
+			<li><span class="code-inline">[[...]]</span> — 入れ子の <span class="code-inline">[]</span> で表を作る</li>
+			<li><span class="code-inline">x.shape</span> / <span class="code-inline">x.dtype</span> — 属性を読む</li>
 		</ul>
+
+		<details>
+			<summary>もう少しくわしく（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><span class="code-inline">import numpy as np</span> は「NumPy を np という短い名前で使う」宣言です。以降のコードで <span class="code-inline">np.array()</span> と書けるのは、この宣言があるからです。</li>
+				<li>入れ子の <span class="code-inline">[]</span> で表の形を作ります（1行が1つの <span class="code-inline">[]</span>）。</li>
+				<li><span class="code-inline">x.shape</span> が返す <span class="code-inline">(2, 3)</span> は「タプル」という型です。リストに似ていますが変更できません。<span class="code-inline">[0]</span> で先頭の値（行数）、<span class="code-inline">[1]</span> で次の値（列数）を取り出せるのはリストと同じ書き方です。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
-		<h2>結果パターン別の次の一手</h2>
-		<ul class="point-list">
-			<li><strong>パターンA:</strong> <span class="code-inline">shape: (2, 3)</span> と出た → この章はクリア。次章へ進んでOK。</li>
-			<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
-			<li><strong>パターンC:</strong> shape が想定と違う → よくある原因は2つです。① 行ごとの要素数がそろっていない（例: <span class="code-inline">[[1,2,3],[4,5]]</span> のように行によって列数が違う）、② 外側の <span class="code-inline">[]</span> を忘れて1次元になってしまった（例: <span class="code-inline">np.array([1,2,3,4,5,6])</span> は shape が <span class="code-inline">(6,)</span> になる）。</li>
-			<li><strong>パターンD:</strong> 実行はできたが意味が曖昧 → <span class="code-inline">rows</span> と <span class="code-inline">cols</span> を必ず表示して確認します。</li>
-		</ul>
+		<h2>うまくいかなかったら</h2>
+		<details>
+			<summary>結果パターン別の次の一手（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><strong>パターンA:</strong> <span class="code-inline">shape: (2, 3)</span> と出た → この章はクリア。次章へ進んでOK。</li>
+				<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
+				<li><strong>パターンC:</strong> shape が想定と違う → よくある原因は2つです。① 行ごとの要素数がそろっていない（例: <span class="code-inline">[[1,2,3],[4,5]]</span> のように行によって列数が違う）、② 外側の <span class="code-inline">[]</span> を忘れて1次元になってしまった（例: <span class="code-inline">np.array([1,2,3,4,5,6])</span> は shape が <span class="code-inline">(6,)</span> になる）。</li>
+				<li><strong>パターンD:</strong> 実行はできたが意味が曖昧 → <span class="code-inline">rows</span> と <span class="code-inline">cols</span> を必ず表示して確認します。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li>各行の長さがそろっていないと、配列化で失敗したり意図しない型になったりします。例: <span class="code-inline">[[1,2,3],[4,5]]</span> のような不ぞろい形は避けます。</li>
-			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように気をつけます。<strong>「行が先、列が後」</strong> — 数学で「m 行 n 列の行列」と書くのと同じ順です。</li>
-			<li>出力の数字に <span class="code-inline">.</span> が付く（<span class="code-inline">1.</span> など）のは <span class="code-inline">dtype=float32</span> で小数型になったためです。エラーではありません。</li>
-			<li><span class="code-inline">dtype</span> を指定しないと NumPy のデフォルト（float64）になります。GPU を使うときは float32 を明示する習慣をつけましょう。</li>
+			<li>各行の長さがそろっていないと、配列化で失敗したり意図しない型になったりします。</li>
+			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように。<strong>「行が先、列が後」</strong>です。</li>
+			<li>出力の <span class="code-inline">1.</span> は float32 による小数表示です。エラーではありません。</li>
 		</ul>
+
+		<details>
+			<summary>dtype を指定しなかったときの注意（クリックで開く）</summary>
+			<p><span class="code-inline">dtype</span> を指定しないと NumPy のデフォルト（float64）になります。GPU を使うときは float32 を明示する習慣をつけましょう。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
