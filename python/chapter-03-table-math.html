@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第3章 表どうしを計算したい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第3章</p>
+		<h1>表どうしを計算したい</h1>
+		<p>行列の掛け算は、AI や GPU の話に何度も出てくる大事な形です。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>NumPy の表どうしを掛けて、入力の shape と出力の shape がどう変わるかを読めるようにします。まずは「数字そのもの」より「表の形」に注目します。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import numpy as np
+
+a = np.array([[1, 2, 3],
+              [4, 5, 6]], dtype=np.float32)
+b = np.array([[7, 8],
+              [9, 10],
+              [11, 12]], dtype=np.float32)
+
+c = a @ b
+
+print(a.shape, b.shape, c.shape)
+print(c)</code></pre>
+		<p><span class="code-inline">a</span> は <span class="code-inline">(2, 3)</span>、<span class="code-inline">b</span> は <span class="code-inline">(3, 2)</span> です。内側の 3 と 3 がつながるので、結果の <span class="code-inline">c</span> は <span class="code-inline">(2, 2)</span> になります。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>この「表どうしを掛ける」計算は、あとで PyTorch の中でも何度も出てきます。ROCm の下では、こうした行列計算を速く回すためのライブラリが大事な役目を持っています。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">@</span> で行列の掛け算を書く</li>
+			<li>計算結果を新しい変数 <span class="code-inline">c</span> に受け取る</li>
+			<li>複数の値をまとめて <span class="code-inline">print()</span> する</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">(2, 3)</span> と <span class="code-inline">(2, 2)</span> はそのままでは掛けられません。内側が合うかを先に見ます。</li>
+			<li><span class="code-inline">@</span> は「一個ずつ掛ける」ではなく、表どうしの掛け算です。</li>
+			<li>結果の数よりも、まず出力 shape がどうなったかを見ると迷いにくくなります。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">a</span> や <span class="code-inline">b</span> の数字を入れ替えた上で、実行前に <span class="code-inline">c.shape</span> がいくつになるかを先に予想してみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-02-number-tables.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-04-numpy-to-pytorch.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第1章 GPUが見えるか確かめたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第1章</p>
+		<h1>GPUが見えるか確かめたい</h1>
+		<p>最初の一歩は、「この環境で GPU が使えるのか」を自分の目で確かめることです。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>ROCm 版 PyTorch が入っていて、いまの PC から GPU が見えているかを短いコードで確認します。まずここが通ると、この先の章で「CPU だけで動いていた」という遠回りを減らせます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+
+print("HIP:", torch.version.hip)
+print("GPU available:", torch.cuda.is_available())
+
+if torch.cuda.is_available():
+    print("Device:", torch.cuda.get_device_name(0))</code></pre>
+		<p><span class="code-inline">torch.version.hip</span> が見えて、<span class="code-inline">torch.cuda.is_available()</span> が <span class="code-inline">True</span> なら、まずは出発できます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>ROCm 版 PyTorch でも、歴史的な理由で <span class="code-inline">torch.cuda</span> という名前の API を使う場所があります。名前はそう見えても、ROCm 環境では下で HIP/ROCm 側の処理につながります。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">import</span> でライブラリを読み込む</li>
+			<li><span class="code-inline">print()</span> で確認したい値を出す</li>
+			<li><span class="code-inline">if</span> で「GPU が見えているときだけ」を分ける</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">GPU available: False</span> なら、PyTorch の build か ROCm の見え方を先に確認します。</li>
+			<li><span class="code-inline">torch.version.hip</span> が <span class="code-inline">None</span> なら、ROCm 向けではない PyTorch が入っていることがあります。</li>
+			<li>GPU 名が出なくても慌てず、まずは <span class="code-inline">False</span> なのかエラーなのかを分けて見るのが大事です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">print("GPU available:", ...)</span> の行だけを残して実行し、まずは <span class="code-inline">True</span> か <span class="code-inline">False</span> かを自分の環境で確かめてみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-02-number-tables.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

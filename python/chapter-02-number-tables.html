@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第2章 数字を表として持ちたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第2章</p>
+		<h1>数字を表として持ちたい</h1>
+		<p>ここでは NumPy を使って、数字の並びを「表」として見る感覚を作ります。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>AI や GPU の話では、数字は 1 個ずつよりも「まとまった表」で出てくることが多いです。まずは NumPy 配列を作って、<span class="code-inline">shape</span> を「表の大きさ」として読めるようにします。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import numpy as np
+
+x = np.array([[1, 2, 3],
+              [4, 5, 6]], dtype=np.float32)
+
+print(x)
+print(x.shape)
+print(x.dtype)</code></pre>
+		<p>この例では、2 行 3 列の表を 1 つのまとまりとして持っています。<span class="code-inline">(2, 3)</span> と見えたら、「2 行 3 列」と読めば大丈夫です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>この章のコードは CPU 側ですが、ここで作る「shape を読む習慣」がそのまま PyTorch と GPU の章につながります。ROCm でも、まずは何行何列なのかを読めることが大事です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li>入れ子の <span class="code-inline">[]</span> で表の形を作る</li>
+			<li>変数 <span class="code-inline">x</span> にまとまりを入れておく</li>
+			<li><span class="code-inline">x.shape</span> や <span class="code-inline">x.dtype</span> のように属性を読む</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>各行の長さがそろっていないと、きれいな表として扱いにくくなります。</li>
+			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように気をつけます。</li>
+			<li><span class="code-inline">dtype</span> は「数字の種類」です。最初は <span class="code-inline">float32</span> と見えたら十分です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p>数字を入れ替えて、<span class="code-inline">3 行 2 列</span> の配列を 1 つ作ってみましょう。実行したら <span class="code-inline">shape</span> がどう表示されるかを見ます。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-01-gpu-visible.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-03-table-math.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

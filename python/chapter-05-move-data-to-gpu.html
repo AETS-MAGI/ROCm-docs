@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第5章 データをGPUに送りたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第5章</p>
+		<h1>データをGPUに送りたい</h1>
+		<p>ここで初めて、「どこに置かれているデータか」をコードで意識します。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>CPU にある tensor を GPU へ送って、<span class="code-inline">device</span> が変わる様子を見ます。計算そのものより、まずは「置き場所」を読めることが目標です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+x = torch.tensor([[1.0, 2.0]], dtype=torch.float32)
+
+print("before:", x.device)
+x = x.to(device)
+print("after :", x.device)</code></pre>
+		<p><span class="code-inline">before</span> と <span class="code-inline">after</span> を見比べるだけで、データがどこにあるかを追えるようになります。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>ROCm 版 PyTorch でも、GPU を指す場所で <span class="code-inline">"cuda"</span> という名前が出ることがあります。名前に引っ張られず、「GPU 側へ送るための入口なんだな」と読むのがコツです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">"A" if 条件 else "B"</span> の形で分岐する</li>
+			<li><span class="code-inline">.to(device)</span> のようなメソッド呼び出しを使う</li>
+			<li>文字列ラベルといっしょに値を表示する</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>tensor だけ GPU に送っても、モデルが CPU のままだと次の章で混ざって止まることがあります。</li>
+			<li><span class="code-inline">device</span> が <span class="code-inline">cpu</span> のままでもエラーではありません。まずは環境の状態を知ることが先です。</li>
+			<li><span class="code-inline">"cuda"</span> という名前を見て混乱しやすいですが、ROCm でもここはよく出てきます。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p>コードの最後に <span class="code-inline">print(x)</span> を足して、値そのものは同じでも置き場所だけが変わることを見てみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-04-numpy-to-pytorch.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-06-run-small-model.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>
