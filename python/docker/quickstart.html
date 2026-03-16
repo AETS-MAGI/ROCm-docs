@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Quickstart（Docker）| ROCm-docs</title>
+	<link rel="stylesheet" href="../python-course.css">
+	<style>
+		.step-card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 20px 22px;
+			margin-bottom: 16px;
+		}
+		.step-card h2 {
+			margin: 0 0 10px;
+			font-size: 19px;
+			color: var(--blue-deep);
+		}
+		.step-card p {
+			margin: 0 0 10px;
+			font-size: 15px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+		.step-num {
+			display: inline-block;
+			background: var(--blue);
+			color: #fff;
+			width: 28px; height: 28px;
+			line-height: 28px;
+			text-align: center;
+			border-radius: 50%;
+			font-size: 14px;
+			font-weight: 700;
+			margin-right: 8px;
+			vertical-align: middle;
+		}
+		.cmd {
+			display: block;
+			background: var(--code-bg);
+			color: var(--code-ink);
+			padding: 14px 16px;
+			border-radius: 10px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 14px;
+			line-height: 1.6;
+			margin: 10px 0;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		.output-example {
+			background: #f0f4f8;
+			border: 1px solid var(--line);
+			border-radius: 10px;
+			padding: 12px 16px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 13px;
+			line-height: 1.5;
+			color: var(--muted);
+			margin: 8px 0;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		.success-box {
+			background: #E8F5E9;
+			border-left: 5px solid #2E7D32;
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin: 20px 0;
+			font-size: 15px;
+			line-height: 1.7;
+		}
+		.success-box strong { color: #2E7D32; }
+		.warn-box {
+			background: #FFF3E0;
+			border-left: 5px solid #E65100;
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin: 12px 0;
+			font-size: 14px;
+			line-height: 1.7;
+		}
+		.warn-box strong { color: #E65100; }
+		.info-box {
+			background: #E3F2FD;
+			border-left: 5px solid var(--blue);
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin: 12px 0;
+			font-size: 14px;
+			line-height: 1.7;
+		}
+		.next-link {
+			display: inline-block;
+			margin-top: 18px;
+			padding: 10px 18px;
+			border-radius: 999px;
+			background: var(--blue);
+			color: #fff;
+			text-decoration: none;
+			font-size: 14px;
+			font-weight: 700;
+		}
+		.next-link:hover { opacity: 0.92; }
+		.aside-link {
+			color: var(--blue);
+			text-decoration: none;
+			font-weight: 700;
+		}
+		.aside-link:hover { text-decoration: underline; }
+	</style>
+</head>
+<body>
+<div class="page">
+	<a class="back-link" href="../quickstart.html">← ルート選択に戻る</a>
+
+	<section class="chapter-hero">
+		<p class="eyebrow">Quickstart — Docker</p>
+		<h1>GPU で 1 回動かす</h1>
+		<p>ROCm が入った Docker コンテナを使って、PyTorch で GPU 計算を 1 回動かすところまで進みます。環境を汚さず試せるのが Docker の強みです。</p>
+	</section>
+
+	<!-- Step 1 -->
+	<div class="step-card">
+		<h2><span class="step-num">1</span>前提を確認する</h2>
+		<p>必要なものは2つだけです。</p>
+		<ul style="font-size: 15px; line-height: 2; color: var(--muted); padding-left: 20px;">
+			<li><strong>AMD GPU</strong> が載った Linux マシン（ROCm 対応の GPU）</li>
+			<li><strong>Docker</strong> がインストールされていること</li>
+		</ul>
+		<p>Docker が入っているか確認:</p>
+		<code class="cmd">docker --version</code>
+		<p>バージョンが表示されれば OK です。</p>
+
+		<p>GPU の対応状況はこちらで確認できます:</p>
+		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html" target="_blank" rel="noopener">AMD 公式: 対応 GPU・OS 一覧</a></p>
+	</div>
+
+	<!-- Step 2 -->
+	<div class="step-card">
+		<h2><span class="step-num">2</span>ROCm + PyTorch のコンテナを取得する</h2>
+		<p>AMD が公開している PyTorch 入りのイメージを使います。</p>
+		<code class="cmd">docker pull rocm/pytorch:latest</code>
+		<p>数 GB あるので、初回は少し時間がかかります。</p>
+	</div>
+
+	<!-- Step 3 -->
+	<div class="step-card">
+		<h2><span class="step-num">3</span>コンテナを起動する</h2>
+		<code class="cmd">docker run -it --rm \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  --group-add video \
+  rocm/pytorch:latest</code>
+
+		<div class="info-box">
+			<strong>フラグの意味:</strong><br>
+			<code>--device=/dev/kfd</code> と <code>--device=/dev/dri</code> — GPU デバイスをコンテナに渡す<br>
+			<code>--group-add video</code> — GPU にアクセスする権限を追加<br>
+			<code>--rm</code> — コンテナ終了時に自動で削除（やり直しやすい）
+		</div>
+
+		<div class="warn-box">
+			<strong>GPU が見えない場合:</strong> ホスト側で <code>video</code> / <code>render</code> グループに入っているか、ROCm のカーネルドライバが入っているかを確認してください。
+		</div>
+	</div>
+
+	<!-- Step 4 -->
+	<div class="step-card">
+		<h2><span class="step-num">4</span>コンテナ内で GPU が見えるか確認する</h2>
+		<p>コンテナのシェルに入ったら、まず <code>rocminfo</code> で確認します。</p>
+		<code class="cmd">rocminfo | head -30</code>
+		<div class="output-example">Agent 1
+  Name:                    gfx1100
+  ...</div>
+		<p>GPU 名が出ていれば、コンテナから GPU が見えています。</p>
+	</div>
+
+	<!-- Step 5 -->
+	<div class="step-card">
+		<h2><span class="step-num">5</span>PyTorch から GPU が見えるか確認する</h2>
+		<code class="cmd">python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code>
+		<div class="output-example">HIP: 6.2.xxxxx
+GPU available: True</div>
+		<p><code>True</code> が出れば、PyTorch が GPU を認識しています。</p>
+	</div>
+
+	<!-- Step 6 -->
+	<div class="step-card">
+		<h2><span class="step-num">6</span>GPU で行列の掛け算を 1 回動かす</h2>
+		<p>これが今日のゴールです。</p>
+		<code class="cmd">python3 -c "
+import torch
+device = torch.device('cuda')
+a = torch.randn(3, 3, device=device)
+b = torch.randn(3, 3, device=device)
+c = torch.matmul(a, b)
+print('結果:', c)
+print('デバイス:', c.device)
+"</code>
+		<div class="output-example">結果: tensor([[ 0.1234, -0.5678,  1.2345],
+        [ 0.9876, -0.4321,  0.5432],
+        [-0.1111,  0.2222,  0.3333]], device='cuda:0')
+デバイス: cuda:0</div>
+		<p><code>device='cuda:0'</code> と出ていれば、<strong>GPU 上で計算できています</strong>。</p>
+	</div>
+
+	<div class="success-box">
+		<strong>🎉 おめでとうございます！</strong><br>
+		Docker コンテナ内で GPU 計算が動きました。<br>
+		<code>torch.cuda</code> という名前ですが、AMD GPU でも使える API 名です（詳しくは第1章で）。
+	</div>
+
+	<h2 style="margin-top: 28px; font-size: 19px; color: var(--blue-deep);">次のステップ</h2>
+	<p style="font-size: 15px; line-height: 1.8; color: var(--muted);">
+		「動いた」ことが確認できたら、次は2つの方向があります。
+	</p>
+	<ul style="font-size: 15px; line-height: 2; color: var(--muted); padding-left: 20px;">
+		<li><strong>意味を知りたいなら →</strong> <a class="aside-link" href="./chapter-00-setup.html">第0章: 環境のしくみを理解する</a></li>
+		<li><strong>すぐ先に進みたいなら →</strong> <a class="aside-link" href="../chapter-01-gpu-visible.html">第1章: GPU が見えるか確かめたい</a></li>
+	</ul>
+
+	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
+</div>
+</body>
+</html>

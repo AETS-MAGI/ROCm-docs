@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Quickstart（ネイティブ Linux）| ROCm-docs</title>
+	<link rel="stylesheet" href="../python-course.css">
+	<style>
+		.step-card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 20px 22px;
+			margin-bottom: 16px;
+		}
+		.step-card h2 {
+			margin: 0 0 10px;
+			font-size: 19px;
+			color: var(--blue-deep);
+		}
+		.step-card p {
+			margin: 0 0 10px;
+			font-size: 15px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+		.step-num {
+			display: inline-block;
+			background: var(--blue);
+			color: #fff;
+			width: 28px; height: 28px;
+			line-height: 28px;
+			text-align: center;
+			border-radius: 50%;
+			font-size: 14px;
+			font-weight: 700;
+			margin-right: 8px;
+			vertical-align: middle;
+		}
+		.cmd {
+			display: block;
+			background: var(--code-bg);
+			color: var(--code-ink);
+			padding: 14px 16px;
+			border-radius: 10px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 14px;
+			line-height: 1.6;
+			margin: 10px 0;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		.output-example {
+			background: #f0f4f8;
+			border: 1px solid var(--line);
+			border-radius: 10px;
+			padding: 12px 16px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 13px;
+			line-height: 1.5;
+			color: var(--muted);
+			margin: 8px 0;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		.success-box {
+			background: #E8F5E9;
+			border-left: 5px solid #2E7D32;
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin: 20px 0;
+			font-size: 15px;
+			line-height: 1.7;
+		}
+		.success-box strong { color: #2E7D32; }
+		.warn-box {
+			background: #FFF3E0;
+			border-left: 5px solid #E65100;
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin: 12px 0;
+			font-size: 14px;
+			line-height: 1.7;
+		}
+		.warn-box strong { color: #E65100; }
+		.next-link {
+			display: inline-block;
+			margin-top: 18px;
+			padding: 10px 18px;
+			border-radius: 999px;
+			background: var(--blue);
+			color: #fff;
+			text-decoration: none;
+			font-size: 14px;
+			font-weight: 700;
+		}
+		.next-link:hover { opacity: 0.92; }
+		.aside-link {
+			color: var(--blue);
+			text-decoration: none;
+			font-weight: 700;
+		}
+		.aside-link:hover { text-decoration: underline; }
+	</style>
+</head>
+<body>
+<div class="page">
+	<a class="back-link" href="../quickstart.html">← ルート選択に戻る</a>
+
+	<section class="chapter-hero">
+		<p class="eyebrow">Quickstart — ネイティブ Linux</p>
+		<h1>GPU で 1 回動かす</h1>
+		<p>Linux に直接 ROCm を入れて、PyTorch で GPU 計算を 1 回動かすところまで進みます。意味の深掘りは後回し — まずは「動いた」を作りましょう。</p>
+	</section>
+
+	<!-- Step 1 -->
+	<div class="step-card">
+		<h2><span class="step-num">1</span>GPU が ROCm に対応しているか確認する</h2>
+		<p>まず、お使いの GPU が ROCm の対応リストに載っているか調べます。</p>
+		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html" target="_blank" rel="noopener">AMD 公式: 対応 GPU・OS 一覧</a></p>
+		<p>自分の GPU 名がわからないときは、ターミナルで確認できます。</p>
+		<code class="cmd">lspci | grep -i vga</code>
+		<div class="warn-box">
+			<strong>⚠ 載っていない場合:</strong> 旧世代の GPU（Vega 系など）では、動くこともありますが公式サポート外です。まずは対応 GPU で試すのがおすすめです。
+		</div>
+	</div>
+
+	<!-- Step 2 -->
+	<div class="step-card">
+		<h2><span class="step-num">2</span>ROCm をインストールする</h2>
+		<p>公式の手順にしたがって ROCm をインストールします。</p>
+		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/" target="_blank" rel="noopener">AMD 公式: ROCm インストールガイド</a></p>
+
+		<div class="warn-box">
+			<strong>よくある落とし穴:</strong> インストール後に <code>video</code> と <code>render</code> グループにユーザーを追加するのを忘れがちです。
+		</div>
+		<code class="cmd">sudo usermod -aG video,render $USER</code>
+		<p>追加後は <strong>一度ログアウトして再ログイン</strong> してください（再起動でも OK）。</p>
+	</div>
+
+	<!-- Step 3 -->
+	<div class="step-card">
+		<h2><span class="step-num">3</span>GPU が見えるか確認する</h2>
+		<code class="cmd">rocminfo | head -30</code>
+		<p>「Agent」のところに GPU 名が出ていれば OK です。</p>
+		<div class="output-example">Agent 1
+  Name:                    gfx1100
+  ...</div>
+		<div class="warn-box">
+			<strong>何も出ない・エラーになる場合:</strong> 権限不足のことが多いです。<code>groups</code> コマンドで <code>video</code> と <code>render</code> が入っているか確認してください。
+		</div>
+	</div>
+
+	<!-- Step 4 -->
+	<div class="step-card">
+		<h2><span class="step-num">4</span>Python 仮想環境をつくる</h2>
+		<p>システムの Python と分けるために、仮想環境を 1 つ作ります。</p>
+		<code class="cmd">python3 -m venv ~/rocm-env
+source ~/rocm-env/bin/activate</code>
+		<p>プロンプトの先頭に <code>(rocm-env)</code> が付いたら成功です。</p>
+	</div>
+
+	<!-- Step 5 -->
+	<div class="step-card">
+		<h2><span class="step-num">5</span>ROCm 版 PyTorch をインストールする</h2>
+		<p>PyTorch 公式サイトで <strong>ROCm</strong> を選ぶと、正しいインストールコマンドが出ます。</p>
+		<p>👉 <a class="aside-link" href="https://pytorch.org/get-started/locally/" target="_blank" rel="noopener">PyTorch 公式: Get Started</a></p>
+		<p>たとえば ROCm 6.x 用の場合（バージョンは公式で確認してください）:</p>
+		<code class="cmd">pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2</code>
+
+		<div class="warn-box">
+			<strong>CPU 版を掴まないように注意:</strong> <code>--index-url</code> を付けないと CPU 版が入ることがあります。必ず ROCm 用の URL を使ってください。
+		</div>
+	</div>
+
+	<!-- Step 6 -->
+	<div class="step-card">
+		<h2><span class="step-num">6</span>PyTorch から GPU が見えるか確認する</h2>
+		<code class="cmd">python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code>
+		<div class="output-example">HIP: 6.2.xxxxx
+GPU available: True</div>
+		<p><code>torch.version.hip</code> にバージョンが出て、<code>True</code> なら ROCm 版の PyTorch が GPU を認識しています。</p>
+
+		<div class="warn-box">
+			<strong><code>None</code> や <code>False</code> が出たら:</strong> CPU 版がインストールされている可能性があります。<code>pip uninstall torch</code> してから、ROCm 用の URL 付きで入れ直してください。
+		</div>
+	</div>
+
+	<!-- Step 7 -->
+	<div class="step-card">
+		<h2><span class="step-num">7</span>GPU で行列の掛け算を 1 回動かす</h2>
+		<p>これが今日のゴールです。</p>
+		<code class="cmd">python3 -c "
+import torch
+device = torch.device('cuda')
+a = torch.randn(3, 3, device=device)
+b = torch.randn(3, 3, device=device)
+c = torch.matmul(a, b)
+print('結果:', c)
+print('デバイス:', c.device)
+"</code>
+		<div class="output-example">結果: tensor([[ 0.1234, -0.5678,  1.2345],
+        [ 0.9876, -0.4321,  0.5432],
+        [-0.1111,  0.2222,  0.3333]], device='cuda:0')
+デバイス: cuda:0</div>
+		<p><code>device='cuda:0'</code> と出ていれば、<strong>GPU 上で計算できています</strong>。</p>
+	</div>
+
+	<div class="success-box">
+		<strong>🎉 おめでとうございます！</strong><br>
+		GPU で計算が動きました。ROCm 版 PyTorch が正常に動作しています。<br>
+		<code>torch.cuda</code> という名前ですが、AMD GPU でも使える API 名です（詳しくは第1章で）。
+	</div>
+
+	<h2 style="margin-top: 28px; font-size: 19px; color: var(--blue-deep);">次のステップ</h2>
+	<p style="font-size: 15px; line-height: 1.8; color: var(--muted);">
+		「動いた」ことが確認できたら、次は2つの方向があります。
+	</p>
+	<ul style="font-size: 15px; line-height: 2; color: var(--muted); padding-left: 20px;">
+		<li><strong>意味を知りたいなら →</strong> <a class="aside-link" href="./chapter-00-setup.html">第0章: 環境のしくみを理解する</a></li>
+		<li><strong>すぐ先に進みたいなら →</strong> <a class="aside-link" href="../chapter-01-gpu-visible.html">第1章: GPU が見えるか確かめたい</a></li>
+	</ul>
+
+	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
+</div>
+</body>
+</html>

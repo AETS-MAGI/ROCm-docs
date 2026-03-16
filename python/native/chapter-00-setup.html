@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第0章: 環境のしくみを理解する（ネイティブ Linux）| ROCm-docs</title>
+	<link rel="stylesheet" href="../python-course.css">
+	<style>
+		.explain-card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 20px 22px;
+			margin-bottom: 16px;
+		}
+		.explain-card h2 {
+			margin: 0 0 10px;
+			font-size: 19px;
+			color: var(--blue-deep);
+		}
+		.explain-card h3 {
+			margin: 14px 0 8px;
+			font-size: 16px;
+			color: var(--blue-deep);
+		}
+		.explain-card p {
+			margin: 0 0 10px;
+			font-size: 15px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+		.cmd {
+			display: block;
+			background: var(--code-bg);
+			color: var(--code-ink);
+			padding: 14px 16px;
+			border-radius: 10px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 14px;
+			line-height: 1.6;
+			margin: 10px 0;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		.meaning-box {
+			background: #F3E5F5;
+			border-left: 5px solid #7B1FA2;
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin: 12px 0;
+			font-size: 14px;
+			line-height: 1.7;
+		}
+		.meaning-box strong { color: #7B1FA2; }
+		.info-box {
+			background: #E3F2FD;
+			border-left: 5px solid var(--blue);
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin: 12px 0;
+			font-size: 14px;
+			line-height: 1.7;
+		}
+		.success-box {
+			background: #E8F5E9;
+			border-left: 5px solid #2E7D32;
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin: 20px 0;
+			font-size: 15px;
+			line-height: 1.7;
+		}
+		.success-box strong { color: #2E7D32; }
+		.checklist {
+			background: var(--card);
+			border: 2px solid #2E7D32;
+			border-radius: 14px;
+			padding: 20px 22px;
+			margin: 20px 0;
+		}
+		.checklist h2 {
+			margin: 0 0 12px;
+			font-size: 19px;
+			color: #2E7D32;
+		}
+		.checklist ul {
+			margin: 0;
+			padding-left: 20px;
+			font-size: 15px;
+			line-height: 2;
+			color: var(--ink);
+		}
+		.next-link {
+			display: inline-block;
+			margin-top: 18px;
+			padding: 10px 18px;
+			border-radius: 999px;
+			background: var(--blue);
+			color: #fff;
+			text-decoration: none;
+			font-size: 14px;
+			font-weight: 700;
+		}
+		.next-link:hover { opacity: 0.92; }
+		.aside-link {
+			color: var(--blue);
+			text-decoration: none;
+			font-weight: 700;
+		}
+		.aside-link:hover { text-decoration: underline; }
+		.mascot-row {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			margin: 16px 0;
+		}
+		.mascot-row img {
+			width: 56px;
+			height: auto;
+			flex-shrink: 0;
+			border-radius: 10px;
+		}
+		.mascot-row .speech {
+			background: #f0f4f8;
+			border-radius: 12px;
+			padding: 12px 16px;
+			font-size: 14px;
+			line-height: 1.7;
+			color: var(--ink);
+		}
+	</style>
+</head>
+<body>
+<div class="page">
+	<a class="back-link" href="../python-index.html">← 教室トップへ</a>
+
+	<section class="chapter-hero">
+		<p class="eyebrow">第0章 — ネイティブ Linux</p>
+		<h1>環境のしくみを理解する</h1>
+		<p>Quickstart で「動いた」ことを確認しましたか？ ここでは、あのとき実行したコマンドが <strong>何をしていたのか</strong> を理解します。</p>
+	</section>
+
+	<div class="info-box">
+		<strong>この章の前提:</strong> <a class="aside-link" href="./quickstart.html">Quickstart（ネイティブ Linux）</a> が終わっていることを前提にしています。まだの方は先にそちらをどうぞ。
+	</div>
+
+	<!-- rocminfo の意味 -->
+	<div class="explain-card">
+		<h2>rocminfo — GPU が「見えている」とはどういうことか</h2>
+		<p>Quickstart では <code>rocminfo</code> を使いました。これは <strong>ROCm のランタイムが GPU を認識しているかを確認するツール</strong> です。</p>
+
+		<div class="meaning-box">
+			<strong>💡 なぜ大事なのか:</strong> ROCm がインストールされていても、ドライバの問題やアクセス権限の不足で GPU が「見えない」ことがあります。<code>rocminfo</code> は「OS → ドライバ → ROCm ランタイム → GPU」の経路が通っているかを確認する最初のチェックポイントです。
+		</div>
+
+		<p><code>rocminfo</code> の出力で見るべきところ:</p>
+		<ul style="font-size: 14px; line-height: 2; color: var(--muted); padding-left: 20px;">
+			<li><strong>Agent の Name</strong> — GPU のアーキテクチャ名（例: <code>gfx1100</code>）</li>
+			<li><strong>Agent が 0 個のとき</strong> — GPU が見えていない = ドライバか権限の問題</li>
+		</ul>
+	</div>
+
+	<!-- video / render グループ -->
+	<div class="explain-card">
+		<h2>video / render グループ — なぜ必要なのか</h2>
+
+		<code class="cmd">groups</code>
+
+		<p>Quickstart で <code>sudo usermod -aG video,render $USER</code> を実行しました。</p>
+
+		<div class="meaning-box">
+			<strong>💡 なぜ大事なのか:</strong> Linux では GPU デバイス（<code>/dev/kfd</code> や <code>/dev/dri/*</code>）へのアクセスは、<code>video</code> や <code>render</code> グループに属するユーザーだけに許可されています。このグループに入っていないと、root 以外のユーザーは GPU を使えません。
+		</div>
+
+		<div class="mascot-row">
+			<img src="../../media/aktk-chan/aktk-chan-detective.png" alt="アカツキちゃん">
+			<div class="speech">
+				<code>rocminfo</code> でエラーが出るとき、いちばん多い原因がこの権限不足です。<code>groups</code> コマンドで <code>video</code> と <code>render</code> が出るか確認してみてください。
+			</div>
+		</div>
+	</div>
+
+	<!-- venv の意味 -->
+	<div class="explain-card">
+		<h2>Python 仮想環境（venv）— なぜ分けるのか</h2>
+
+		<code class="cmd">python3 -m venv ~/rocm-env
+source ~/rocm-env/bin/activate</code>
+
+		<div class="meaning-box">
+			<strong>💡 なぜ大事なのか:</strong> Python は、同じコマンド名 <code>python3</code> でもインストール先によって別のライブラリ環境を持ちます。仮想環境を使わないと、システムの Python とパッケージが混ざって「入れたはずの PyTorch が見つからない」「バージョンが違う」といった事故が起きます。
+		</div>
+
+		<p>仮想環境を使うと:</p>
+		<ul style="font-size: 14px; line-height: 2; color: var(--muted); padding-left: 20px;">
+			<li>システムの Python を壊さない</li>
+			<li>ROCm 版 PyTorch だけを入れた環境を作れる</li>
+			<li>うまくいかなかったら、フォルダごと消してやり直せる</li>
+		</ul>
+	</div>
+
+	<!-- ROCm 版 PyTorch の確認 -->
+	<div class="explain-card">
+		<h2>torch.version.hip — ROCm 版かどうかを見分ける</h2>
+
+		<code class="cmd">python3 -c "import torch; print(torch.version.hip)"</code>
+
+		<div class="meaning-box">
+			<strong>💡 なぜ大事なのか:</strong> PyTorch には CPU 版、CUDA 版、ROCm 版があり、<code>pip install torch</code> だけだと CPU 版が入ることがあります。<code>torch.version.hip</code> がバージョン番号を返せば ROCm 版、<code>None</code> なら ROCm 版ではありません。
+		</div>
+
+		<p>もうひとつの確認方法:</p>
+		<code class="cmd">python3 -c "print(torch.cuda.is_available())"</code>
+
+		<div class="mascot-row">
+			<img src="../../media/aktk-chan/aktk-chan-surprising.png" alt="アカツキちゃん">
+			<div class="speech">
+				<code>torch.cuda</code> という名前なのに AMD GPU？<br>
+				PyTorch は歴史的に GPU API を <code>cuda</code> という名前にしています。ROCm 版でもこの名前はそのまま使います。名前は CUDA でも、中身は ROCm が動いています。詳しくは<a class="aside-link" href="../chapter-01-gpu-visible.html">第1章</a>で。
+			</div>
+		</div>
+	</div>
+
+	<!-- ROCm インストール自体の意味 -->
+	<div class="explain-card">
+		<h2>ROCm のインストール — 公式手順を使う理由</h2>
+		<p>ROCm はカーネルドライバ、ランタイムライブラリ、ツール群からなる大きなソフトウェアスタックです。</p>
+
+		<div class="meaning-box">
+			<strong>💡 なぜ公式手順なのか:</strong> パッケージ間のバージョン依存が複雑なため、公式の手順通りにやるのがいちばん事故が少ないです。「便利そうなワンライナー」を見つけても、まずは公式を優先してください。
+		</div>
+
+		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/" target="_blank" rel="noopener">AMD 公式: ROCm インストールガイド</a></p>
+	</div>
+
+	<!-- ネイティブと Docker の違い -->
+	<div class="explain-card">
+		<h2>ネイティブ Linux と Docker — 何が違うのか</h2>
+		<p>この講座では、ネイティブ Linux と Docker の2つのルートを用意しています。</p>
+
+		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0;">
+			<thead>
+				<tr style="border-bottom: 2px solid var(--line);">
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);"></th>
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">ネイティブ</th>
+					<th style="text-align: left; padding: 8px 10px; color: var(--blue-deep);">Docker</th>
+				</tr>
+			</thead>
+			<tbody style="color: var(--muted); line-height: 1.7;">
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px; font-weight: 700;">ROCm のインストール</td>
+					<td style="padding: 8px 10px;">自分でやる</td>
+					<td style="padding: 8px 10px;">コンテナに入っている</td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px; font-weight: 700;">環境の独立性</td>
+					<td style="padding: 8px 10px;">venv で分離</td>
+					<td style="padding: 8px 10px;">コンテナ自体が分離</td>
+				</tr>
+				<tr style="border-bottom: 1px solid var(--line);">
+					<td style="padding: 8px 10px; font-weight: 700;">やり直し</td>
+					<td style="padding: 8px 10px;">venv を消して作り直す</td>
+					<td style="padding: 8px 10px;">コンテナを消して起動し直す</td>
+				</tr>
+				<tr>
+					<td style="padding: 8px 10px; font-weight: 700;">向いている人</td>
+					<td style="padding: 8px 10px;">Linux をそのまま使いたい</td>
+					<td style="padding: 8px 10px;">環境を汚したくない</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p>第1章以降は、どちらのルートでも同じコードで進めます。</p>
+	</div>
+
+	<!-- チェックリスト -->
+	<div class="checklist">
+		<h2>✅ 第0章のチェックリスト</h2>
+		<ul>
+			<li><code>rocminfo</code> が「ROCm のランタイムから GPU が見えるかの確認」だとわかった</li>
+			<li><code>video</code> / <code>render</code> グループが「GPU へのアクセス権限」だとわかった</li>
+			<li><code>venv</code> が「Python 環境を分離する仕組み」だとわかった</li>
+			<li><code>torch.version.hip</code> が「ROCm 版 PyTorch かどうかの目安」だとわかった</li>
+			<li><code>torch.cuda</code> が AMD GPU でも使う API 名だと知った</li>
+		</ul>
+	</div>
+
+	<div class="success-box">
+		<strong>ここまで来たら、第1章に進む準備ができています。</strong><br>
+		環境の意味がわかった状態でコードを書くと、エラーが出たときの対処がずっと楽になります。
+	</div>
+
+	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
+</div>
+</body>
+</html>

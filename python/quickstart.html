@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Quickstart — まず GPU で 1 回動かそう | ROCm-docs</title>
+	<style>
+		:root {
+			--ink: #22313f;
+			--muted: #5d6a75;
+			--line: #dbe4eb;
+			--blue: #2e6da4;
+			--blue-deep: #173a56;
+			--teal: #00796B;
+			--bg: #f7fafc;
+			--card: #ffffff;
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: 'Calibri', 'Arial', sans-serif;
+			color: var(--ink);
+			background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
+		}
+		.page {
+			max-width: 780px;
+			margin: 0 auto;
+			padding: 28px 20px 56px;
+		}
+		.back-link {
+			display: inline-block;
+			margin-bottom: 18px;
+			color: var(--blue);
+			text-decoration: none;
+			font-size: 14px;
+			font-weight: 700;
+		}
+		.back-link:hover { text-decoration: underline; }
+
+		.hero {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 18px;
+			padding: 28px 24px 24px;
+			margin-bottom: 26px;
+			display: flex;
+			align-items: flex-start;
+			gap: 20px;
+		}
+		.hero-img {
+			width: 90px;
+			height: auto;
+			flex-shrink: 0;
+			border-radius: 12px;
+		}
+		.hero-text h1 {
+			margin: 0 0 10px;
+			font-size: 30px;
+			line-height: 1.2;
+			color: var(--blue-deep);
+		}
+		.hero-text p {
+			margin: 0;
+			font-size: 16px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+
+		.goal-box {
+			background: #E8F5E9;
+			border-left: 5px solid #2E7D32;
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin-bottom: 28px;
+			font-size: 15px;
+			line-height: 1.7;
+		}
+		.goal-box strong { color: #2E7D32; }
+
+		.route-heading {
+			margin: 0 0 12px;
+			font-size: 20px;
+			color: var(--blue-deep);
+		}
+		.route-lead {
+			margin: 0 0 18px;
+			font-size: 15px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+
+		.route-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 16px;
+			margin-bottom: 28px;
+		}
+		.route-card {
+			background: var(--card);
+			border: 2px solid var(--line);
+			border-radius: 16px;
+			padding: 24px 22px 20px;
+			text-decoration: none;
+			color: inherit;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			transition: border-color 0.15s, box-shadow 0.15s;
+		}
+		.route-card:hover {
+			border-color: var(--teal);
+			box-shadow: 0 4px 16px rgba(0,121,107,0.10);
+		}
+		.route-card h2 {
+			margin: 0;
+			font-size: 19px;
+			color: var(--blue-deep);
+			line-height: 1.3;
+		}
+		.route-card .route-icon {
+			font-size: 32px;
+			line-height: 1;
+		}
+		.route-card p {
+			margin: 0;
+			font-size: 14px;
+			line-height: 1.7;
+			color: var(--muted);
+		}
+		.route-card .route-btn {
+			display: inline-block;
+			margin-top: auto;
+			padding: 8px 16px;
+			border-radius: 8px;
+			background: var(--teal);
+			color: #fff;
+			font-size: 13px;
+			font-weight: 700;
+			text-align: center;
+		}
+		.route-card:nth-child(2) .route-btn {
+			background: var(--blue);
+		}
+
+		.note-box {
+			background: #E3F2FD;
+			border-left: 5px solid var(--blue);
+			border-radius: 12px;
+			padding: 14px 18px;
+			margin-bottom: 20px;
+			font-size: 14px;
+			line-height: 1.7;
+			color: var(--muted);
+		}
+		.note-box a {
+			color: var(--blue);
+			font-weight: 700;
+			text-decoration: none;
+		}
+		.note-box a:hover { text-decoration: underline; }
+
+		.closing {
+			margin-top: 10px;
+			font-size: 14px;
+			line-height: 1.8;
+			color: var(--muted);
+		}
+		.closing a {
+			color: var(--blue);
+			text-decoration: none;
+			font-weight: 700;
+		}
+		.closing a:hover { text-decoration: underline; }
+
+		@media (max-width: 640px) {
+			.page { padding: 22px 16px 48px; }
+			.hero { flex-direction: column; align-items: center; text-align: center; }
+			.hero-img { width: 72px; }
+			.hero-text h1 { font-size: 26px; }
+			.route-grid { grid-template-columns: 1fr; }
+		}
+	</style>
+</head>
+<body>
+<div class="page">
+	<a class="back-link" href="../index.html">← サイト入口へ</a>
+
+	<section class="hero">
+		<img class="hero-img" src="../media/aktk-chan/aktk-chan-discovery.png" alt="アカツキちゃん">
+		<div class="hero-text">
+			<h1>Quickstart — まず GPU で 1 回動かそう</h1>
+			<p>むずかしいことは後回し。<br>まずは自分の GPU で計算を 1 回動かして、「動いた！」を体験しましょう。</p>
+		</div>
+	</section>
+
+	<div class="goal-box">
+		<strong>ゴール:</strong> <code>rocminfo</code> で GPU が見える → PyTorch で <code>torch.cuda.is_available()</code> が <code>True</code> → 小さな行列の掛け算を GPU で 1 回動かす — ここまでを 10〜30 分で。
+	</div>
+
+	<h2 class="route-heading">あなたの環境はどちらですか？</h2>
+	<p class="route-lead">やり方が違うので、最初にルートを選んでください。選んだ先では、そのルートの手順だけが出てきます。</p>
+
+	<div class="route-grid">
+		<a class="route-card" href="./native/quickstart.html">
+			<span class="route-icon">🐧</span>
+			<h2>Linux にネイティブで ROCm を入れる</h2>
+			<p>Ubuntu や Fedora に直接 ROCm をインストールして使う方法です。ふだん Linux を使っている人向け。</p>
+			<span class="route-btn">ネイティブ Linux で始める →</span>
+		</a>
+		<a class="route-card" href="./docker/quickstart.html">
+			<span class="route-icon">🐳</span>
+			<h2>Docker で試す</h2>
+			<p>ROCm 入りのコンテナを使う方法です。環境を汚さず試したい人や、すでに Docker を使っている人向け。</p>
+			<span class="route-btn">Docker で始める →</span>
+		</a>
+	</div>
+
+	<div class="note-box">
+		<strong>どちらを選べばいい？</strong><br>
+		迷ったら <strong>Docker</strong> がおすすめです。環境の差が出にくく、うまくいかなくてもコンテナを消してやり直せます。<br>
+		ふだんから Linux をそのまま使っていて、システムに ROCm を入れてもいいなら <strong>ネイティブ Linux</strong> でどうぞ。
+	</div>
+
+	<p class="closing">
+		手順の意味をもっと知りたくなったら、Quickstart のあとに <a href="./native/chapter-00-setup.html">第0章（環境のしくみ）</a> へ進むと理解が深まります。
+	</p>
+</div>
+</body>
+</html>
