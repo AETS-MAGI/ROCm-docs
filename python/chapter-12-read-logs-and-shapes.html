@@ -15,25 +15,28 @@
 		<h1>ログとshapeを読めるようになりたい</h1>
 		<p>止まったときに、すぐ「どこで shape が合っていないか」を見つける力を付ける章です。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1 の最上位候補。
-	エラーログ読解は実用価値が非常に高い一方で、現状は「shape mismatch を見る」という主張に対して注釈付きログや読む手順がまだ少ない。
-	将来の補強候補:
-	- 実際のエラー出力を行ごとにマーキングする
-	- shape / device / dtype の切り分けチェックリスト
-	- 壊れた例と直した例の before/after
-	- 「まずどこを見るか」を3手順で固定する導線
-	初心者の事故を減らす意味でも、この章は優先して厚くしたい。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>エラーが出たときに、ただ怖がるのではなく、shape と期待していた大きさを見比べて原因を追えるようにします。ROCm の前に、まず shape のずれで止まることはとても多いです。</p>
+
+		<p>エラーに出会ったら、まずこの <strong>3 手順</strong> で見ます。</p>
+		<ol class="point-list">
+			<li><strong>エラーの最後の行</strong>を読む — 何が合わなかったかが書いてある</li>
+			<li><strong>shape / device / dtype</strong> のどれが原因かを切り分ける</li>
+			<li>原因の数字を <span class="code-inline">print</span> して、期待値と比べる</li>
+		</ol>
+
+		<p>3 つの原因を切り分けるチェックリストです。</p>
+		<ul class="check-list">
+			<li><strong>shape</strong> — 入力の次元数や大きさが、層の期待と合っているか？</li>
+			<li><strong>device</strong> — テンソルとモデルが同じ場所（CPU / GPU）にいるか？</li>
+			<li><strong>dtype</strong> — Float と Long など、型が混ざっていないか？</li>
+		</ul>
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>最小コード — 壊れた例</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -48,12 +51,39 @@ try:
 except RuntimeError as e:
     print(type(e).__name__)
     print(e)</code></pre></div>
-		<p>ここでは、入力の最後の大きさ 3 と、<span class="code-inline">Linear(4, 2)</span> が期待する 4 が合っていません。だから止まる、と shape から説明できます。</p>
+		<p>入力の最後の大きさ 3 と、<span class="code-inline">Linear(4, 2)</span> が期待する 4 が合っていません。</p>
+
+		<p>エラー出力はこうなります。注目すべき場所にマークを付けました。</p>
+		<div class="output-example">x shape: torch.Size([2, 3])
+expected in_features: 4
+RuntimeError
+<span class="error-line highlight">mat1 and mat2 shapes cannot be multiplied (2x3 and 4x2)</span></div>
+		<p>最後の行の <strong>2x3</strong> と <strong>4x2</strong> が、shape のずれそのものです。入力の列数 (3) と重みの行数 (4) が一致しないと掛け算できません。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>直した例</h2>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
+import torch.nn as nn
+
+x = torch.randn(2, 3)
+layer = nn.Linear(3, 2)  # 4 → 3 に修正
+
+print("x shape:", x.shape)
+print("expected in_features:", layer.in_features)
+
+y = layer(x)
+print("y shape:", y.shape)</code></pre></div>
+		<div class="output-example">x shape: torch.Size([2, 3])
+expected in_features: 3
+y shape: torch.Size([2, 2])</div>
+		<p><span class="code-inline">Linear(3, 2)</span> にしたので、入力の最後の 3 と一致して通るようになりました。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
 		<p>GPU で止まったように見えても、原因が shape mismatch ということはよくあります。ROCm の調子を疑う前に、まず入力 shape、期待 shape、device を見る習慣が役立ちます。</p>
+		<p>特に device の問題は、CPU テンソルと GPU モデルを混ぜると起きます。エラーに <span class="code-inline">Expected all tensors to be on the same device</span> と出たら、device チェックが先です。</p>
 	</section>
 
 	<section class="content-section">
@@ -62,15 +92,17 @@ except RuntimeError as e:
 			<li><span class="code-inline">try</span> と <span class="code-inline">except</span> でエラーを受け取る</li>
 			<li>エラーの型と本文を分けて表示する</li>
 			<li>計算の前に確認したい値を先に <span class="code-inline">print()</span> する</li>
+			<li>エラーメッセージの最後の行にある数字を読む</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li>エラーメッセージを全部読まずに閉じてしまうと、shape のヒントを見逃します。</li>
+			<li>エラーメッセージを全部読まずに閉じてしまうと、shape のヒントを見逃します。<strong>最後の行から読む</strong>のがコツです。</li>
 			<li>device の問題と shape の問題は別です。まずどちらなのかを分けることが大事です。</li>
 			<li>入力の最後の大きさと <span class="code-inline">in_features</span> の数字を見るだけで、かなり分かることがあります。</li>
+			<li>dtype エラーは「Float なのに Long が来た」のような形で出ます。shape が合っているのに通らないときは dtype を疑います。</li>
 		</ul>
 	</section>
 

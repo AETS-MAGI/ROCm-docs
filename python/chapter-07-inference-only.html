@@ -15,17 +15,17 @@
 		<h1>推論だけしたい</h1>
 		<p>ここでは、学習はせずに「答えを出すだけ」の流れを切り分けて見ます。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1: 5〜13章の肉付け対象。
-	この章は現状でも筋はよいが、「eval() / no_grad() を付けると何が変わるのか」の見え方がもう少し欲しい。
-	将来は train との対比を先取りしすぎない範囲で、推論専用モードの安心感を示す出力例や短い比較表を足す余地がある。
-	ただし緊急度は 8 / 10 / 11 / 12 より低い。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>推論は、できあがったモデルに入力を通して答えを受け取る場面です。ここでは <span class="code-inline">eval()</span> と <span class="code-inline">no_grad()</span> を使って、「学習はしないで使うだけ」を短い形で確認します。</p>
+
+		<dl class="term-card">
+			<dt>eval()</dt>
+			<dd>モデルを「推論モード」に切り替える。Dropout や BatchNorm の動きが変わる。</dd>
+			<dt>no_grad()</dt>
+			<dd>勾配計算を省略する。推論だけなら必要ないので、メモリと速度が少し楽になる。</dd>
+		</dl>
 	</section>
 
 	<section class="content-section">
@@ -47,8 +47,11 @@ model.eval()
 with torch.no_grad():
     y = model(x)
 
-print(y)</code></pre></div>
-		<p>ここでやっているのは、入力から答えを出す <span class="code-inline">forward</span> だけです。重みを直したり、学習したりはしていません。</p>
+print(y)
+print(y.requires_grad)</code></pre></div>
+		<div class="output-example">tensor([[ 0.1532, -0.0478]], device='cuda:0')
+False</div>
+		<p><span class="code-inline">requires_grad</span> が <span class="code-inline">False</span> であることから、勾配計算が省略されていると分かります。ここでやっているのは forward だけです。</p>
 	</section>
 
 	<section class="content-section">

@@ -15,13 +15,6 @@
 		<h1>データをGPUに送りたい</h1>
 		<p>ここで初めて、「どこに置かれているデータか」をコードで意識します。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1: 5〜13章の肉付け対象。
-	この章は橋渡しとしては素直だが、後半章群の共通課題である「動かしたあと何を見ればよいか」がまだ薄い。
-	将来の改修では、成功時の出力例、device が変わったときの見え方、モデルと tensor の device 不一致の最小事故例を足すと初心者が止まりにくい。
-	ただし緊急度は 8 / 10 / 11 / 12 より一段低く、まずは高難度章の補強を優先したい。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
@@ -38,6 +31,10 @@ x = torch.tensor([[1.0, 2.0]], dtype=torch.float32)
 print("before:", x.device)
 x = x.to(device)
 print("after :", x.device)</code></pre></div>
+
+		<p>GPU 環境なら、こう表示されます。</p>
+		<div class="output-example">before: cpu
+after : cuda:0</div>
 		<p><span class="code-inline">before</span> と <span class="code-inline">after</span> を見比べるだけで、データがどこにあるかを追えるようになります。</p>
 	</section>
 
@@ -62,6 +59,22 @@ print("after :", x.device)</code></pre></div>
 			<li><span class="code-inline">device</span> が <span class="code-inline">cpu</span> のままでもエラーではありません。まずは環境の状態を知ることが先です。</li>
 			<li><span class="code-inline">"cuda"</span> という名前を見て混乱しやすいですが、ROCm でもここはよく出てきます。</li>
 		</ul>
+
+		<p>device が混ざるとどうなるか、見てみましょう。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># device 不一致の例
+import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = nn.Linear(2, 1)          # CPU のまま
+x = torch.tensor([[1.0, 2.0]], device=device)  # GPU
+
+try:
+    model(x)
+except RuntimeError as e:
+    print(e)</code></pre></div>
+		<div class="output-example">Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!</div>
+		<p><span class="code-inline">model.to(device)</span> を足すか、<span class="code-inline">x</span> を CPU に戻せば解消します。</p>
 	</section>
 
 	<section class="content-section">

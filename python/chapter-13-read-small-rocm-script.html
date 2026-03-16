@@ -15,17 +15,20 @@
 		<h1>小さなROCm実験コードを1本読めるようになりたい</h1>
 		<p>最後は、短い実験コードを最初から最後まで自分で追う練習です。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1: 5〜13章の肉付け対象。
-	到達点としてよい章だが、読む練習としては「どこに注目して読むか」のガイドが増えるとさらに強くなる。
-	将来は、コード横メモ、読む順番、device / shape / timing の3観点マーカーなどを追加すると、総仕上げとして機能しやすい。
-	ただし優先順位としては 8 / 10 / 11 / 12 の補強が先。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>「GPU を選ぶ」「tensor を作る」「計算する」「時間を見る」という流れが入った小さな実験コードを読んで、何を測っているのかを説明できるようにします。</p>
+
+		<p>実験コードを読むときは、この <strong>3 つの観点</strong> で追うと迷いにくくなります。</p>
+		<dl class="term-card">
+			<dt>device</dt>
+			<dd>どこで計算しているか（CPU? GPU?）</dd>
+			<dt>shape</dt>
+			<dd>入力と出力の大きさは何か</dd>
+			<dt>timing</dt>
+			<dd>どこからどこまでの時間を測っているか</dd>
+		</dl>
 	</section>
 
 	<section class="content-section">
@@ -47,7 +50,11 @@ if device.type == "cuda":
 print("device:", device)
 print("shape :", c.shape)
 print("sec   :", time.time() - t0)</code></pre></div>
-		<p>このコードは、大きな行列の掛け算を 1 回だけ走らせて、その時間を見ています。最後の <span class="code-inline">print</span> 3 つが読めれば、実験コードの入口として十分です。</p>
+
+		<div class="output-example">device: cuda
+shape : torch.Size([1024, 1024])
+sec   : 0.0012</div>
+		<p>最後の 3 行の <span class="code-inline">print</span> が、さきほどの 3 観点そのままです。「どこで」「何を」「どれくらいで」が読めれば、実験コードの入口として十分です。</p>
 	</section>
 
 	<section class="content-section">

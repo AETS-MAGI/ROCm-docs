@@ -15,16 +15,31 @@
 		<h1>学習と推論の違いを見比べたい</h1>
 		<p>似たコードに見えても、重みが動くかどうかで中身はかなり違います。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1: 5〜13章の肉付け対象。
-	比較章としての立ち位置はよいが、将来は「何が同じで何が違うか」を一目で見せる比較表や before/after の対照表示があると理解負荷を下げられる。
-	ただしこの章単体よりも、前提になる第8章の補強が先。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>推論は「答えを出すだけ」、学習は「答えを出してから直すまで」です。この違いを、同じモデルを使った短いコードで見比べて、自分の言葉で説明できるようにします。</p>
+
+		<table class="shape-table">
+			<tr>
+				<th></th><th>推論</th><th>学習</th>
+			</tr>
+			<tr>
+				<td><strong>forward</strong>（答えを出す）</td><td>する</td><td>する</td>
+			</tr>
+			<tr>
+				<td><strong>loss</strong>（ずれを測る）</td><td>しない</td><td>する</td>
+			</tr>
+			<tr>
+				<td><strong>backward</strong>（勾配を計算）</td><td>しない</td><td>する</td>
+			</tr>
+			<tr>
+				<td><strong>step</strong>（重みを更新）</td><td>しない</td><td>する</td>
+			</tr>
+			<tr>
+				<td><strong>重みが変わるか</strong></td><td>変わらない</td><td>変わる</td>
+			</tr>
+		</table>
 	</section>
 
 	<section class="content-section">
@@ -56,6 +71,9 @@ after = model.weight.detach().clone()
 print("inference output:", answer.item())
 print("weight changed:", not torch.equal(before, after))</code></pre></div>
 		<p>このコードでは、前半が推論、後半が学習です。最後の <span class="code-inline">weight changed</span> が <span class="code-inline">True</span> なら、「学習側では重みが動いた」と読めます。</p>
+
+		<div class="output-example">inference output: 0.3127
+weight changed: True</div>
 	</section>
 
 	<section class="content-section">

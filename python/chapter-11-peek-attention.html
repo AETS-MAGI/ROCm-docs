@@ -15,21 +15,28 @@
 		<h1>Attentionをのぞきたい</h1>
 		<p>難しく見えやすい Attention も、まずは shape と流れから入ると追いやすくなります。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1 の最上位候補。
-	Attention は用語も shape も急に難しくなるのに、現状は「とりあえず動かす」以上の足場がまだ少ない。
-	将来の補強候補:
-	- x -> weights -> y の流れ図
-	- token / embed_dim / weights shape の最小用語カード
-	- 3つの shape が何を意味するかの対応表
-	- Q / K / V を本筋から外しすぎず、でも詰め込みすぎない補助説明
-	この章も薄いままだと置いていかれやすく、優先的に補強したい。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>Attention を全部理解するより先に、「入力が入って、重み付きの出力が返る」流れを形で見ます。ここでは <span class="code-inline">Q</span>、<span class="code-inline">K</span>、<span class="code-inline">V</span> の理屈を詰め込みすぎず、まずは 1 回動かしてみます。</p>
+
+		<p>データの流れはこうです。</p>
+		<div class="flow-steps">
+			<span class="step">x (入力)</span>
+			<span class="arrow">→</span>
+			<span class="step">MultiheadAttention</span>
+			<span class="arrow">→</span>
+			<span class="step">y (出力) + weights (注目度)</span>
+		</div>
+
+		<dl class="term-card">
+			<dt>token</dt>
+			<dd>入力の「1 個ぶん」。文なら単語、系列なら 1 ステップ。</dd>
+			<dt>embed_dim</dt>
+			<dd>各 token を表す数字の個数。ここでは 4。</dd>
+			<dt>weights</dt>
+			<dd>「どの token をどれくらい見たか」を表すスコア。</dd>
+		</dl>
 	</section>
 
 	<section class="content-section">
@@ -48,10 +55,42 @@ attn = nn.MultiheadAttention(
 x = torch.randn(1, 3, 4, device=device)
 y, weights = attn(x, x, x)
 
-print(x.shape)
-print(y.shape)
-print(weights.shape)</code></pre></div>
-		<p>この例では、3 個の token を持つ入力を入れています。最初は「どの token をどれくらい見るかの重みが <span class="code-inline">weights</span> に出てくる」と読めれば十分です。</p>
+print("x      shape:", x.shape)
+print("y      shape:", y.shape)
+print("weights shape:", weights.shape)</code></pre></div>
+
+		<div class="output-example">x      shape: torch.Size([1, 3, 4])
+y      shape: torch.Size([1, 3, 4])
+weights shape: torch.Size([1, 3, 3])</div>
+
+		<p>3 つの shape を並べると、この対応が見えます。</p>
+		<table class="shape-table">
+			<tr>
+				<th>変数</th><th>shape</th><th>読み方</th>
+			</tr>
+			<tr>
+				<td><span class="code-inline">x</span></td>
+				<td>(1, 3, 4)</td>
+				<td>バッチ 1、token 3 個、各 4 次元</td>
+			</tr>
+			<tr>
+				<td><span class="code-inline">y</span></td>
+				<td>(1, 3, 4)</td>
+				<td>入力と同じ形で返る</td>
+			</tr>
+			<tr>
+				<td><span class="code-inline">weights</span></td>
+				<td>(1, 3, 3)</td>
+				<td>token 3 × token 3 の注目スコア</td>
+			</tr>
+		</table>
+		<p><span class="code-inline">weights</span> が (3, 3) なのは、3 個の token が「お互いをどれくらい見ているか」を表しているからです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>Q / K / V ってなに？</h2>
+		<p><span class="code-inline">attn(x, x, x)</span> の 3 つの引数は、順に Query（何を探したいか）、Key（何を手がかりにするか）、Value（何を返すか）です。</p>
+		<p>ここでは全部同じ <span class="code-inline">x</span> を入れています。これを <strong>Self-Attention</strong> と呼び、「自分の中で、どの部分に注目するか」を計算しています。最初は「同じものを 3 回渡して注目度を計算する」と読めれば十分です。</p>
 	</section>
 
 	<section class="content-section">
@@ -71,9 +110,10 @@ print(weights.shape)</code></pre></div>
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">embed_dim=4</span> なら、入力の最後の大きさも 4 に合わせます。</li>
+			<li><span class="code-inline">embed_dim=4</span> なら、入力の最後の大きさも 4 に合わせます。ここがずれると shape エラーになります。</li>
 			<li><span class="code-inline">token</span> は「文の中の小さな単位」くらいの感覚で大丈夫です。</li>
 			<li>最初から数式を全部追うより、<span class="code-inline">x.shape</span>、<span class="code-inline">y.shape</span>、<span class="code-inline">weights.shape</span> の 3 つを見るほうが入りやすいです。</li>
+			<li>Q / K / V が分からなくても、「同じ x を 3 回渡すと Self-Attention になる」と覚えれば先に進めます。</li>
 		</ul>
 	</section>
 

@@ -15,17 +15,28 @@
 		<h1>小さなモデルを動かしたい</h1>
 		<p>ここでは、PyTorch のモデルに入力を通して、出力が返ってくる一連の流れを見ます。</p>
 	</header>
-	<!--
-	Codex review 2026-03-17:
-	優先度 1: 5〜13章の肉付け対象。
-	この章は後半の導入として重要なので、今後は「model(x) の前後で shape がどう変わるか」「入力と出力の対応をどう見ればよいか」をもう一段可視化したい。
-	候補は、成功出力の追加、1枚の流れ図、Linear の入出力次元の対応メモ。
-	ただし優先順位としては、8 / 10 / 11 / 12 の高難度章の補強が先。
-	-->
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p><span class="code-inline">model(x)</span> という一行が、実際には「入力をモデルに通して答えを作る」動きだと分かることが目標です。まずはとても小さなモデルで、形がどう変わるかを追います。</p>
+
+		<p>shape はこう流れます。</p>
+		<div class="flow-steps">
+			<span class="step">(1, 4)</span>
+			<span class="arrow">→</span>
+			<span class="step">Linear(4, 8)</span>
+			<span class="arrow">→</span>
+			<span class="step">(1, 8)</span>
+			<span class="arrow">→</span>
+			<span class="step">ReLU</span>
+			<span class="arrow">→</span>
+			<span class="step">(1, 8)</span>
+			<span class="arrow">→</span>
+			<span class="step">Linear(8, 2)</span>
+			<span class="arrow">→</span>
+			<span class="step">(1, 2)</span>
+		</div>
+		<p><span class="code-inline">Linear(4, 8)</span> の 4 は入力の数、8 は出力の数です。次の層の入力もこの 8 に合わせます。</p>
 	</section>
 
 	<section class="content-section">
@@ -44,9 +55,11 @@ model = nn.Sequential(
 x = torch.randn(1, 4, device=device)
 y = model(x)
 
-print(x.shape)
-print(y.shape)</code></pre></div>
-		<p>入力が <span class="code-inline">(1, 4)</span> で、最後の出力が <span class="code-inline">(1, 2)</span> になっています。数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
+print("入力 shape:", x.shape)
+print("出力 shape:", y.shape)</code></pre></div>
+		<div class="output-example">入力 shape: torch.Size([1, 4])
+出力 shape: torch.Size([1, 2])</div>
+		<p>数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
 	</section>
 
 	<section class="content-section">
