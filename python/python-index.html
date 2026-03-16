@@ -48,6 +48,56 @@
 			line-height: 1.75;
 			font-size: 15px;
 		}
+		.section-title {
+			font-size: 21px;
+			font-weight: 700;
+			color: var(--navy);
+			border-left: 5px solid var(--blue);
+			padding-left: 14px;
+			margin: 34px 0 10px;
+		}
+		.card-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 16px;
+		}
+		.card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 20px 22px 18px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+		.card h2 {
+			margin: 0;
+			font-size: 19px;
+			color: var(--navy);
+			line-height: 1.35;
+		}
+		.card p {
+			margin: 0;
+			color: var(--muted);
+			font-size: 14px;
+			line-height: 1.65;
+		}
+		.card .filename {
+			font-family: monospace;
+			font-size: 12px;
+			color: #90A4AE;
+		}
+		.card .btn {
+			display: inline-block;
+			margin-top: auto;
+			padding: 7px 16px;
+			border-radius: 7px;
+			text-decoration: none;
+			color: #fff;
+			background: var(--blue);
+			font-weight: 700;
+			font-size: 13px;
+		}
 		.info { background: #E3F2FD; border-left: 5px solid var(--blue); }
 		.warn { background: #FFF8E1; border-left: 5px solid var(--amber); }
 		.box strong { color: var(--navy); }
@@ -57,7 +107,11 @@
 		html[data-language="en"] [data-lang="en"] { display: initial; }
 		html[data-language="ja"] div[data-lang="ja"], html[data-language="en"] div[data-lang="en"] { display: block; }
 		html[data-language="ja"] p[data-lang="ja"], html[data-language="en"] p[data-lang="en"] { display: block; }
-		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"] { display: block; }
+		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"],
+		html[data-language="ja"] h2[data-lang="ja"], html[data-language="en"] h2[data-lang="en"] { display: block; }
+		@media (max-width: 760px) {
+			.card-grid { grid-template-columns: 1fr; }
+		}
 	</style>
 </head>
 <body>
@@ -78,8 +132,8 @@
 	</section>
 
 	<div class="box info">
-		<p data-lang="ja"><strong>この場所の役割:</strong> `import`、変数、関数、クラス、配列、shape の読み方など、ROCm や PyTorch を読む前に必要な Python の説明ページをここに置きます。</p>
-		<p data-lang="en"><strong>Role of this place:</strong> This is where explanation pages about `import`, variables, functions, classes, arrays, and reading shapes should live before a reader moves on to ROCm or PyTorch.</p>
+		<p data-lang="ja"><strong>この場所の役割:</strong> Python 文法を順番に並べるよりも、「GPU を見たい」「行列を計算したい」「学習と推論を見分けたい」のような目的から入る説明ページをここに置きます。</p>
+		<p data-lang="en"><strong>Role of this place:</strong> Instead of listing Python grammar in isolation, this section starts from goals such as checking the GPU, doing matrix math, and telling training from inference.</p>
 	</div>
 
 	<div class="box warn">
@@ -87,9 +141,23 @@
 		<p data-lang="en"><strong>What should not go here:</strong> Runnable scripts, operational notes, and rough working memos do not belong here. Those should go under `scripts/` or `__tmp/` instead.</p>
 	</div>
 
+	<h2 class="section-title" data-lang="ja">入口ページ</h2>
+	<h2 class="section-title" data-lang="en">Entry Pages</h2>
+
+	<div class="card-grid">
+		<div class="card">
+			<h2 data-lang="ja">Python and ROCm 教室</h2>
+			<h2 data-lang="en">Python and ROCm Course</h2>
+			<p class="filename">python-and-rocm-class.html</p>
+			<p data-lang="ja">`会話メモ.md` をもとにした叩き台です。文法名ではなく「何をしたいか」ベースで 13 章を並べ、各章に「最小コード」「どこが ROCm？」「ここで出てきた文法」を持たせる構成にしています。</p>
+			<p data-lang="en">A draft based on the working memo. It uses a goal-first 13-chapter structure, with each chapter centered on minimum code, the ROCm-specific point, and the Python that appears naturally.</p>
+			<a class="btn" href="./python-and-rocm-class.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a>
+		</div>
+	</div>
+
 	<p class="footer">
-		<span data-lang="ja">まだページ本体は追加前です。ここは用途を明確にするための入口です。</span>
-		<span data-lang="en">The actual pages are not added yet. This file exists to make the intended purpose clear.</span>
+		<span data-lang="ja">ここから先は、章ページを少しずつ増やしていく想定です。</span>
+		<span data-lang="en">More chapter pages can branch out from here over time.</span>
 	</p>
 </div>
 

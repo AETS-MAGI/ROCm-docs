@@ -9,8 +9,9 @@
 ## 入口
 
 - 公開トップ: `index.html`
-- 理論ページもくじ: `theory/index.html`
-- Python 説明ページ入口: `python/index.html`
+- 理論ページもくじ: `theory/theory-index.html`
+- Python 説明ページ入口: `python/python-index.html`
+- Python and ROCm 教室 叩き台: `python/python-and-rocm-class.html`
 
 ## ディレクトリの役割
 
