@@ -7,8 +7,9 @@
 	--blue-soft: #eef5fb;
 	--bg: #f7fafc;
 	--card: #ffffff;
-	--code-bg: #1f2933;
-	--code-ink: #f7fafc;
+	--code-bg: #203447;
+	--code-line: #35526b;
+	--code-ink: #f8fbff;
 }
 
 * { box-sizing: border-box; }
@@ -110,6 +111,7 @@ body {
 	padding: 16px 18px;
 	border-radius: 14px;
 	background: var(--code-bg);
+	border: 1px solid var(--code-line);
 	color: var(--code-ink);
 	overflow-x: auto;
 }
@@ -124,6 +126,15 @@ body {
 	white-space: pre;
 	display: block;
 	line-height: 1.7;
+	color: inherit;
+}
+
+.code-inline {
+	display: inline-block;
+	padding: 0.08em 0.42em;
+	border-radius: 0.45em;
+	background: var(--blue-soft);
+	color: var(--blue-deep);
 }
 
 .chapter-nav {
