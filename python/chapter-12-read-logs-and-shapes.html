@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第12章 ログとshapeを読めるようになりたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第12章</p>
+		<h1>ログとshapeを読めるようになりたい</h1>
+		<p>止まったときに、すぐ「どこで shape が合っていないか」を見つける力を付ける章です。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>エラーが出たときに、ただ怖がるのではなく、shape と期待していた大きさを見比べて原因を追えるようにします。ROCm の前に、まず shape のずれで止まることはとても多いです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+x = torch.randn(2, 3)
+layer = nn.Linear(4, 2)
+
+print("x shape:", x.shape)
+print("expected in_features:", layer.in_features)
+
+try:
+    y = layer(x)
+except RuntimeError as e:
+    print(type(e).__name__)
+    print(e)</code></pre>
+		<p>ここでは、入力の最後の大きさ 3 と、<span class="code-inline">Linear(4, 2)</span> が期待する 4 が合っていません。だから止まる、と shape から説明できます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>GPU で止まったように見えても、原因が shape mismatch ということはよくあります。ROCm の調子を疑う前に、まず入力 shape、期待 shape、device を見る習慣が役立ちます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">try</span> と <span class="code-inline">except</span> でエラーを受け取る</li>
+			<li>エラーの型と本文を分けて表示する</li>
+			<li>計算の前に確認したい値を先に <span class="code-inline">print()</span> する</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>エラーメッセージを全部読まずに閉じてしまうと、shape のヒントを見逃します。</li>
+			<li>device の問題と shape の問題は別です。まずどちらなのかを分けることが大事です。</li>
+			<li>入力の最後の大きさと <span class="code-inline">in_features</span> の数字を見るだけで、かなり分かることがあります。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">nn.Linear(4, 2)</span> を <span class="code-inline">nn.Linear(3, 2)</span> に変えて、今度は止まらず進むかを確かめてみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-11-peek-attention.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-13-read-small-rocm-script.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

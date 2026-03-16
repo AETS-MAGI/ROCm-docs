@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第7章 推論だけしたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第7章</p>
+		<h1>推論だけしたい</h1>
+		<p>ここでは、学習はせずに「答えを出すだけ」の流れを切り分けて見ます。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>推論は、できあがったモデルに入力を通して答えを受け取る場面です。ここでは <span class="code-inline">eval()</span> と <span class="code-inline">no_grad()</span> を使って、「学習はしないで使うだけ」を短い形で確認します。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = nn.Sequential(
+    nn.Linear(4, 8),
+    nn.ReLU(),
+    nn.Linear(8, 2),
+).to(device)
+
+x = torch.randn(1, 4, device=device)
+
+model.eval()
+with torch.no_grad():
+    y = model(x)
+
+print(y)</code></pre>
+		<p>ここでやっているのは、入力から答えを出す <span class="code-inline">forward</span> だけです。重みを直したり、学習したりはしていません。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>モデルと入力が GPU 上にあれば、推論の計算は GPU 側で動きます。ROCm の見方では、推論は「答えを出すだけ」なので、学習より仕事が少ない流れです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">with ...:</span> の形で、一時的なモードを作る</li>
+			<li>メソッドを順番に呼んで動作を切り替える</li>
+			<li>最後の結果だけを受け取って表示する</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">model.eval()</span> は「推論向けの設定へ切り替える」ための一歩です。</li>
+			<li><span class="code-inline">torch.no_grad()</span> を忘れても動くことはありますが、推論だけの場面では入れておくと意図が伝わります。</li>
+			<li>「答えを出した」ことと「学習した」ことは別です。この章ではまだ学習していません。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p>同じ <span class="code-inline">x</span> で 2 回実行して、まずは「答えを出す流れ」が落ち着いて読めるかを見てみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-06-run-small-model.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-08-train-once.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

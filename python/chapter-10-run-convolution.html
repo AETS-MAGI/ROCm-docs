@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第10章 たたみこみを動かしてみたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第10章</p>
+		<h1>たたみこみを動かしてみたい</h1>
+		<p>画像っぽい shape を持つデータが、畳み込みでどう流れるかを見てみます。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p><span class="code-inline">Conv2d</span> という部品を動かして、入力 shape と出力 shape を読めるようにします。いきなり画像認識の話を全部やるのではなく、まずは形の流れをつかむ章です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+conv = nn.Conv2d(1, 2, kernel_size=3, padding=1).to(device)
+x = torch.randn(1, 1, 5, 5, device=device)
+y = conv(x)
+
+print(x.shape)
+print(y.shape)</code></pre>
+		<p>ここでの shape は、ざっくり言うと「枚数、チャネル、高さ、幅」の順です。最初は 4 つの数字が並んでいる、と見られれば十分です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>畳み込みは、画像まわりでよく出る代表的な計算です。ROCm の下では、こうした定番の処理を速く動かすための経路が大事になります。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">kernel_size=3</span> のようなキーワード引数を書く</li>
+			<li>4 つの数字を shape として読む</li>
+			<li>部品 <span class="code-inline">conv</span> を関数のように呼ぶ</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>入力は 4 次元です。高さと幅だけでなく、枚数とチャネルも入ります。</li>
+			<li><span class="code-inline">in_channels</span> が合わないと止まります。ここでは入力の 2 番目の数字が 1 なので、<span class="code-inline">Conv2d(1, ...)</span> にしています。</li>
+			<li>画像そのものを理解する前に、まず shape の並び順だけ押さえると入りやすいです。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">Conv2d(1, 2, ...)</span> の 2 を 4 に変えて、出力 shape のどこが変わるかを見てみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-09-training-vs-inference.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-11-peek-attention.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

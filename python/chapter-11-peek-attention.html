@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第11章 Attentionをのぞきたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第11章</p>
+		<h1>Attentionをのぞきたい</h1>
+		<p>難しく見えやすい Attention も、まずは shape と流れから入ると追いやすくなります。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>Attention を全部理解するより先に、「入力が入って、重み付きの出力が返る」流れを形で見ます。ここでは <span class="code-inline">Q</span>、<span class="code-inline">K</span>、<span class="code-inline">V</span> の理屈を詰め込みすぎず、まずは 1 回動かしてみます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+attn = nn.MultiheadAttention(
+    embed_dim=4,
+    num_heads=1,
+    batch_first=True,
+).to(device)
+
+x = torch.randn(1, 3, 4, device=device)
+y, weights = attn(x, x, x)
+
+print(x.shape)
+print(y.shape)
+print(weights.shape)</code></pre>
+		<p>この例では、3 個の token を持つ入力を入れています。最初は「どの token をどれくらい見るかの重みが <span class="code-inline">weights</span> に出てくる」と読めれば十分です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>Attention の中では、行列計算や softmax のような処理がいくつも重なります。ROCm の見方では、「複数の重い計算が続けて走る場面」と考えるとイメージしやすいです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">y, weights = ...</span> のように 2 つの戻り値を受け取る</li>
+			<li>キーワード引数で設定を分かりやすく書く</li>
+			<li>shape を 3 つ並べて見比べる</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">embed_dim=4</span> なら、入力の最後の大きさも 4 に合わせます。</li>
+			<li><span class="code-inline">token</span> は「文の中の小さな単位」くらいの感覚で大丈夫です。</li>
+			<li>最初から数式を全部追うより、<span class="code-inline">x.shape</span>、<span class="code-inline">y.shape</span>、<span class="code-inline">weights.shape</span> の 3 つを見るほうが入りやすいです。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">x = torch.randn(1, 4, 4, ...)</span> に変えて、token の数を 3 から 4 にしたとき、どの shape が変わるかを見てみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-10-run-convolution.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-12-read-logs-and-shapes.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

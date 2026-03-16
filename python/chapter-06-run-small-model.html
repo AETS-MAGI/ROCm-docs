@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第6章 小さなモデルを動かしたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第6章</p>
+		<h1>小さなモデルを動かしたい</h1>
+		<p>ここでは、PyTorch のモデルに入力を通して、出力が返ってくる一連の流れを見ます。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p><span class="code-inline">model(x)</span> という一行が、実際には「入力をモデルに通して答えを作る」動きだと分かることが目標です。まずはとても小さなモデルで、形がどう変わるかを追います。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = nn.Sequential(
+    nn.Linear(4, 8),
+    nn.ReLU(),
+    nn.Linear(8, 2),
+).to(device)
+
+x = torch.randn(1, 4, device=device)
+y = model(x)
+
+print(x.shape)
+print(y.shape)</code></pre>
+		<p>入力が <span class="code-inline">(1, 4)</span> で、最後の出力が <span class="code-inline">(1, 2)</span> になっています。数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>モデルと入力の両方を GPU に送っておけば、下の重い計算は GPU 側で進みます。ROCm の見方では、この中に行列計算が何度も出ていると考えるとつながりやすいです。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li>オブジェクトを作って変数に入れる</li>
+			<li><span class="code-inline">nn.Sequential(...)</span> のように部品を順につなぐ</li>
+			<li><span class="code-inline">model(x)</span> のように、モデルを関数のように呼ぶ</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>入力の最後の大きさが <span class="code-inline">Linear(4, 8)</span> の 4 と合わないと止まります。</li>
+			<li>入力だけ GPU、モデルは CPU のままだと device の不一致で止まることがあります。</li>
+			<li><span class="code-inline">ReLU</span> は「マイナスを 0 にする簡単な部品」くらいに思えば十分です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p>最後の <span class="code-inline">nn.Linear(8, 2)</span> を <span class="code-inline">nn.Linear(8, 3)</span> に変えて、出力 shape がどう変わるかを見てみましょう。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-05-move-data-to-gpu.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-07-inference-only.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

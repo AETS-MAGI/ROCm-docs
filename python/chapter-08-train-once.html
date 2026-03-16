@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第8章 学習してみたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第8章</p>
+		<h1>学習してみたい</h1>
+		<p>ここでは、答えを出すだけでなく「少し直す」までを 1 回だけ体験します。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>学習では、まず答えを出し、そのずれを測り、そのずれを小さくする向きへ重みを少し動かします。この 1 回分を短いコードで見て、<span class="code-inline">loss</span> と <span class="code-inline">backward()</span> と <span class="code-inline">step()</span> の役目をつかみます。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import torch
+import torch.nn as nn
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = nn.Linear(1, 1).to(device)
+x = torch.tensor([[1.0]], device=device)
+y_true = torch.tensor([[2.0]], device=device)
+
+loss_fn = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+
+pred = model(x)
+loss = loss_fn(pred, y_true)
+
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+
+print(loss.item())</code></pre>
+		<p>学習の流れは、ざっくり言うと「答えを出す → ずれを数にする → 直す」です。この章ではそれを 1 回だけ回しています。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>学習では、推論の forward に加えて、ずれの逆向きの計算と重み更新も入ります。ROCm の見方では、推論より仕事が増えるので、そのぶん重くなりやすい場面です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li>変数へ段階ごとの結果を順に入れていく</li>
+			<li>メソッドを決まった順番で呼ぶ</li>
+			<li><span class="code-inline">loss.item()</span> で 1 個の数として取り出す</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">optimizer.zero_grad()</span> を忘れると、前の勾配が残って見え方が分かりにくくなります。</li>
+			<li>1 回の学習で全部よくなるとは限りません。ここでは流れをつかむのが目的です。</li>
+			<li><span class="code-inline">loss</span> は「ずれの大きさ」です。小さいほどよい、とまず考えれば大丈夫です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p><span class="code-inline">optimizer.step()</span> のあとに、もう 1 回同じ流れを足してみましょう。<span class="code-inline">loss.item()</span> がどう変わるかを見ます。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-07-inference-only.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./chapter-09-training-vs-inference.html">次の章へ →</a>
+	</nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>第13章 小さなROCm実験コードを1本読めるようになりたい | Python and ROCm 教室</title>
+	<link rel="stylesheet" href="./python-course.css">
+</head>
+<body>
+<main class="page">
+	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
+
+	<header class="chapter-hero">
+		<p class="eyebrow">第13章</p>
+		<h1>小さなROCm実験コードを1本読めるようになりたい</h1>
+		<p>最後は、短い実験コードを最初から最後まで自分で追う練習です。</p>
+	</header>
+
+	<section class="content-section">
+		<h2>今日は何をしたい？</h2>
+		<p>「GPU を選ぶ」「tensor を作る」「計算する」「時間を見る」という流れが入った小さな実験コードを読んで、何を測っているのかを説明できるようにします。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>最小コード</h2>
+		<pre class="code-block"><code>import time
+import torch
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+a = torch.randn(1024, 1024, device=device)
+b = torch.randn(1024, 1024, device=device)
+
+if device.type == "cuda":
+    torch.cuda.synchronize()
+t0 = time.time()
+c = a @ b
+if device.type == "cuda":
+    torch.cuda.synchronize()
+
+print("device:", device)
+print("shape :", c.shape)
+print("sec   :", time.time() - t0)</code></pre>
+		<p>このコードは、大きな行列の掛け算を 1 回だけ走らせて、その時間を見ています。最後の <span class="code-inline">print</span> 3 つが読めれば、実験コードの入口として十分です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>どこがROCm？</h2>
+		<p>GPU 実験では、時間を測る前後で同期を入れることがあります。ROCm 版 PyTorch でも <span class="code-inline">torch.cuda.synchronize()</span> という名前が出ますが、ここでも名前より役目を読むことが大切です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>ここで出てきたPython</h2>
+		<ul class="point-list">
+			<li><span class="code-inline">import time</span> で時間計測の道具を使う</li>
+			<li><span class="code-inline">if</span> で GPU のときだけ同期を入れる</li>
+			<li>行列の掛け算、shape の表示、時間の表示を 1 本で読む</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>よくあるつまずき</h2>
+		<ul class="point-list">
+			<li>同期を入れないと、GPU の仕事がまだ終わっていないのに時間を読んでしまうことがあります。</li>
+			<li><span class="code-inline">"cuda"</span> という名前だけを見て、ROCm ではないと決めつけないようにします。</li>
+			<li>まずは「どの device で」「何の shape を」「どれくらいの時間で」計算したかを読めれば十分です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>1分演習</h2>
+		<p>行列サイズを <span class="code-inline">2048</span> に変えて、時間がどう変わるかを見てみましょう。shape はどう表示されるかも合わせて確認します。</p>
+	</section>
+
+	<nav class="chapter-nav">
+		<a href="./chapter-12-read-logs-and-shapes.html">← 前の章へ</a>
+		<a href="./python-index.html">一覧へ戻る</a>
+		<a class="primary" href="./appendix-help.html">Appendixへ →</a>
+	</nav>
+</main>
+</body>
+</html>
