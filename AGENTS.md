@@ -62,5 +62,252 @@
 - 派手さより安全で自然な公開文面を優先する
 - リポジトリ構成の正確な説明より、読者体験を優先する
 
-## やるべきこと
+## Instruction
 
+You are implementing a static educational website about ROCm and Python for beginners.
+
+This repository contains both:
+1. internal implementation notes, author instructions, directory structure notes, development memos, and content planning
+2. public-facing educational pages
+
+These are NOT the same thing.
+
+Your job is to build and edit public website pages from the intent of the instructions, not to expose the instructions themselves.
+
+================================
+PRIMARY GOAL
+================================
+
+Build a beginner-friendly educational site where readers learn Python through things they want to do with ROCm, NumPy, and PyTorch.
+
+The teaching philosophy is:
+
+- Do NOT teach Python grammar first.
+- Instead, start from “what the learner wants to do with ROCm / PyTorch”.
+- Introduce only the minimum Python needed to achieve that goal.
+- Let Python grammar be learned naturally as a side effect of doing practical tasks.
+
+This is not a generic Python tutorial.
+This is not a repository structure guide.
+This is not an internal project memo.
+This is a public-facing learning site.
+
+================================
+CRITICAL CONTENT BOUNDARY
+================================
+
+Unless explicitly marked as public copy, user instructions must be treated as INTERNAL MATERIAL.
+
+That means:
+- author notes
+- chapter planning notes
+- directory explanations
+- operating rules
+- development reminders
+- content strategy discussions
+- "put files here" instructions
+- "this folder is for..." explanations
+- examples of page structures
+- implementation comments
+- draft curriculum discussions
+
+must NOT be copied literally into public HTML.
+
+Never expose internal repository structure or workflow unless explicitly requested for a public page.
+
+Do NOT turn planning text into visible page text.
+
+Do NOT publish phrases like:
+- “this directory is for...”
+- “place notes under ...”
+- “scripts are stored here”
+- “__tmp”
+- “internal memo”
+- “work in progress”
+- “not for public”
+- “put explanation pages only here”
+- “this is where build scripts live”
+- or any equivalent internal operational wording
+
+If a note helps implementation but is not suitable for a visitor, keep it out of the visible page.
+
+================================
+SITE PURPOSE
+================================
+
+The public site should help readers quickly understand:
+
+- what ROCm is
+- what they can learn here
+- where to start
+- how Python / NumPy / PyTorch connect to ROCm
+- how to progress through the course
+
+Pages should feel welcoming, practical, and clear.
+
+The site should be readable by beginners, including younger learners and people new to GPU programming.
+
+Prefer simple Japanese that explains ideas through concrete goals and small examples.
+
+================================
+COURSE DESIGN RULE
+================================
+
+The Python course must be organized by learner goals, not by grammar topics.
+
+Bad organization:
+- variables
+- lists
+- functions
+- class
+- import
+- if / for / with
+
+Good organization:
+- check whether GPU is visible
+- hold numbers as tables
+- multiply tables
+- move data to GPU
+- run a small model
+- inference only
+- train once
+- compare training and inference
+- run convolution
+- peek at attention
+- read logs and shapes
+- read a small ROCm experiment script
+
+Grammar should appear inside each chapter only when needed.
+
+Each chapter should answer:
+- What do we want to do today?
+- What is the smallest code that does it?
+- Where is ROCm involved?
+- What Python appeared here?
+- What common mistakes happen?
+- What tiny exercise can the reader try?
+
+================================
+EXPECTED PUBLIC COURSE STRUCTURE
+================================
+
+The Python and ROCm course has 13 chapters.
+
+Use these chapter themes as the public learning path:
+
+1. GPUが見えるか確かめたい
+2. 数字を表として持ちたい
+3. 表どうしを計算したい
+4. NumPyからPyTorchへ移りたい
+5. データをGPUに送りたい
+6. 小さなモデルを動かしたい
+7. 推論だけしたい
+8. 学習してみたい
+9. 学習と推論の違いを見比べたい
+10. たたみこみを動かしてみたい
+11. Attentionをのぞきたい
+12. ログとshapeを読めるようになりたい
+13. 小さなROCm実験コードを1本読めるようになりたい
+
+These chapter titles are public-facing learning goals.
+Use them as educational content, not as repository task items.
+
+================================
+WRITING STYLE
+================================
+
+When writing public content:
+
+- write for learners, not developers
+- prefer natural Japanese over specification-like wording
+- explain what the reader gains
+- prefer concrete and short explanations
+- avoid heavy jargon when a simpler phrase works
+- when technical terms are necessary, explain them simply
+- make the page feel like a course entry point, not a project README
+- prioritize “what can I learn here?” over “how this repository is organized”
+
+Do not sound like internal documentation.
+Do not sound like a generated directory summary.
+Do not sound like a build note.
+
+================================
+IMPLEMENTATION RULES
+================================
+
+Before rendering any visible text, classify source material into two buckets:
+
+A. INTERNAL ONLY
+B. SAFE FOR PUBLIC
+
+If uncertain, treat it as INTERNAL ONLY.
+
+Convert internal planning into public explanation by summarizing intent, not by copying wording.
+
+For public index pages:
+- prioritize navigation
+- show recommended reading order
+- give each chapter a short learner-oriented summary
+- keep descriptions short
+- avoid overexplaining implementation details
+- do not dump raw planning notes into cards or sections
+
+For chapter pages:
+- start from the learner’s goal
+- include a minimal code example
+- explain the ROCm connection
+- summarize the Python concepts introduced
+- include common stumbling points
+- include a tiny exercise
+
+================================
+FORBIDDEN OUTPUT PATTERNS
+================================
+
+Never output public HTML that reads like:
+- internal instructions pasted into the page
+- directory-by-directory repository commentary
+- operational notes for maintainers
+- “this folder contains...”
+- “do not put files here”
+- “store temporary notes under...”
+- “public content should not be placed...”
+- “scripts are used to...”
+- raw prompt text reformatted as cards
+
+Never confuse implementation scaffolding with user-facing prose.
+
+================================
+SELF-CHECK BEFORE WRITING HTML
+================================
+
+Before finalizing any page, verify:
+
+1. Is this sentence natural for a visitor to read?
+2. Does this sentence teach, guide, or welcome the reader?
+3. Is this sentence actually an internal note disguised as content?
+4. Am I exposing project structure that the visitor does not need?
+5. Am I copying author instructions too literally?
+6. Does the page explain what can be learned here?
+7. Is the reading order clear?
+8. Would this page make sense to someone who never saw the repository?
+
+If any sentence fails these checks, rewrite or remove it.
+
+================================
+DEFAULT BEHAVIOR WHEN GIVEN NEW INSTRUCTIONS
+================================
+
+When the user gives planning text, curriculum notes, or directory hints:
+- extract intent
+- decide what is public and what is internal
+- write fresh public-facing content
+- do not copy internal wording
+- do not expose repository mechanics
+- keep the result educational and visitor-friendly
+
+================================
+ONE-LINE CORE RULE
+================================
+
+Treat user planning text as implementation input, not publishable website copy.
