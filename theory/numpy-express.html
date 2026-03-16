@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../styles/mermaid-layout.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"
+		onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+	<title>NumPy特急便 / NumPy Express | vega-hbmx-pages</title>
+	<style>
+		:root {
+			--navy: #0B3C5D;
+			--teal: #00796B;
+			--amber: #C56A00;
+			--blue: #1565C0;
+			--green: #2E7D32;
+			--purple: #5B4B8A;
+			--ink: #1F2933;
+			--muted: #5F6C7B;
+			--line: #D8E0E8;
+			--bg: #F5F8FB;
+			--card: #FFFFFF;
+			--accent: #00695C;
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: 'Calibri', 'Arial', sans-serif;
+			color: var(--ink);
+			background: radial-gradient(circle at top right, rgba(0,105,92,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(91,75,138,0.07), transparent 26%), var(--bg);
+		}
+		.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+		.home-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--navy); font-size: 14px; font-weight: 600; }
+		.home-link:hover { text-decoration: underline; }
+		.lang-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--navy); background: transparent; color: var(--navy); transition: all 0.2s; }
+		.lang-btn.active { background: var(--navy); color: #fff; }
+		.hero {
+			background: linear-gradient(135deg, #004D40 0%, #00695C 55%, #26A69A 100%);
+			color: #fff;
+			border-radius: 16px;
+			padding: 40px 36px 32px;
+			margin-bottom: 32px;
+		}
+		.hero h1 { margin: 0 0 10px; font-size: 28px; font-weight: 700; line-height: 1.3; }
+		.hero .subtitle { margin: 0 0 14px; font-size: 16px; opacity: 0.82; }
+		.hero p { margin: 0; font-size: 16px; opacity: 0.92; line-height: 1.7; }
+		.section-title {
+			font-size: 21px;
+			font-weight: 700;
+			color: var(--navy);
+			border-left: 5px solid var(--accent);
+			padding-left: 14px;
+			margin: 44px 0 8px;
+		}
+		.section-lead { color: var(--muted); margin: 0 0 18px; font-size: 15px; line-height: 1.6; }
+		.prose { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; font-size: 16px; line-height: 1.75; }
+		.prose p { margin: 0 0 12px; }
+		.prose p:last-child { margin-bottom: 0; }
+		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 15px; line-height: 1.65; }
+		.fact-box strong { color: var(--green); }
+		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 15px; line-height: 1.65; }
+		.warn-box strong { color: var(--amber); }
+		.code-block {
+			background: #263238;
+			color: #ECEFF1;
+			border-radius: 10px;
+			padding: 18px 22px;
+			margin: 16px 0;
+			overflow-x: auto;
+			font-family: 'Fira Code', 'Consolas', monospace;
+			font-size: 14px;
+			line-height: 1.7;
+			white-space: pre;
+		}
+		.code-block .comment { color: #90A4AE; }
+		.code-block .kw { color: #82B1FF; }
+		.code-block .str { color: #FFCB6B; }
+		.code-block .fn { color: #C3E88D; }
+		code { background: #F0F4F8; padding: 2px 6px; border-radius: 4px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.92em; }
+		.term-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 14px 0 18px; }
+		.term-card { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 12px; padding: 18px 18px 16px; }
+		.term-card h3 { margin: 0 0 6px; font-size: 18px; color: var(--navy); }
+		.term-card p { margin: 0; font-size: 15px; line-height: 1.7; }
+		.math-bridge { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 16px 0 18px; }
+		.math-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+		.math-card h3 { margin: 0 0 8px; font-size: 18px; color: var(--navy); }
+		.math-card p { margin: 0 0 10px; line-height: 1.7; }
+		.math-card p:last-child { margin-bottom: 0; }
+		.math-formula { border-top: 4px solid var(--blue); }
+		.quick-map { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 15px; }
+		.quick-map th, .quick-map td { border: 1px solid var(--line); padding: 11px 14px; text-align: left; }
+		.quick-map th { background: var(--navy); color: #fff; font-weight: 600; }
+		.quick-map tr:nth-child(even) { background: #F5F8FB; }
+		.next-links { background: #E3F2FD; border-left: 5px solid var(--blue); border-radius: 10px; padding: 16px 20px; margin-top: 28px; font-size: 15px; line-height: 1.7; }
+		.next-links strong { color: var(--blue); }
+		.next-links a { color: var(--blue); font-weight: 600; }
+		.footer { margin-top: 28px; color: var(--muted); font-size: 13px; text-align: center; }
+		[data-lang] { display: none; }
+		html[data-language="en"] [data-lang="en"] { display: initial; }
+		html[data-language="ja"] [data-lang="ja"] { display: initial; }
+		html[data-language="en"] div[data-lang="en"], html[data-language="ja"] div[data-lang="ja"] { display: block; }
+		html[data-language="en"] p[data-lang="en"], html[data-language="ja"] p[data-lang="ja"] { display: block; }
+		html[data-language="en"] li[data-lang="en"], html[data-language="ja"] li[data-lang="ja"] { display: list-item; }
+		html[data-language="en"] h1[data-lang="en"], html[data-language="ja"] h1[data-lang="ja"],
+		html[data-language="en"] h2[data-lang="en"], html[data-language="ja"] h2[data-lang="ja"],
+		html[data-language="en"] h3[data-lang="en"], html[data-language="ja"] h3[data-lang="ja"],
+		html[data-language="en"] h4[data-lang="en"], html[data-language="ja"] h4[data-lang="ja"] { display: block; }
+		html[data-language="en"] span[data-lang="en"], html[data-language="ja"] span[data-lang="ja"] { display: inline; }
+		html[data-language="en"] th[data-lang="en"], html[data-language="ja"] th[data-lang="ja"],
+		html[data-language="en"] td[data-lang="en"], html[data-language="ja"] td[data-lang="ja"] { display: table-cell; }
+		@media (max-width: 680px) {
+			.hero { padding: 28px 20px 24px; }
+			.hero h1 { font-size: 24px; }
+			.page { padding: 20px 14px 40px; }
+			.code-block { font-size: 12px; }
+			.term-grid { grid-template-columns: 1fr; }
+			.math-bridge { grid-template-columns: 1fr; }
+		}
+	</style>
+</head>
+<body>
+<div class="page">
+	<div class="toolbar">
+		<a class="home-link" href="../index.html">← <span data-lang="ja">もくじ</span><span data-lang="en">Index</span></a>
+		<div>
+			<button class="lang-btn active" id="btn-ja" type="button">JP</button>
+			<button class="lang-btn" id="btn-en" type="button">EN</button>
+		</div>
+	</div>
+
+	<section class="hero">
+		<h1 data-lang="ja">NumPy特急便</h1>
+		<h1 data-lang="en">NumPy Express</h1>
+		<p class="subtitle" data-lang="ja">NumPy ってなあに？を 1 ページで</p>
+		<p class="subtitle" data-lang="en">What is NumPy? in one page</p>
+		<p data-lang="ja">このページは、PyTorch に入る前に <strong>「数字の表をどう見るか」</strong> に慣れるための導入です。NumPy は、数字を表の形に並べて、まとめて計算するための道具です。このページではまず、<strong>配列・shape・axis</strong> の 3 つを中心に見ていきます。</p>
+		<p data-lang="en">This page is a gentle introduction before PyTorch, helping you get used to <strong>thinking in tables of numbers</strong>. NumPy is a tool for arranging numbers into table-like forms and computing on them together. We focus first on <strong>arrays, shape, and axis</strong>.</p>
+	</section>
+
+	<h2 class="section-title" data-lang="ja">1. NumPy はなに？</h2>
+	<h2 class="section-title" data-lang="en">1. What Is NumPy?</h2>
+	<p class="section-lead" data-lang="ja">ひとことで言うと、数字を表の形に並べて、まとめて計算するための道具です。</p>
+	<p class="section-lead" data-lang="en">In one sentence: a tool for arranging numbers into tables and computing on them together.</p>
+	<div class="prose">
+		<p data-lang="ja">NumPy は、<strong>数字を表の形でまとめてあつかうための道具</strong>です。Python のふつうのリストでも数字は置けますが、NumPy を使うと、数字をきれいに並べやすく、表の大きさを確認しやすく、まとめて計算しやすくなります。</p>
+		<p data-lang="en">NumPy is a tool for <strong>handling numbers in table-like form</strong>. Ordinary Python lists can also store numbers, but NumPy makes it easier to arrange them neatly, inspect their size, and compute on many of them together.</p>
+		<p data-lang="ja">たとえば、<code>[1, 2, 3]</code> は 1 本の数字の列、<code>[[1, 2, 3], [4, 5, 6]]</code> は 2 行 3 列の表、と考えやすくなります。</p>
+		<p data-lang="en">For example, <code>[1, 2, 3]</code> can be seen as one row of numbers, while <code>[[1, 2, 3], [4, 5, 6]]</code> is a table with 2 rows and 3 columns.</p>
+	</div>
+	<div class="fact-box">
+		<p data-lang="ja"><strong>このページでまず大事なのは 3 つだけ:</strong> 配列 / shape / axis</p>
+		<p data-lang="en"><strong>The first three things that matter here:</strong> array / shape / axis</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">2. まず覚える 3 つ</h2>
+	<h2 class="section-title" data-lang="en">2. Three Ideas to Learn First</h2>
+	<p class="section-lead" data-lang="ja">最初は、この 3 つがわかれば十分です。</p>
+	<p class="section-lead" data-lang="en">At the start, these three ideas are enough.</p>
+
+	<div class="term-grid">
+		<div class="term-card">
+			<h3 data-lang="ja">配列</h3>
+			<h3 data-lang="en">Array</h3>
+			<p data-lang="ja">数字を並べたものです。1 列でも、表でも、もっと大きなかたまりでもよいです。</p>
+			<p data-lang="en">A collection of numbers. It can be one row, a table, or something larger.</p>
+		</div>
+		<div class="term-card">
+			<h3>shape</h3>
+			<p data-lang="ja">表の大きさです。たとえば <code>(2, 3)</code> は「2 行 3 列」と考えれば十分です。</p>
+			<p data-lang="en">The size of the table. For example, <code>(2, 3)</code> means “2 rows and 3 columns.”</p>
+		</div>
+		<div class="term-card">
+			<h3>axis</h3>
+			<p data-lang="ja">どの向きに見るかを表します。最初は <code>axis=0</code> はたて、<code>axis=1</code> はよこ、と考えると入りやすいです。</p>
+			<p data-lang="en">The direction you are looking along. A simple first picture is <code>axis=0</code> for vertical and <code>axis=1</code> for horizontal.</p>
+		</div>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>あとでよく出る 1 語:</strong> <code>dtype</code> は「数字の種類」です。最初は後回しでも大丈夫です。</p>
+		<p data-lang="en"><strong>One more word you will meet later:</strong> <code>dtype</code> means the kind of numbers. It is okay to leave it for later at first.</p>
+	</div>
+
+	<div class="warn-box">
+		<p data-lang="ja"><strong>補足:</strong> ドキュメントでは <code>ndarray</code> という名前も出ますが、このページではまず「数字の表」と読めば十分です。</p>
+		<p data-lang="en"><strong>Note:</strong> In documentation you may see the name <code>ndarray</code>, but on this page it is enough to read it as “a table of numbers.”</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">3. いちばん小さい例</h2>
+	<h2 class="section-title" data-lang="en">3. The Smallest Example</h2>
+	<p class="section-lead" data-lang="ja">まずは 1 本の数字の列から始めます。</p>
+	<p class="section-lead" data-lang="en">Start with one row of numbers.</p>
+
+	<div class="code-block">import numpy as np
+
+a = np.array([1, 2, 3])
+
+print(a)
+print(a.shape)</div>
+
+	<div class="prose">
+		<p data-lang="ja">この例では、3 つの数字をひとまとめにしています。<code>import numpy as np</code> は、NumPy を <code>np</code> という短い名前で呼ぶ、という意味です。</p>
+		<p data-lang="en">This example groups three numbers together. <code>import numpy as np</code> means “use the short name <code>np</code> for NumPy.”</p>
+		<p data-lang="ja"><code>np.array(...)</code> は、数字を NumPy の配列にする、という意味です。</p>
+		<p data-lang="en"><code>np.array(...)</code> means “turn these numbers into a NumPy array.”</p>
+		<p data-lang="ja"><code>a.shape</code> を見ると、その数字のまとまりがどんな大きさかがわかります。</p>
+		<p data-lang="en">Looking at <code>a.shape</code> tells you the size of that group of numbers.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>ここで見てほしいこと:</strong> 1 個ずつ数字を見るのではなく、<strong>まとまったかたまり</strong>として見ていることです。</p>
+		<p data-lang="en"><strong>What to notice here:</strong> we are not looking at numbers one by one, but as <strong>one structured bundle</strong>.</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">4. 表にしてみる</h2>
+	<h2 class="section-title" data-lang="en">4. Turn It into a Table</h2>
+	<p class="section-lead" data-lang="ja">次は 2 次元の表にしてみます。</p>
+	<p class="section-lead" data-lang="en">Next, let’s make a two-dimensional table.</p>
+
+	<div class="code-block">import numpy as np
+
+b = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+print(b)
+print(b.shape)</div>
+
+	<div class="prose">
+		<p data-lang="ja">この <code>b</code> は、2 行 3 列の表です。だから shape は <code>(2, 3)</code> になります。</p>
+		<p data-lang="en">This <code>b</code> is a table with 2 rows and 3 columns, so its shape is <code>(2, 3)</code>.</p>
+		<p data-lang="ja">ここで大事なのは、shape を見て <strong>「いま自分はどんな表を持っているのか」</strong> を確認するくせをつけることです。</p>
+		<p data-lang="en">The important habit is to check the shape and ask: <strong>“What kind of table am I holding right now?”</strong></p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">5. axis ってなに？</h2>
+	<h2 class="section-title" data-lang="en">5. What Is axis?</h2>
+	<p class="section-lead" data-lang="ja">axis は、「どの向きにまとめるか」を決める番号です。</p>
+	<p class="section-lead" data-lang="en">axis is the number that chooses which direction to combine along.</p>
+
+	<div class="code-block">import numpy as np
+
+b = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+print(np.sum(b, axis=0))
+print(np.sum(b, axis=1))</div>
+
+	<div class="prose">
+		<p data-lang="ja">表の数字を足すとき、たて方向に見るか、よこ方向に見るかで結果が変わります。</p>
+		<p data-lang="en">When you add numbers in a table, the result changes depending on whether you look vertically or horizontally.</p>
+		<p data-lang="ja">最初は、<code>axis=0</code> は <strong>たて方向</strong>、<code>axis=1</code> は <strong>よこ方向</strong>、と考えるだけで十分です。</p>
+		<p data-lang="en">At first, it is enough to think of <code>axis=0</code> as <strong>vertical</strong> and <code>axis=1</code> as <strong>horizontal</strong>.</p>
+	</div>
+
+	<div class="warn-box">
+		<p data-lang="ja"><strong>最初はここで迷いやすいです:</strong> axis は慣れるまで混乱しやすいので、「向きを決める番号」と思えば十分です。</p>
+		<p data-lang="en"><strong>This is a common confusion point:</strong> axis often feels tricky at first, so it is enough to think of it as “the number that chooses a direction.”</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">6. 表どうしをかけてみる</h2>
+	<h2 class="section-title" data-lang="en">6. Multiply Two Tables</h2>
+	<p class="section-lead" data-lang="ja">行列のかけ算は最後に見ます。ここでもまず大事なのは shape です。</p>
+	<p class="section-lead" data-lang="en">We leave matrix multiplication for later. Here too, the first thing that matters is shape.</p>
+
+	<div class="code-block">import numpy as np
+
+a = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+b = np.array([[7, 8],
+              [9, 10],
+              [11, 12]])
+
+c = a @ b
+
+print(a.shape)
+print(b.shape)
+print(c.shape)
+print(c)</div>
+
+	<div class="math-bridge">
+		<div class="math-card">
+			<h3 data-lang="ja">コードの表と数式の行列は同じもの</h3>
+			<h3 data-lang="en">The code table and the math matrix are the same thing</h3>
+			<p data-lang="ja"><code>a</code> の <code>[[1, 2, 3], [4, 5, 6]]</code> は、「1 行目が <code>[1, 2, 3]</code>、2 行目が <code>[4, 5, 6]</code> の表」です。</p>
+			<p data-lang="en"><code>a</code> as <code>[[1, 2, 3], [4, 5, 6]]</code> means “a table whose first row is <code>[1, 2, 3]</code> and second row is <code>[4, 5, 6]</code>.”</p>
+			<p data-lang="ja">数式では、その同じ表を横と縦にきれいに並べて行列として書きます。つまり、<code>a</code> は数式では $A$、<code>b</code> は $B$、<code>c</code> は $C$ と見るとつながりやすいです。</p>
+			<p data-lang="en">In math, we write that same table as a matrix. So it helps to read <code>a</code> as $A$, <code>b</code> as $B$, and <code>c</code> as $C$.</p>
+			<p data-lang="ja">shape も同じです。$A$ は 2 行 3 列だから <code>(2, 3)</code>、$B$ は 3 行 2 列だから <code>(3, 2)</code> です。</p>
+			<p data-lang="en">The shapes are the same idea too. $A$ has 2 rows and 3 columns, so its shape is <code>(2, 3)</code>, while $B$ has shape <code>(3, 2)</code>.</p>
+		</div>
+		<div class="math-card math-formula">
+			<h3 data-lang="ja">このコードを数式で書くと</h3>
+			<h3 data-lang="en">The same computation in math notation</h3>
+			<div data-lang="ja">$$
+A =
+\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6
+\end{bmatrix},
+\quad
+B =
+\begin{bmatrix}
+7 & 8 \\
+9 & 10 \\
+11 & 12
+\end{bmatrix}
+$$
+$$
+C = AB =
+\begin{bmatrix}
+58 & 64 \\
+139 & 154
+\end{bmatrix}
+$$</div>
+			<div data-lang="en">$$
+A =
+\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6
+\end{bmatrix},
+\quad
+B =
+\begin{bmatrix}
+7 & 8 \\
+9 & 10 \\
+11 & 12
+\end{bmatrix}
+$$
+$$
+C = AB =
+\begin{bmatrix}
+58 & 64 \\
+139 & 154
+\end{bmatrix}
+$$</div>
+		</div>
+	</div>
+
+	<div class="prose">
+		<p data-lang="ja">ここでは、表どうしのかけ算をしています。<code>@</code> は、このページでは「表どうしをかける記号」くらいに読めば十分です。</p>
+		<p data-lang="en">Here we multiply two tables. On this page, it is enough to read <code>@</code> as “the symbol for multiplying two tables.”</p>
+		<p data-lang="ja">まず数字そのものより、<strong>shape を先に見る</strong>のが大事です。</p>
+		<p data-lang="en">The important thing is to look at the <strong>shapes first</strong>, before the numbers themselves.</p>
+		<p data-lang="ja"><code>a</code> は <code>(2, 3)</code>、<code>b</code> は <code>(3, 2)</code> です。内側の 3 と 3 がつながるので計算できて、結果の <code>c</code> は <code>(2, 2)</code> になります。</p>
+		<p data-lang="en"><code>a</code> has shape <code>(2, 3)</code>, and <code>b</code> has shape <code>(3, 2)</code>. The inner 3 and 3 match, so multiplication works, and the result <code>c</code> has shape <code>(2, 2)</code>.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>この読み方はあとで効きます:</strong> PyTorch の tensor や ROCm 関連ページでも、まず shape を見る習慣がとても大事です。</p>
+		<p data-lang="en"><strong>This reading habit matters later:</strong> on PyTorch tensor pages and ROCm-related pages, checking shape first is very important.</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">7. このサイトではどこで出てくる？</h2>
+	<h2 class="section-title" data-lang="en">7. Where Does It Appear in This Site?</h2>
+	<p class="section-lead" data-lang="ja">NumPy は、このあと出てくる PyTorch や線形代数のページを読みやすくするための土台です。</p>
+	<p class="section-lead" data-lang="en">NumPy is a foundation that makes the later PyTorch and linear algebra pages easier to read.</p>
+	<table class="quick-map">
+		<thead>
+			<tr>
+				<th data-lang="ja">ページ</th>
+				<th data-lang="en">Page</th>
+				<th data-lang="ja">NumPy が役立つところ</th>
+				<th data-lang="en">How NumPy Helps</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td data-lang="ja">線形代数 / 行列とAI</td>
+				<td data-lang="en">Linear algebra / Matrices &amp; AI</td>
+				<td data-lang="ja">ベクトルや行列を「数字の表」として見る練習になる</td>
+				<td data-lang="en">It helps you see vectors and matrices as tables of numbers</td>
+			</tr>
+			<tr>
+				<td data-lang="ja">PyTorch特急便</td>
+				<td data-lang="en">PyTorch Express</td>
+				<td data-lang="ja">shape や axis の感覚が、tensor を読む助けになる</td>
+				<td data-lang="en">Its shape and axis intuition helps you read tensors later</td>
+			</tr>
+			<tr>
+				<td data-lang="ja">ROCmで見る 系</td>
+				<td data-lang="en">See in ROCm series</td>
+				<td data-lang="ja">入力や出力の「形」を読む基礎になる</td>
+				<td data-lang="en">It becomes a basis for reading the shapes of inputs and outputs</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2 class="section-title" data-lang="ja">8. 初学者が詰まりやすいところ</h2>
+	<h2 class="section-title" data-lang="en">8. Common Beginner Stumbles</h2>
+	<div class="warn-box">
+		<p data-lang="ja"><strong>よくある詰まり:</strong><br>1) shape を見ないまま計算する<br>2) list と NumPy の配列を同じ気分で扱う<br>3) axis の向きを混乱する</p>
+		<p data-lang="en"><strong>Common stumbles:</strong><br>1) Computing without checking shape<br>2) Treating Python lists and NumPy arrays as if they were the same<br>3) Getting confused about axis directions</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">9. NumPy と PyTorch の関係</h2>
+	<h2 class="section-title" data-lang="en">9. NumPy and PyTorch</h2>
+	<div class="prose">
+		<p data-lang="ja">NumPy は、<strong>数字の表を読む練習</strong>に向いています。PyTorch は、その考え方を持ったまま、AI モデルを書いたり、学習で必要な計算をしたり、GPU で動かしたりできる道具です。</p>
+		<p data-lang="en">NumPy is great for <strong>practising how to read tables of numbers</strong>. PyTorch keeps that same way of thinking, but extends it to writing AI models, doing training-related computation, and running on GPUs.</p>
+		<p data-lang="ja">つまり、<strong>NumPy = 数字の表の練習</strong>、<strong>PyTorch = その考え方で AI を作って動かす道具</strong> と考えるとわかりやすいです。</p>
+		<p data-lang="en">A useful picture is: <strong>NumPy = practice with numeric tables</strong>, and <strong>PyTorch = use the same style to build and run AI</strong>.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>ROCm とのつながり:</strong> ROCm 系のページで出てくる入力や出力の shape も、まずは NumPy の表を見る感覚で読むと入りやすいです。</p>
+		<p data-lang="en"><strong>Connection to ROCm:</strong> The input and output shapes shown on ROCm-related pages are easier to read if you keep the NumPy “table of numbers” picture in mind.</p>
+	</div>
+
+	<div class="next-links">
+		<strong data-lang="ja">📖 次に読むなら:</strong>
+		<strong data-lang="en">📖 Read next:</strong><br>
+		<span data-lang="ja">
+			<a href="pytorch-express.html">PyTorch特急便</a> — NumPy の「数字の表」の考え方が、PyTorch の tensor にどうつながるかを見る<br>
+			<a href="linear-algebra-for-rocm.html">イメージでわかる線形代数</a> — 行列やベクトルの意味を、図やたとえで補強する
+		</span>
+		<span data-lang="en">
+			<a href="pytorch-express.html">PyTorch Express</a> — See how NumPy’s table-of-numbers thinking connects to PyTorch tensors<br>
+			<a href="linear-algebra-for-rocm.html">Visual Linear Algebra</a> — Reinforce vectors and matrices with diagrams and analogies
+		</span>
+	</div>
+
+	<div class="footer">
+		<span data-lang="ja">vega-hbmx-pages · NumPy特急便 · 2026-03-16</span>
+		<span data-lang="en">vega-hbmx-pages · NumPy Express · 2026-03-16</span>
+	</div>
+</div>
+
+<script>
+	const html = document.documentElement;
+	const btnJa = document.getElementById('btn-ja');
+	const btnEn = document.getElementById('btn-en');
+	function setLang(l) {
+		html.setAttribute('data-language', l);
+		html.lang = l;
+		btnJa.classList.toggle('active', l === 'ja');
+		btnEn.classList.toggle('active', l === 'en');
+		localStorage.setItem('vega-hbmx-pages-lang', l);
+	}
+	btnJa.addEventListener('click', () => setLang('ja'));
+	btnEn.addEventListener('click', () => setLang('en'));
+	setLang(localStorage.getItem('vega-hbmx-pages-lang') === 'en' ? 'en' : 'ja');
+</script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../styles/mermaid-layout.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"
+		onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+	<title>ROCmで見る 学習の流れ / See Training Flow in ROCm | vega-hbmx-pages</title>
+	<style>
+		:root {
+			--navy: #0B3C5D; --teal: #00796B; --amber: #C56A00; --blue: #1565C0;
+			--green: #2E7D32; --purple: #5B4B8A; --ink: #1F2933; --muted: #5F6C7B;
+			--line: #D8E0E8; --bg: #F5F8FB; --card: #FFFFFF; --accent: #1565C0;
+		}
+		* { box-sizing: border-box; }
+		body { margin: 0; font-family: 'Calibri','Arial',sans-serif; color: var(--ink);
+			background: radial-gradient(circle at top right,rgba(21,101,192,0.08),transparent 28%),
+			radial-gradient(circle at bottom left,rgba(91,75,138,0.07),transparent 26%),var(--bg); }
+		.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+		.toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+		.home-link { display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--navy); font-size:14px; font-weight:600; }
+		.home-link:hover { text-decoration:underline; }
+		.lang-btn { padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:2px solid var(--navy); background:transparent; color:var(--navy); transition:all .2s; }
+		.lang-btn.active { background:var(--navy); color:#fff; }
+		.hero { background:linear-gradient(135deg,#0D47A1 0%,#1565C0 55%,#42A5F5 100%); color:#fff; border-radius:16px; padding:40px 36px 32px; margin-bottom:32px; }
+		.hero h1 { margin:0 0 10px; font-size:28px; font-weight:700; line-height:1.3; }
+		.hero .subtitle { margin:0 0 14px; font-size:16px; opacity:.82; }
+		.hero p { margin:0; font-size:16px; opacity:.9; line-height:1.65; }
+		.section-title { font-size:21px; font-weight:700; color:var(--navy); border-left:5px solid var(--accent); padding-left:14px; margin:44px 0 8px; }
+		.section-lead { color:var(--muted); margin:0 0 20px; font-size:15px; line-height:1.6; }
+		.prose { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; font-size:16px; line-height:1.75; }
+		.prose p { margin:0 0 12px; } .prose p:last-child { margin-bottom:0; }
+		.code-block { background:#263238; color:#ECEFF1; border-radius:10px; padding:18px 22px; margin:16px 0; overflow-x:auto; font-family:'Fira Code','Consolas',monospace; font-size:14px; line-height:1.7; white-space:pre; }
+		.code-block .comment { color:#78909C; } .code-block .kw { color:#82B1FF; } .code-block .fn { color:#C3E88D; } .code-block .str { color:#FFCB6B; } .code-block .num { color:#F78C6C; }
+		.output-block { background:#F3E5F5; border-left:5px solid var(--purple); border-radius:10px; padding:16px 20px; margin:16px 0; font-family:monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; }
+		.mapping { background:#E3F2FD; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.mapping strong { color:var(--blue); }
+		.math-box { background:#EAF4FF; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin:16px 0 18px; font-size:15px; line-height:1.7; }
+		.math-box strong { color:var(--blue); }
+		.math-box p { margin:0 0 10px; }
+		.math-box p:last-child { margin-bottom:0; }
+		.fact-box { background:#E8F5E9; border-left:5px solid var(--green); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.fact-box strong { color:var(--green); }
+		.analogy { background:#FFF8E1; border-left:5px solid var(--amber); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.analogy strong { color:var(--amber); }
+		.next-links { background:#E3F2FD; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin-top:32px; font-size:15px; line-height:1.7; }
+		.next-links strong { color:var(--blue); } .next-links a { color:var(--blue); font-weight:600; }
+		.footer { margin-top:28px; color:var(--muted); font-size:13px; text-align:center; }
+		[data-lang] { display:none; }
+		html[data-language="en"] [data-lang="en"] { display:initial; }
+		html[data-language="ja"] [data-lang="ja"] { display:initial; }
+		html[data-language="en"] div[data-lang="en"],html[data-language="ja"] div[data-lang="ja"] { display:block; }
+		html[data-language="en"] p[data-lang="en"],html[data-language="ja"] p[data-lang="ja"] { display:block; }
+		html[data-language="en"] li[data-lang="en"],html[data-language="ja"] li[data-lang="ja"] { display:list-item; }
+		html[data-language="en"] h1[data-lang="en"],html[data-language="ja"] h1[data-lang="ja"],
+		html[data-language="en"] h2[data-lang="en"],html[data-language="ja"] h2[data-lang="ja"],
+		html[data-language="en"] h3[data-lang="en"],html[data-language="ja"] h3[data-lang="ja"],
+		html[data-language="en"] h4[data-lang="en"],html[data-language="ja"] h4[data-lang="ja"] { display:block; }
+		html[data-language="en"] span[data-lang="en"],html[data-language="ja"] span[data-lang="ja"] { display:inline; }
+		@media(max-width:640px){ .page{padding:20px 14px 40px;} .hero{padding:28px 20px 24px;} .hero h1{font-size:24px;} .code-block{font-size:12px;padding:14px 16px;} }
+	</style>
+</head>
+<body>
+<div class="page">
+	<div class="toolbar">
+		<a class="home-link" href="../index.html">← <span data-lang="ja">もくじ</span><span data-lang="en">Index</span></a>
+		<div><button class="lang-btn active" id="btn-ja" type="button">JP</button><button class="lang-btn" id="btn-en" type="button">EN</button></div>
+	</div>
+
+	<section class="hero">
+		<h1 data-lang="ja">ROCmで見る 学習の流れ</h1>
+		<h1 data-lang="en">See Training Flow in ROCm</h1>
+		<p class="subtitle" data-lang="ja">See Training Flow in ROCm</p>
+		<p class="subtitle" data-lang="en">ROCm で見るシリーズ</p>
+		<p data-lang="ja">forward → loss → backward → optimizer.step() の 1 エポックを PyTorch ROCm で実行し、重みが変わることを確認します。</p>
+		<p data-lang="en">Run one epoch of forward → loss → backward → optimizer.step() on PyTorch ROCm and confirm that weights change.</p>
+	</section>
+
+	<div class="mapping">
+		<p data-lang="ja"><strong>📘 対応する理論ページ:</strong> <a href="training-flow.html">イメージでわかる学習の流れ</a> — forward / backward / optimizer を図解で解説</p>
+		<p data-lang="en"><strong>📘 Theory page:</strong> <a href="training-flow.html">Visual Training Flow</a> — Forward / backward / optimizer explained with diagrams</p>
+	</div>
+	<div class="fact-box">
+		<p data-lang="ja"><strong>このページの読み方:</strong> 1) まず <code>model.training = True</code> を見る 2) 次に <code>loss</code> が出るのを見る 3) 最後に <code>weight changed = True</code> を見れば、学習が起きたことがつかめます。</p>
+		<p data-lang="en"><strong>How to read this page:</strong> 1) First look at <code>model.training = True</code> 2) Then see that a <code>loss</code> appears 3) Finally check <code>weight changed = True</code>. That is enough to see that learning happened.</p>
+		<p data-lang="ja"><strong>注記:</strong> このページの GPU 指定は <code>"cuda"</code> 表記ですが、ROCm 版 PyTorch の互換 API 名です。実行経路は HIP/ROCm です。</p>
+		<p data-lang="en"><strong>Note:</strong> GPU selection appears as <code>"cuda"</code> on this page, but that is the compatibility API name used by PyTorch ROCm. Execution still goes through HIP/ROCm.</p>
+	</div>
+
+	<!-- ── 1 ── -->
+	<h2 class="section-title" data-lang="ja">1. なにをするか</h2>
+	<h2 class="section-title" data-lang="en">1. What We'll Do</h2>
+
+	<div class="prose">
+		<p data-lang="ja">推論ページと対になる形で、学習の主役 4 つを見ます。<strong>① train() ② loss 計算 ③ backward() ④ optimizer.step()</strong>。最後に重みが変わることを確認します。</p>
+		<p data-lang="en">As a pair with the inference page, we focus on four training essentials: <strong>1) train() 2) loss computation 3) backward() 4) optimizer.step()</strong>. We then verify that weights actually change.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>困ったらこの 4 語だけ:</strong> <code>train()</code> は学習モード、<code>loss</code> はどれだけ外れたか、<code>backward()</code> はどこを直すか、<code>optimizer.step()</code> は実際に直す、です。</p>
+		<p data-lang="en"><strong>If you get stuck, keep just these four ideas:</strong> <code>train()</code> means training mode, <code>loss</code> means how wrong the answer was, <code>backward()</code> means what should be fixed, and <code>optimizer.step()</code> means actually fixing it.</p>
+	</div>
+
+	<!-- ── 2 ── -->
+	<h2 class="section-title" data-lang="ja">2. 最小コード</h2>
+	<h2 class="section-title" data-lang="en">2. Minimal Code</h2>
+
+	<div class="code-block"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="comment"># 0) 実行前チェック</span>
+<span class="fn">print</span>(<span class="str">"torch.version.hip ="</span>, torch.version.hip)
+<span class="kw">assert</span> torch.version.hip <span class="kw">is not</span> <span class="kw">None</span>, <span class="str">"This example expects PyTorch built for ROCm"</span>
+DEVICE = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">"cpu"</span>)
+<span class="fn">print</span>(<span class="str">"device ="</span>, DEVICE)
+
+<span class="comment"># 1) 小さなモデルを作り、説明用に重みを固定</span>
+model = nn.Linear(<span class="num">3</span>, <span class="num">1</span>).to(DEVICE)
+<span class="kw">with</span> torch.no_grad():
+	model.weight[:] = torch.tensor([[<span class="num">0.1</span>, <span class="num">0.2</span>, <span class="num">0.3</span>]], device=DEVICE)
+	model.bias[:] = torch.tensor([<span class="num">0.5</span>], device=DEVICE)
+
+<span class="comment"># 2) 学習モード</span>
+model.train()
+<span class="fn">print</span>(<span class="str">"model.training ="</span>, model.training)  <span class="comment"># True</span>
+
+<span class="comment"># 3) 入力と正解</span>
+x = torch.tensor([[<span class="num">1.0</span>, <span class="num">2.0</span>, <span class="num">3.0</span>]], device=DEVICE)
+y_true = torch.tensor([[<span class="num">2.5</span>]], device=DEVICE)
+
+loss_fn = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=<span class="num">0.1</span>)
+
+w_before = model.weight.detach().clone()
+
+<span class="comment"># 4) 学習 1 ステップ</span>
+optimizer.zero_grad()
+pred = model(x)
+loss = loss_fn(pred, y_true)
+loss.backward()
+optimizer.step()
+
+w_after = model.weight.detach().clone()
+
+<span class="fn">print</span>(<span class="str">"pred ="</span>, pred.detach().cpu())
+<span class="fn">print</span>(<span class="str">"loss ="</span>, loss.item())
+<span class="fn">print</span>(<span class="str">"pred.requires_grad ="</span>, pred.requires_grad)
+<span class="fn">print</span>(<span class="str">"weight changed ="</span>, <span class="kw">not</span> torch.allclose(w_before, w_after))
+<span class="fn">print</span>(<span class="str">"weight.grad ="</span>, model.weight.grad.detach().cpu())</div>
+
+	<div class="math-box">
+		<p data-lang="ja"><strong>コードと式の対応:</strong> このページでは、forward の式と「そのずれを直す式」を 1 回だけ回しています。</p>
+		<p data-lang="en"><strong>Code-to-math link:</strong> This page runs one pass of the forward equation, then one pass of “the equation that fixes the error.”</p>
+		<div data-lang="ja">$$\hat{y} = xw + b = 1.9,\quad y_{\text{true}} = 2.5,\quad L = (\hat{y} - y_{\text{true}})^2 = (1.9 - 2.5)^2 = 0.36$$</div>
+		<div data-lang="en">$$\hat{y} = xw + b = 1.9,\quad y_{\text{true}} = 2.5,\quad L = (\hat{y} - y_{\text{true}})^2 = (1.9 - 2.5)^2 = 0.36$$</div>
+		<div data-lang="ja">$$\nabla_w L =
+\begin{bmatrix}
+-1.2 & -2.4 & -3.6
+\end{bmatrix},
+\quad
+w_{\text{new}} = w - \eta \nabla_w L$$</div>
+		<div data-lang="en">$$\nabla_w L =
+\begin{bmatrix}
+-1.2 & -2.4 & -3.6
+\end{bmatrix},
+\quad
+w_{\text{new}} = w - \eta \nabla_w L$$</div>
+		<p data-lang="ja"><code>loss.backward()</code> がこの勾配 $\nabla_w L$ を出し、<code>optimizer.step()</code> が $w_{\text{new}}$ へ進めます。出力の <code>weight.grad</code> は、その途中の値です。</p>
+		<p data-lang="en"><code>loss.backward()</code> produces this gradient $\nabla_w L$, and <code>optimizer.step()</code> moves the weights to $w_{\text{new}}$. The printed <code>weight.grad</code> is that intermediate value.</p>
+	</div>
+
+	<div class="prose">
+		<p data-lang="ja">コードは長く見えますが、最初は次の 4 行だけ追えば十分です。</p>
+		<p data-lang="en">The code may look long, but at first it is enough to follow these four lines.</p>
+		<p data-lang="ja"><strong><code>model.train()</code>:</strong> 学習モードへ切り替えます。</p>
+		<p data-lang="en"><strong><code>model.train()</code>:</strong> This switches the model into training mode.</p>
+		<p data-lang="ja"><strong><code>loss = loss_fn(pred, y_true)</code>:</strong> 予測と正解のずれを数にします。</p>
+		<p data-lang="en"><strong><code>loss = loss_fn(pred, y_true)</code>:</strong> This turns the gap between prediction and target into a number.</p>
+		<p data-lang="ja"><strong><code>loss.backward()</code>:</strong> どこをどう直すとよいかを計算します。</p>
+		<p data-lang="en"><strong><code>loss.backward()</code>:</strong> This computes what should be changed and in which direction.</p>
+		<p data-lang="ja"><strong><code>optimizer.step()</code>:</strong> モデルの中の調整つまみを実際に少し動かします。</p>
+		<p data-lang="en"><strong><code>optimizer.step()</code>:</strong> This actually moves the model’s internal adjustment knobs a little.</p>
+	</div>
+
+	<!-- ── 3 ── -->
+	<h2 class="section-title" data-lang="ja">3. 実行するとどうなるか</h2>
+	<h2 class="section-title" data-lang="en">3. What Happens When You Run It</h2>
+
+	<div class="output-block">torch.version.hip = 6.x.x
+device = cuda
+model.training = True
+pred = tensor([[1.9000]])
+loss = 0.36
+pred.requires_grad = True
+weight changed = True
+weight.grad = tensor([[-1.2000, -2.4000, -3.6000]])</div>
+
+	<div class="prose">
+		<p data-lang="ja">推論ページと違い、ここでは <code>pred.requires_grad=True</code> で勾配を追跡し、<code>backward()</code> と <code>optimizer.step()</code> によって重みが更新されます。これが「学習が起きた」状態です。</p>
+		<p data-lang="en">Unlike the inference page, this run tracks gradients with <code>pred.requires_grad=True</code>, then updates weights through <code>backward()</code> and <code>optimizer.step()</code>. That is what "learning happened" means here.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>理論ページとの対応:</strong><br>
+		<strong>forward</strong> = model(x) — 入力をネットに通す<br>
+		<strong>loss</strong> = 予測と正解のズレを数値化<br>
+		<strong>backward</strong> = loss.backward() — 勾配を計算<br>
+		<strong>optimizer.step()</strong> = 重みを少し修正</p>
+		<p data-lang="en"><strong>Theory page mapping:</strong><br>
+		<strong>forward</strong> = model(x) — pass input through the network<br>
+		<strong>loss</strong> = quantify the gap between prediction and target<br>
+		<strong>backward</strong> = loss.backward() — compute gradients<br>
+		<strong>optimizer.step()</strong> = adjust weights a little</p>
+	</div>
+
+	<!-- ── 4 ── -->
+	<h2 class="section-title" data-lang="ja">4. 裏では何が起きているか</h2>
+	<h2 class="section-title" data-lang="en">4. Under the Hood</h2>
+
+	<div class="prose">
+		<p data-lang="ja"><strong>forward:</strong> まず答えを出します。<br>
+		<strong>backward:</strong> 次に、どこをどう直すとよいかを逆向きに調べます。<br>
+		<strong>optimizer.step():</strong> 最後に、その情報を使って重みを少し直します。</p>
+		<p data-lang="en"><strong>forward:</strong> First the model produces an answer.<br>
+		<strong>backward:</strong> Then it looks backward to find what should be changed.<br>
+		<strong>optimizer.step():</strong> Finally it uses that information to adjust the weights a little.</p>
+		<p data-lang="ja">ROCm の見方では、学習は推論より仕事が増えます。答えを出すだけでなく、直し方を計算し、重みも更新するからです。</p>
+		<p data-lang="en">From a ROCm point of view, training has more work than inference. It not only produces an answer, but also computes corrections and updates the weights.</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">5. ROCmで観測するポイント</h2>
+	<h2 class="section-title" data-lang="en">5. What to Observe on ROCm</h2>
+	<div class="code-block"><span class="comment"># ROCm ビルド確認</span>
+python -c <span class="str">"import torch; print('torch.version.hip =', torch.version.hip)"</span>
+
+<span class="comment"># 学習ステップの HIP 呼び出し観測</span>
+rocprof --hip-trace python training_flow_example.py</div>
+	<div class="prose">
+		<p data-lang="ja">同じモデルで <a href="inference-flow-rocm-example.html">推論ページ</a> の実行時間と比較すると、学習側が重いことを観測できます。理論ページの「学習は重い」を実測でつなぐ目的です。</p>
+		<p data-lang="en">Compare runtime with the same model on the <a href="inference-flow-rocm-example.html">inference page</a> to observe why training is heavier. This connects the theory claim to actual measurement.</p>
+	</div>
+
+	<div class="analogy">
+		<p data-lang="ja"><strong>🎯 ポイント:</strong> 学習は forward + backward + update の繰り返しです。ここでは 1 回だけ実行しましたが、実際には数万〜数十万回繰り返して loss を下げ続けます。</p>
+		<p data-lang="en"><strong>🎯 Key point:</strong> Training is the repetition of forward + backward + update. We ran it once, but in practice this repeats thousands to millions of times to keep reducing loss.</p>
+	</div>
+
+	<!-- ── next ── -->
+	<div class="next-links">
+		<strong data-lang="ja">📖 次に読むなら:</strong>
+		<strong data-lang="en">📖 Read next:</strong><br>
+		<span data-lang="ja">
+			<a href="training-flow.html">イメージでわかる学習の流れ</a> — 理論ページに戻る<br>
+			<a href="inference-flow-rocm-example.html">ROCmで見る 推論の流れ</a> — 学習済みモデルで forward だけ実行<br>
+			<a href="deep-learning-rocm-example.html">ROCmで見る 深層学習</a> — ネットの構造をもう少し見る
+		</span>
+		<span data-lang="en">
+			<a href="training-flow.html">Visual Training Flow</a> — Back to the theory page<br>
+			<a href="inference-flow-rocm-example.html">See Inference Flow in ROCm</a> — Run forward-only on a trained model<br>
+			<a href="deep-learning-rocm-example.html">See Deep Learning in ROCm</a> — Look at network structures
+		</span>
+	</div>
+
+	<div class="footer">
+		<span data-lang="ja">vega-hbmx-pages · ROCmで見るシリーズ · 2026-03-16</span>
+		<span data-lang="en">vega-hbmx-pages · See it in ROCm series · 2026-03-16</span>
+	</div>
+</div>
+
+<script>
+	const html = document.documentElement;
+	const btnJa = document.getElementById('btn-ja');
+	const btnEn = document.getElementById('btn-en');
+	function setLang(l) { html.setAttribute('data-language', l); html.lang = l; btnJa.classList.toggle('active', l === 'ja'); btnEn.classList.toggle('active', l === 'en'); localStorage.setItem('vega-hbmx-pages-lang', l); }
+	btnJa.addEventListener('click', () => setLang('ja'));
+	btnEn.addEventListener('click', () => setLang('en'));
+	setLang(localStorage.getItem('vega-hbmx-pages-lang') === 'en' ? 'en' : 'ja');
+</script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../styles/mermaid-layout.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"
+		onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+	<title>ROCmで見る 深層学習 / See Deep Learning in ROCm | vega-hbmx-pages</title>
+	<style>
+		:root {
+			--navy: #0B3C5D; --teal: #00796B; --amber: #C56A00; --blue: #1565C0;
+			--green: #2E7D32; --purple: #5B4B8A; --ink: #1F2933; --muted: #5F6C7B;
+			--line: #D8E0E8; --bg: #F5F8FB; --card: #FFFFFF; --accent: #1565C0;
+		}
+		* { box-sizing: border-box; }
+		body { margin: 0; font-family: 'Calibri','Arial',sans-serif; color: var(--ink);
+			background: radial-gradient(circle at top right,rgba(21,101,192,0.08),transparent 28%),
+			radial-gradient(circle at bottom left,rgba(91,75,138,0.07),transparent 26%),var(--bg); }
+		.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+		.toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+		.home-link { display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--navy); font-size:14px; font-weight:600; }
+		.home-link:hover { text-decoration:underline; }
+		.lang-btn { padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:2px solid var(--navy); background:transparent; color:var(--navy); transition:all .2s; }
+		.lang-btn.active { background:var(--navy); color:#fff; }
+		.hero { background:linear-gradient(135deg,#0D47A1 0%,#1565C0 55%,#42A5F5 100%); color:#fff; border-radius:16px; padding:40px 36px 32px; margin-bottom:32px; }
+		.hero h1 { margin:0 0 10px; font-size:28px; font-weight:700; line-height:1.3; }
+		.hero .subtitle { margin:0 0 14px; font-size:16px; opacity:.82; }
+		.hero p { margin:0; font-size:16px; opacity:.9; line-height:1.65; }
+		.section-title { font-size:21px; font-weight:700; color:var(--navy); border-left:5px solid var(--accent); padding-left:14px; margin:44px 0 8px; }
+		.section-lead { color:var(--muted); margin:0 0 20px; font-size:15px; line-height:1.6; }
+		.prose { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; font-size:16px; line-height:1.75; }
+		.prose p { margin:0 0 12px; } .prose p:last-child { margin-bottom:0; }
+		.code-block { background:#263238; color:#ECEFF1; border-radius:10px; padding:18px 22px; margin:16px 0; overflow-x:auto; font-family:'Fira Code','Consolas',monospace; font-size:14px; line-height:1.7; white-space:pre; }
+		.code-block .comment { color:#78909C; } .code-block .kw { color:#82B1FF; } .code-block .fn { color:#C3E88D; } .code-block .str { color:#FFCB6B; } .code-block .num { color:#F78C6C; }
+		.output-block { background:#F3E5F5; border-left:5px solid var(--purple); border-radius:10px; padding:16px 20px; margin:16px 0; font-family:monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; }
+		.mapping { background:#E3F2FD; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.mapping strong { color:var(--blue); }
+		.math-box { background:#EAF4FF; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin:16px 0 18px; font-size:15px; line-height:1.7; }
+		.math-box strong { color:var(--blue); }
+		.math-box p { margin:0 0 10px; }
+		.math-box p:last-child { margin-bottom:0; }
+		.fact-box { background:#E8F5E9; border-left:5px solid var(--green); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.fact-box strong { color:var(--green); }
+		.analogy { background:#FFF8E1; border-left:5px solid var(--amber); border-radius:10px; padding:16px 20px; margin:16px 0; font-size:15px; line-height:1.65; }
+		.analogy strong { color:var(--amber); }
+		.next-links { background:#E3F2FD; border-left:5px solid var(--blue); border-radius:10px; padding:16px 20px; margin-top:32px; font-size:15px; line-height:1.7; }
+		.next-links strong { color:var(--blue); } .next-links a { color:var(--blue); font-weight:600; }
+		.footer { margin-top:28px; color:var(--muted); font-size:13px; text-align:center; }
+		[data-lang] { display:none; }
+		html[data-language="en"] [data-lang="en"] { display:initial; }
+		html[data-language="ja"] [data-lang="ja"] { display:initial; }
+		html[data-language="en"] div[data-lang="en"],html[data-language="ja"] div[data-lang="ja"] { display:block; }
+		html[data-language="en"] p[data-lang="en"],html[data-language="ja"] p[data-lang="ja"] { display:block; }
+		html[data-language="en"] li[data-lang="en"],html[data-language="ja"] li[data-lang="ja"] { display:list-item; }
+		html[data-language="en"] h1[data-lang="en"],html[data-language="ja"] h1[data-lang="ja"],
+		html[data-language="en"] h2[data-lang="en"],html[data-language="ja"] h2[data-lang="ja"],
+		html[data-language="en"] h3[data-lang="en"],html[data-language="ja"] h3[data-lang="ja"],
+		html[data-language="en"] h4[data-lang="en"],html[data-language="ja"] h4[data-lang="ja"] { display:block; }
+		html[data-language="en"] span[data-lang="en"],html[data-language="ja"] span[data-lang="ja"] { display:inline; }
+		@media(max-width:640px){ .page{padding:20px 14px 40px;} .hero{padding:28px 20px 24px;} .hero h1{font-size:24px;} .code-block{font-size:12px;padding:14px 16px;} }
+	</style>
+</head>
+<body>
+<div class="page">
+	<div class="toolbar">
+		<a class="home-link" href="../index.html">← <span data-lang="ja">もくじ</span><span data-lang="en">Index</span></a>
+		<div><button class="lang-btn active" id="btn-ja" type="button">JP</button><button class="lang-btn" id="btn-en" type="button">EN</button></div>
+	</div>
+
+	<section class="hero">
+		<h1 data-lang="ja">ROCmで見る 深層学習</h1>
+		<h1 data-lang="en">See Deep Learning in ROCm</h1>
+		<p class="subtitle" data-lang="ja">See Deep Learning in ROCm</p>
+		<p class="subtitle" data-lang="en">ROCm で見るシリーズ</p>
+		<p data-lang="ja">小さな Conv ネットを PyTorch ROCm で 1 回動かし、畳み込みが MIOpen、全結合が rocBLAS へ対応する流れを確認します。</p>
+		<p data-lang="en">Run a tiny Conv net once on PyTorch ROCm and verify the mapping: convolution to MIOpen, fully-connected math to rocBLAS.</p>
+	</section>
+
+	<div class="mapping">
+		<p data-lang="ja"><strong>📘 対応する理論ページ:</strong> <a href="deep-learning-for-rocm.html">イメージでわかる深層学習</a> — 畳み込み・フィルタ・solver を比喩で解説</p>
+		<p data-lang="en"><strong>📘 Theory page:</strong> <a href="deep-learning-for-rocm.html">Visual Deep Learning</a> — Convolution, filters, and solvers through analogy</p>
+	</div>
+	<div class="fact-box">
+		<p data-lang="ja"><strong>このページの読み方:</strong> 1) まず入力 shape と出力 shape を見る 2) 次に <code>Conv2d → ReLU → Flatten → Linear</code> の順だけ読む 3) 最後に「Conv は MIOpen、Linear は rocBLAS」とつながれば十分です。</p>
+		<p data-lang="en"><strong>How to read this page:</strong> 1) Look at the input and output shapes first 2) Then just read the order <code>Conv2d → ReLU → Flatten → Linear</code> 3) Finally connect that to “Conv uses MIOpen, Linear uses rocBLAS.”</p>
+		<p data-lang="ja"><strong>注記:</strong> PyTorch ROCm では GPU 指定に <code>"cuda"</code> 文字列を使います。名称互換の都合であり、実体は HIP/ROCm バックエンドです。</p>
+		<p data-lang="en"><strong>Note:</strong> PyTorch ROCm uses the string <code>"cuda"</code> for GPU selection. This is only for API-name compatibility; actual execution is on the HIP/ROCm backend.</p>
+	</div>
+
+	<!-- ── 1 ── -->
+	<h2 class="section-title" data-lang="ja">1. なにをするか</h2>
+	<h2 class="section-title" data-lang="en">1. What We'll Do</h2>
+
+	<div class="prose">
+		<p data-lang="ja">Conv2d を 1 層含む最小ネット（Conv → ReLU → Flatten → Linear）を 1 回だけ forward します。理論ページの「フィルタで特徴抽出」に対応します。</p>
+		<p data-lang="en">Run a minimal net with one Conv2d layer (Conv → ReLU → Flatten → Linear) once. This maps directly to "feature extraction by filters" in the theory page.</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>このページでまず見えれば OK:</strong> 小さな画像が入り、途中で特徴を取り出し、最後に 2 つのスコアが出ることです。</p>
+		<p data-lang="en"><strong>What is enough to see first:</strong> a small image goes in, features are extracted in the middle, and two scores come out at the end.</p>
+	</div>
+
+	<!-- ── 2 ── -->
+	<h2 class="section-title" data-lang="ja">2. 最小コード</h2>
+	<h2 class="section-title" data-lang="en">2. Minimal Code</h2>
+
+	<div class="code-block"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="kw">assert</span> torch.version.hip <span class="kw">is not</span> <span class="kw">None</span>, <span class="str">"This page expects PyTorch ROCm build"</span>
+DEVICE = torch.device(<span class="str">"cuda"</span>)
+
+<span class="comment"># Conv を含む最小ネット: (1,1,4,4) -> Conv -> ReLU -> Linear(16->2)</span>
+model = nn.Sequential(
+    nn.Conv2d(<span class="num">1</span>, <span class="num">1</span>, kernel_size=<span class="num">3</span>, padding=<span class="num">1</span>),
+    nn.ReLU(),
+    nn.Flatten(),
+    nn.Linear(<span class="num">16</span>, <span class="num">2</span>),
+).to(DEVICE)
+
+x = torch.randn(<span class="num">1</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">4</span>).to(DEVICE)
+y = model(x)
+
+<span class="fn">print</span>(<span class="str">"torch.version.hip:"</span>, torch.version.hip)
+<span class="fn">print</span>(<span class="str">"入力 shape:"</span>, x.shape)
+<span class="fn">print</span>(<span class="str">"出力 shape:"</span>, y.shape)
+<span class="fn">print</span>(<span class="str">"モデル構造:"</span>)
+<span class="fn">print</span>(model)</div>
+
+	<div class="math-box">
+		<p data-lang="ja"><strong>コードと式の対応:</strong> このページは Conv を含みますが、まずは「形がどう流れるか」と「最後は行列計算になるか」を見れば十分です。</p>
+		<p data-lang="en"><strong>Code-to-math link:</strong> This page includes convolution, but at first it is enough to track “how the shapes flow” and “where the final matrix-style step appears.”</p>
+		<div data-lang="ja">$$x \in \mathbb{R}^{1 \times 1 \times 4 \times 4}
+\xrightarrow{\mathrm{Conv2d}}
+h \in \mathbb{R}^{1 \times 1 \times 4 \times 4}
+\xrightarrow{\mathrm{ReLU}}
+h'
+\xrightarrow{\mathrm{Flatten}}
+z \in \mathbb{R}^{1 \times 16}
+\xrightarrow{\mathrm{Linear}}
+y \in \mathbb{R}^{1 \times 2}$$</div>
+		<div data-lang="en">$$x \in \mathbb{R}^{1 \times 1 \times 4 \times 4}
+\xrightarrow{\mathrm{Conv2d}}
+h \in \mathbb{R}^{1 \times 1 \times 4 \times 4}
+\xrightarrow{\mathrm{ReLU}}
+h'
+\xrightarrow{\mathrm{Flatten}}
+z \in \mathbb{R}^{1 \times 16}
+\xrightarrow{\mathrm{Linear}}
+y \in \mathbb{R}^{1 \times 2}$$</div>
+		<div data-lang="ja">$$y = zW + b$$</div>
+		<div data-lang="en">$$y = zW + b$$</div>
+		<p data-lang="ja">ここでは <code>Conv2d</code> を無理に 1 つの大きな行列式へ押し込まず、最後の <code>Linear(16, 2)</code> が $zW+b$ という行列計算になる、と結びつけるのが入りやすいです。</p>
+		<p data-lang="en">Here we do not force <code>Conv2d</code> into one giant matrix formula. It is easier to connect the final <code>Linear(16, 2)</code> to the matrix-style expression $zW+b$.</p>
+	</div>
+
+	<div class="prose">
+		<p data-lang="ja">コードを全部いっぺんに追わなくても大丈夫です。最初は次の 4 つだけ見れば十分です。</p>
+		<p data-lang="en">You do not need to trace the whole code at once. At first, these four pieces are enough.</p>
+		<p data-lang="ja"><strong><code>nn.Conv2d(...)</code>:</strong> 画像の中から特徴を探す部品です。</p>
+		<p data-lang="en"><strong><code>nn.Conv2d(...)</code>:</strong> A part that searches for features in the image.</p>
+		<p data-lang="ja"><strong><code>nn.ReLU()</code>:</strong> マイナスを 0 にする、よく使う簡単な関数です。</p>
+		<p data-lang="en"><strong><code>nn.ReLU()</code>:</strong> A common simple function that turns negative values into 0.</p>
+		<p data-lang="ja"><strong><code>nn.Flatten()</code>:</strong> 表の形のデータを 1 列に並べ直します。</p>
+		<p data-lang="en"><strong><code>nn.Flatten()</code>:</strong> This rearranges table-shaped data into one long row.</p>
+		<p data-lang="ja"><strong><code>nn.Linear(16, 2)</code>:</strong> 最後に 2 つの答え候補のスコアを出します。</p>
+		<p data-lang="en"><strong><code>nn.Linear(16, 2)</code>:</strong> This produces the final scores for two answer candidates.</p>
+	</div>
+
+	<!-- ── 3 ── -->
+	<h2 class="section-title" data-lang="ja">3. 実行するとどうなるか</h2>
+	<h2 class="section-title" data-lang="en">3. What Happens When You Run It</h2>
+
+	<div class="output-block">torch.version.hip: 6.x.x
+入力 shape: torch.Size([1, 1, 4, 4])
+出力 shape: torch.Size([1, 2])
+モデル構造:
+Sequential(
+	  (0): Conv2d(1, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (1): ReLU()
+	  (2): Flatten(start_dim=1, end_dim=-1)
+	  (3): Linear(in_features=16, out_features=2, bias=True)
+)</div>
+
+	<div class="prose">
+		<p data-lang="ja">画像テンソルが入り、2 クラス分のスコアが出ています。間で起きていることは:</p>
+		<p data-lang="en">An image tensor goes in and two class scores come out. In between:</p>
+	</div>
+
+	<div class="fact-box">
+		<p data-lang="ja"><strong>① Conv2d:</strong> フィルタ走査で特徴抽出（MIOpen が担当）<br>
+		<strong>② ReLU:</strong> マイナス値を 0 にする要素演算（GPU kernel）<br>
+		<strong>③ Linear:</strong> 最終判定を行列積で計算（rocBLAS GEMM）</p>
+		<p data-lang="en"><strong>① Conv2d:</strong> Feature extraction by filter scan (handled by MIOpen)<br>
+		<strong>② ReLU:</strong> Element-wise clamp of negative values (GPU kernel)<br>
+		<strong>③ Linear:</strong> Final classification via matrix multiply (rocBLAS GEMM)</p>
+	</div>
+
+	<div class="analogy">
+		<p data-lang="ja"><strong>🏭 理論ページとの対応:</strong> 理論ページの「フィルタで特徴抽出 → 不要値を抑える → 最終判定」が、ここでは Conv2d → ReLU → Linear として観測できます。</p>
+		<p data-lang="en"><strong>🏭 Theory page connection:</strong> "Extract features by filters → suppress irrelevant signals → final judgment" appears here as Conv2d → ReLU → Linear.</p>
+	</div>
+
+	<!-- ── 4 ── -->
+	<h2 class="section-title" data-lang="ja">4. 裏では何が起きているか</h2>
+	<h2 class="section-title" data-lang="en">4. Under the Hood</h2>
+
+	<div class="prose">
+		<p data-lang="ja">この例では <strong>Conv2d は MIOpen</strong>、<strong>Linear は rocBLAS</strong> が主担当です。PyTorch ROCm は演算種別に応じてバックエンドを切り替えます。</p>
+		<p data-lang="en">In this example, <strong>Conv2d is mainly handled by MIOpen</strong>, while <strong>Linear is mainly handled by rocBLAS</strong>. PyTorch ROCm switches backend by operation type.</p>
+		<p data-lang="ja">やさしく言うと、PyTorch は「この部分は畳み込み」「この部分は行列計算」と見分けて、下の ROCm ライブラリへ仕事を振り分けています。</p>
+		<p data-lang="en">In simpler words, PyTorch tells whether a part is “convolution” or “matrix math,” then hands that work to the matching ROCm library.</p>
+		<p data-lang="ja">MIOpen の <code>solver</code> は、「この畳み込みをどういうやり方で計算するかを選ぶ係」くらいに読めば十分です。GPU や shape によって、選ばれるやり方が変わることがあります。</p>
+		<p data-lang="en">You can read the MIOpen <code>solver</code> as “the chooser for how to compute this convolution.” The chosen method can change with the GPU and the shape.</p>
+	</div>
+
+	<h2 class="section-title" data-lang="ja">5. ROCmで観測するポイント</h2>
+	<h2 class="section-title" data-lang="en">5. What to Observe on ROCm</h2>
+	<div class="code-block"><span class="comment"># ROCm ビルド確認</span>
+python -c <span class="str">"import torch; print('torch.version.hip =', torch.version.hip)"</span>
+
+<span class="comment"># Conv/Linear 実行時の HIP 呼び出し観測</span>
+rocprof --hip-trace python deep_learning_example.py</div>
+	<div class="prose">
+		<p data-lang="ja">このページの主眼は、「1 つのネットの中でも計算の種類ごとに下の ROCm ライブラリが変わる」と読むことです。細かい trace は、必要になってからで大丈夫です。</p>
+		<p data-lang="en">The key point here is that even inside one network, the underlying ROCm library changes with the kind of computation. Fine-grained traces can wait until you need them.</p>
+	</div>
+
+	<!-- ── next ── -->
+	<div class="next-links">
+		<strong data-lang="ja">📖 次に読むなら:</strong>
+		<strong data-lang="en">📖 Read next:</strong><br>
+		<span data-lang="ja">
+			<a href="deep-learning-for-rocm.html">イメージでわかる深層学習</a> — 理論ページに戻る<br>
+			<a href="training-flow-rocm-example.html">ROCmで見る 学習の流れ</a> — この先 loss を計算して重みを更新する<br>
+			<a href="linear-algebra-rocm-example.html">ROCmで見る 線形代数</a> — 行列積の最小例
+		</span>
+		<span data-lang="en">
+			<a href="deep-learning-for-rocm.html">Visual Deep Learning</a> — Back to the theory page<br>
+			<a href="training-flow-rocm-example.html">See Training Flow in ROCm</a> — Next: compute loss and update weights<br>
+			<a href="linear-algebra-rocm-example.html">See Linear Algebra in ROCm</a> — Minimal matrix multiplication
+		</span>
+	</div>
+
+	<div class="footer">
+		<span data-lang="ja">vega-hbmx-pages · ROCmで見るシリーズ · 2026-03-16</span>
+		<span data-lang="en">vega-hbmx-pages · See it in ROCm series · 2026-03-16</span>
+	</div>
+</div>
+
+<script>
+	const html = document.documentElement;
+	const btnJa = document.getElementById('btn-ja');
+	const btnEn = document.getElementById('btn-en');
+	function setLang(l) { html.setAttribute('data-language', l); html.lang = l; btnJa.classList.toggle('active', l === 'ja'); btnEn.classList.toggle('active', l === 'en'); localStorage.setItem('vega-hbmx-pages-lang', l); }
+	btnJa.addEventListener('click', () => setLang('ja'));
+	btnEn.addEventListener('click', () => setLang('en'));
+	setLang(localStorage.getItem('vega-hbmx-pages-lang') === 'en' ? 'en' : 'ja');
+</script>
+</body>
+</html>

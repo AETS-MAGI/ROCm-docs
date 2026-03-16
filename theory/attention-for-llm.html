@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ja" data-language="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/mermaid-layout.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$',  right: '$',  display: false}
+      ]
+    })"></script>
+  <title>イメージでわかる Attention / Visual Attention for Beginners | vega-hbmx-pages</title>
+  <style>
+    :root {
+      --navy: #0B3C5D;
+      --teal: #00796B;
+      --purple: #5B4B8A;
+      --dpurple: #4A148C;
+      --lpurple: #EDE7F6;
+      --ink: #1F2933;
+      --muted: #5F6C7B;
+      --line: #D8E0E8;
+      --bg: #F5F8FB;
+      --card: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(91,75,138,0.09), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(21,101,192,0.06), transparent 26%),
+        var(--bg);
+    }
+    .page { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; margin-bottom: 18px;
+    }
+    .home-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      text-decoration: none; color: var(--navy); font-size: 14px; font-weight: 600;
+    }
+    .home-link:hover { text-decoration: underline; }
+    .lang-switcher { display: flex; gap: 6px; }
+    .lang-btn {
+      padding: 4px 12px; border: 1.5px solid #B0BEC5; border-radius: 20px;
+      background: transparent; cursor: pointer; font-size: 13px; color: var(--muted);
+    }
+    .lang-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+    .hero { margin-bottom: 32px; }
+    .hero h1 { font-size: 28px; font-weight: 800; color: var(--navy); margin: 0 0 6px; }
+    .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
+    .hero p { font-size: 16px; line-height: 1.75; margin: 10px 0 0; }
+
+    .prereq-box {
+      background: #FFF8E1; border: 1px solid #FFE082; border-radius: 8px;
+      padding: 12px 16px; margin: 0 0 28px; font-size: 14px; color: #4E3600;
+    }
+    .prereq-box strong { color: #E65100; }
+
+    .section-title {
+      font-size: 21px; font-weight: 700; color: var(--navy);
+      border-left: 4px solid var(--purple); padding-left: 12px;
+      margin: 36px 0 16px;
+    }
+
+    .prose { line-height: 1.8; font-size: 15px; }
+    .prose p { margin: 0 0 14px; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--navy); }
+
+    /* callout / highlight box */
+    .callout {
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0;
+    }
+    .callout-purple { background: var(--lpurple); border-left: 4px solid var(--purple); }
+    .callout-blue   { background: #E3F2FD; border-left: 4px solid #1565C0; }
+    .callout-green  { background: #E8F5E9; border-left: 4px solid #2E7D32; }
+    .callout h4 { margin: 0 0 8px; font-size: 15px; color: var(--dpurple); }
+    .callout p  { margin: 0 0 8px; font-size: 14px; line-height: 1.75; }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout ul { margin: 4px 0 0; padding-left: 20px; font-size: 14px; line-height: 1.9; }
+
+    /* analogy box */
+    .analogy {
+      background: #FFFDE7; border: 1px solid #FDD835; border-radius: 8px;
+      padding: 14px 18px; margin: 16px 0; font-size: 14px; color: #33260A;
+    }
+    .analogy strong { color: #E65100; }
+
+    /* step bubbles */
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .step {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      background: var(--purple); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-body strong { font-size: 15px; color: var(--navy); }
+    .step-body p { margin: 4px 0 0; font-size: 14px; line-height: 1.75; color: var(--muted); }
+
+    /* QKV table */
+    .qkv-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+    .qkv-table th {
+      background: var(--purple); color: #fff; padding: 8px 12px; text-align: left;
+      font-weight: 700;
+    }
+    .qkv-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .qkv-table tr:last-child td { border-bottom: none; }
+    .qkv-table tr:nth-child(even) td { background: #F9F5FF; }
+    .qkv-letter { font-size: 18px; font-weight: 800; color: var(--purple); }
+
+    /* softmax illustration */
+    .softmax-row {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      margin: 12px 0; font-size: 14px;
+    }
+    .score-chip {
+      background: #EDE7F6; color: var(--dpurple); border-radius: 6px;
+      padding: 4px 10px; font-weight: 700; font-size: 14px;
+    }
+    .weight-chip {
+      background: var(--purple); color: #fff; border-radius: 6px;
+      padding: 4px 10px; font-weight: 700; font-size: 14px;
+    }
+    .arrow-lbl { font-size: 22px; color: #aaa; }
+
+    /* formula */
+    .formula-box {
+      background: #1E1B2E; color: #E8D5FF; border-radius: 8px;
+      padding: 14px 20px; margin: 16px 0; font-family: monospace; font-size: 15px;
+      line-height: 2;
+    }
+    .formula-box .comment { color: #8C7AAE; font-size: 13px; }
+
+    /* diagram-box */
+    .diagram-box {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 16px; margin: 20px 0;
+    }
+    .diagram-caption {
+      text-align: center; font-size: 13px; color: var(--muted); margin: 10px 0 0;
+    }
+
+    /* next-card */
+    .next-card {
+      background: linear-gradient(135deg, #4A148C, #7B1FA2);
+      border-radius: 12px; padding: 20px 24px; margin: 40px 0 0;
+      display: flex; gap: 16px; align-items: center;
+    }
+    .next-card-body { flex: 1; }
+    .next-card-body h3 { margin: 0 0 6px; color: #fff; font-size: 17px; }
+    .next-card-body p  { margin: 0; color: rgba(255,255,255,0.85); font-size: 14px; line-height: 1.6; }
+    .next-card a {
+      display: inline-block; margin-top: 12px; background: rgba(255,255,255,0.2);
+      color: #fff; text-decoration: none; padding: 7px 18px; border-radius: 6px;
+      font-size: 13px; font-weight: 600;
+    }
+    .next-card a:hover { background: rgba(255,255,255,0.35); }
+
+    /* lang */
+    [data-lang] { display: none; }
+    html[data-language="en"] [data-lang="en"] { display: initial; }
+    html[data-language="ja"] [data-lang="ja"] { display: initial; }
+    html[data-language="en"] div[data-lang="en"],
+    html[data-language="ja"] div[data-lang="ja"] { display: block; }
+    html[data-language="en"] span[data-lang="en"],
+    html[data-language="ja"] span[data-lang="ja"] { display: inline; }
+    html[data-language="en"] p[data-lang="en"],
+    html[data-language="ja"] p[data-lang="ja"] { display: block; }
+    html[data-language="en"] li[data-lang="en"],
+    html[data-language="ja"] li[data-lang="ja"] { display: list-item; }
+    html[data-language="en"] h2[data-lang="en"],
+    html[data-language="ja"] h2[data-lang="ja"],
+    html[data-language="en"] h3[data-lang="en"],
+    html[data-language="ja"] h3[data-lang="ja"] { display: block; }
+    html[data-language="ja"] td[data-lang="ja"],
+    html[data-language="en"] td[data-lang="en"],
+    html[data-language="ja"] th[data-lang="ja"],
+    html[data-language="en"] th[data-lang="en"] { display: table-cell; }
+
+    @media (max-width: 640px) {
+      .page { padding: 20px 16px 40px; }
+      .hero h1 { font-size: 22px; }
+      .qkv-table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="toolbar">
+    <a class="home-link" href="../index.html">&#8592; <span data-lang="ja">トップへ</span><span data-lang="en">Back to index</span></a>
+    <div class="lang-switcher">
+      <button id="btn-ja" class="lang-btn active" type="button">JP</button>
+      <button id="btn-en" class="lang-btn" type="button">EN</button>
+    </div>
+  </div>
+
+  <section class="hero">
+    <p class="subtitle" data-lang="ja">LLM の核心をやさしく解説</p>
+    <p class="subtitle" data-lang="en">A gentle guide to the core of LLMs</p>
+    <h1 data-lang="ja">イメージでわかる Attention</h1>
+    <h1 data-lang="en">Visual Attention for Beginners</h1>
+    <p data-lang="ja">ChatGPT や LLaMA のような大規模言語モデル（LLM）の中心にある「Attention（注意機構）」を、遠くの単語どうしの関係を見る仕組みとして、数式の前にイメージで理解するページです。</p>
+    <p data-lang="en">This page builds an intuition for Attention — the core mechanism of LLMs like ChatGPT and LLaMA — as a way of relating distant words, before touching any maths.</p>
+  </section>
+
+  <div class="prereq-box">
+    <span data-lang="ja">&#128218; <strong>このページを読む前に：</strong>「畳み込み」や「フィルタ」が何かを知っていると理解が深まります。まだの方は <a href="deep-learning-for-rocm.html">イメージでわかる深層学習</a> を先に読むことをおすすめします。行列の計算が気になる方は <a href="linear-algebra-for-rocm.html">イメージでわかる線形代数</a> も参考にどうぞ。<br>&#128209; 数式の記号が不安な方は <a href="reading-math.html">数式の読み方ガイド</a> もあります。</span>
+    <span data-lang="en">&#128218; <strong>Before you read:</strong> This page builds on convolution and filters from <a href="deep-learning-for-rocm.html">Visual Deep Learning</a>. If matrix arithmetic is unfamiliar, <a href="linear-algebra-for-rocm.html">Visual Linear Algebra</a> covers the groundwork.<br>&#128209; Unsure about notation? See <a href="reading-math.html">How to Read Math Notation</a>.</span>
+  </div>
+
+  <!-- 1. なぜ必要か -->
+  <h2 class="section-title" data-lang="ja">① なぜ Attention が必要なの？</h2>
+  <h2 class="section-title" data-lang="en">① Why do we need Attention?</h2>
+
+  <div class="prose">
+    <p data-lang="ja">畳み込みは「小さい窓の中だけを見る」演算です。画像のように「隣のピクセルとの関係」だけ見ればよい場面では十分ですが、文章では事情が違います。</p>
+    <p data-lang="en">Convolution looks only within a small local window. For images — where only neighboring pixels matter — that's fine. But language is different.</p>
+  </div>
+
+  <div class="analogy">
+    <strong data-lang="ja">例文で考えてみよう：</strong>
+    <strong data-lang="en">Consider this example:</strong>
+    <p data-lang="ja" style="margin:8px 0 0;">「太郎はケーキを食べた。そのあと<strong>彼</strong>は眠った。」</p>
+    <p data-lang="en" style="margin:8px 0 0;">"Taro ate the cake. After that, <strong>he</strong> fell asleep."</p>
+    <p data-lang="ja" style="margin:6px 0 0;">「彼」が誰かを理解するには、<strong>ずっと前の「太郎」を参照しなければなりません</strong>。小さい窓では届かない「遠距離の関係」です。</p>
+    <p data-lang="en" style="margin:6px 0 0;">To understand who "he" is, you must <strong>reach back to "Taro" earlier in the text</strong> — a long-range relationship that a small window cannot capture.</p>
+  </div>
+
+  <div class="prose">
+    <p data-lang="ja">文章・コード・音楽など「系列データ」には、こういった遠距離の依存関係がたくさんあります。これを解決するために生まれたのが <strong>Attention（注意機構）</strong>です。</p>
+    <p data-lang="en">Sequential data — language, code, music — is full of such long-range dependencies. <strong>Attention</strong> was designed to solve exactly this problem.</p>
+  </div>
+
+  <!-- 2. Attention のざっくりイメージ -->
+  <h2 class="section-title" data-lang="ja">② Attention のざっくりイメージ</h2>
+  <h2 class="section-title" data-lang="en">② The big picture of Attention</h2>
+
+  <div class="prose">
+    <p data-lang="ja">Attention をひとことで言うと、こうです：</p>
+    <p data-lang="en">In one sentence, Attention is:</p>
+  </div>
+
+  <div class="callout callout-purple">
+    <p data-lang="ja" style="font-size:16px;font-weight:700;color:#4A148C;margin:0;">「今この単語を処理するとき、文中の<em>すべての</em>単語を参照して、関係が深そうな単語ほど強く注目する仕組み」</p>
+    <p data-lang="en" style="font-size:16px;font-weight:700;color:#4A148C;margin:0;">"When processing the current word, look at <em>all</em> words in the sequence and pay more attention to the ones that seem most relevant."</p>
+  </div>
+
+  <div class="prose">
+    <p data-lang="ja">畳み込みが「窓の中だけ」を見るのに対し、Attention は<strong>距離に関係なく文全体を一度に見ます</strong>。「彼」という単語を処理するとき、文の先頭にある「太郎」にも強く注目できます。</p>
+    <p data-lang="en">Where convolution looks only "inside the window," Attention <strong>sees the entire sequence at once, regardless of distance</strong>. When processing "he," it can strongly attend to "Taro" at the very beginning of the sentence.</p>
+  </div>
+
+  <!-- 3. 重みづけの意味 -->
+  <h2 class="section-title" data-lang="ja">③ 「重みづけ」ってどういう意味？</h2>
+  <h2 class="section-title" data-lang="en">③ What does "weighting" mean?</h2>
+
+  <div class="prose">
+    <p data-lang="ja">Attention は全単語を「同じ強さで」見るわけではありません。関係が深そうな単語を<strong>強く</strong>見て、無関係な単語は<strong>弱く</strong>見ます。この「注目の強さ」を数字にしたものが<strong>注目の重み（Attention Weight）</strong>です。</p>
+    <p data-lang="en">Attention doesn't look at all words with equal strength. It looks <strong>strongly</strong> at relevant words and <strong>weakly</strong> at irrelevant ones. The number that represents this "strength of focus" is called an <strong>Attention Weight</strong>.</p>
+  </div>
+
+  <div class="analogy">
+    <strong data-lang="ja">たとえるなら：</strong>
+    <strong data-lang="en">Analogy:</strong>
+    <p data-lang="ja" style="margin:6px 0 0;">図書館で調べものをするとき、手元の本（注目したい単語）に関係する棚（他の単語）を見に行きます。「この棚はすごく関係ある！」「この棚はあまり関係ない」と重要度を判断しながら情報を集める感覚です。</p>
+    <p data-lang="en" style="margin:6px 0 0;">Imagine researching in a library: from the book you're reading (the current word), you visit shelves (other words) around the room. You judge "this shelf is very relevant!" vs "this one not so much" — and collect information weighted by relevance.</p>
+  </div>
+
+  <!-- 4. softmax -->
+  <h2 class="section-title" data-lang="ja">④ softmax ってなに？</h2>
+  <h2 class="section-title" data-lang="en">④ What is softmax?</h2>
+
+  <div class="prose">
+    <p data-lang="ja">各単語ペアの「関係の強さ」に点数をつけます。でも、そのままでは点数の大きさがバラバラで使いにくいです。</p>
+    <p data-lang="en">A "relevance score" is computed for every word pair. But raw scores are awkward to work with as-is — they're just arbitrary numbers of different sizes.</p>
+    <p data-lang="ja">そこで <strong>softmax</strong> の出番です。softmax は、バラバラの点数を <strong>「どの単語にどれだけ注目するか」の振り分け</strong> に変える仕組みです。関係が深い単語には大きく、あまり関係ない単語には少しだけ注目が配られます。</p>
+    <p data-lang="en">That's where <strong>softmax</strong> comes in. softmax turns those uneven scores into a <strong>distribution of attention</strong> — assigning a lot of attention to relevant words and very little to unrelated ones.</p>
+  </div>
+
+  <div class="analogy">
+    <strong data-lang="ja">おこづかいのたとえ：</strong>
+    <strong data-lang="en">The allowance analogy:</strong>
+    <p data-lang="ja" style="margin:8px 0 0;">「注目ポイント」が 10 枚あるとして、「太郎」「ケーキ」「食べた」に配るとします。点数が高かった「太郎」にはたくさん、低かった「食べた」にはほんの少しだけ配ります。</p>
+    <p data-lang="en" style="margin:8px 0 0;">Imagine 10 "attention tokens" to hand out among "Taro", "cake", and "ate". Most go to "Taro" (highest score), very few to "ate" (lowest score).</p>
+    <p data-lang="ja" style="margin:6px 0 0;">softmax は、ちょうどこういう「注目の配り方」を自動で決める仕組みです。</p>
+    <p data-lang="en" style="margin:6px 0 0;">softmax automates exactly this kind of distribution.</p>
+  </div>
+
+  <div class="callout callout-blue">
+    <h4 data-lang="ja">点数 → 注目の振り分け</h4>
+    <h4 data-lang="en">Scores → attention distribution</h4>
+    <div class="softmax-row">
+      <div>
+        <div style="font-size:12px;color:#888;margin-bottom:4px;" data-lang="ja">点数（バラバラな数字）</div>
+        <div style="font-size:12px;color:#888;margin-bottom:4px;" data-lang="en">Raw scores (uneven numbers)</div>
+        <div style="display:flex;gap:6px;">
+          <span class="score-chip">太郎: 8.2</span>
+          <span class="score-chip">ケーキ: 1.4</span>
+          <span class="score-chip">食べた: 0.9</span>
+        </div>
+      </div>
+      <span class="arrow-lbl">→</span>
+      <div style="font-size:18px;color:#888;font-weight:700;text-align:center;">softmax<br><span style="font-size:11px;color:#aaa;font-weight:400;" data-lang="ja">大きいほど多く配る</span><span style="font-size:11px;color:#aaa;font-weight:400;" data-lang="en">bigger score → more attention</span></div>
+      <span class="arrow-lbl">→</span>
+      <div>
+        <div style="font-size:12px;color:#888;margin-bottom:4px;" data-lang="ja">注目の配り方</div>
+        <div style="font-size:12px;color:#888;margin-bottom:4px;" data-lang="en">Attention distribution</div>
+        <div style="display:flex;gap:6px;">
+          <span class="weight-chip">太郎: 87%</span>
+          <span class="weight-chip">ケーキ: 8%</span>
+          <span class="weight-chip">食べた: 5%</span>
+        </div>
+      </div>
+    </div>
+    <p data-lang="ja" style="margin:10px 0 0;font-size:13px;color:#555;">「彼」を処理するとき、注目の 87% を「太郎」に向ける、というイメージです。全部合わせると 100% ぶん配りきった状態になります。</p>
+    <p data-lang="en" style="margin:10px 0 0;font-size:13px;color:#555;">When processing "he," 87% of attention goes to "Taro." Together all shares add up to 100% — all the attention has been distributed.</p>
+  </div>
+
+  <div class="prose">
+    <p data-lang="ja">なぜ「全部で 100%（＝合計 1）」になるように揃えるかというと、あとで「注目の強さに比例して情報を混ぜる」計算をするためです。全部配りきった状態にしておくと、その計算がきれいにまとまります。</p>
+    <p data-lang="en">The reason the shares are kept at 100% (sum = 1) is that the next step blends information in proportion to these shares. Having them sum to 1 makes that blending step clean and well-defined.</p>
+  </div>
+
+  <!-- 5. Q / K / V -->
+  <h2 class="section-title" data-lang="ja">⑤ Query・Key・Value — 3つの役割</h2>
+  <h2 class="section-title" data-lang="en">⑤ Query, Key, Value — three roles</h2>
+
+  <div class="prose">
+    <p data-lang="ja">Attention を計算するとき、各単語は<strong>3つの役割</strong>を同時に担います。</p>
+    <p data-lang="en">When computing Attention, each word plays <strong>three roles simultaneously</strong>.</p>
+  </div>
+
+  <table class="qkv-table">
+    <thead>
+      <tr>
+        <th data-lang="ja">記号</th><th data-lang="ja">名前</th><th data-lang="ja">役割のイメージ</th><th data-lang="ja">図書館の比喩</th>
+        <th data-lang="en">Symbol</th><th data-lang="en">Name</th><th data-lang="en">Role</th><th data-lang="en">Library analogy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="qkv-letter">Q</span></td>
+        <td data-lang="ja"><strong>Query（質問）</strong></td>
+        <td data-lang="ja">「自分はどんな情報を欲しいか？」</td>
+        <td data-lang="ja">図書館で調べたいテーマ</td>
+        <td data-lang="en"><strong>Query</strong></td>
+        <td data-lang="en">"What information am I looking for?"</td>
+        <td data-lang="en">The research topic you bring to the library</td>
+      </tr>
+      <tr>
+        <td><span class="qkv-letter">K</span></td>
+        <td data-lang="ja"><strong>Key（目印）</strong></td>
+        <td data-lang="ja">「自分はどんな情報を持っているか？（の要約）」</td>
+        <td data-lang="ja">各棚の背表紙ラベル</td>
+        <td data-lang="en"><strong>Key</strong></td>
+        <td data-lang="en">"What information do I hold?" (a summary)</td>
+        <td data-lang="en">The label on each shelf's spine</td>
+      </tr>
+      <tr>
+        <td><span class="qkv-letter">V</span></td>
+        <td data-lang="ja"><strong>Value（内容）</strong></td>
+        <td data-lang="ja">「実際に渡す情報の中身」</td>
+        <td data-lang="ja">棚の中の本の内容</td>
+        <td data-lang="en"><strong>Value</strong></td>
+        <td data-lang="en">"The actual content I pass along"</td>
+        <td data-lang="en">The actual books on the shelf</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong data-lang="ja">Q と K を比べてスコアをつける</strong>
+        <strong data-lang="en">Compare Q and K to get a score</strong>
+        <p data-lang="ja">「自分が欲しい情報（Q）」と「相手が持っている情報の要約（K）」を内積（ドット積）で比較します。似ているほどスコアが高くなります。</p>
+        <p data-lang="en">The Query (what you're looking for) is compared with each Key (what others hold) via dot product. The more similar they are, the higher the score.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong data-lang="ja">softmax でスコアを注目の配分に変える</strong>
+        <strong data-lang="en">softmax turns scores into an attention distribution</strong>
+        <p data-lang="ja">前のステップのスコアを softmax に通して「どこにどれだけ注目するか」の配分に変えます。関係が深い単語ほど大きな値になります。</p>
+        <p data-lang="en">The scores from step 1 go through softmax, which converts them into an attention distribution — more relevant words get a larger share.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong data-lang="ja">注目割合で V を加重平均する</strong>
+        <strong data-lang="en">Weight-average the Values by attention weights</strong>
+        <p data-lang="ja">「関係が深い単語ほど強く参照する」ように、注目割合に応じて各単語の Value を混ぜ合わせます。これが Attention の出力です。</p>
+        <p data-lang="en">Values are blended proportionally to attention weights — more relevant words contribute more to the output. This mixture is what Attention outputs.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 式 -->
+  <h2 class="section-title" data-lang="ja">⑥ いまの流れを式にすると</h2>
+  <h2 class="section-title" data-lang="en">⑥ Putting the steps into a formula</h2>
+
+  <div class="prose">
+    <p data-lang="ja">ここまでの3ステップを順番に式にしてみます。いきなり全部わかる必要はありません。<strong>「さっきの3ステップがどこに対応しているか」</strong>だけ追えれば十分です。</p>
+    <p data-lang="en">Let's write those three steps as formulas one at a time. You don't need to understand everything at once — just <strong>trace where each of the three steps appears</strong>.</p>
+  </div>
+
+  <div class="callout callout-purple" style="padding:18px 20px;">
+    <div style="display:flex;flex-direction:column;gap:18px;">
+
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="ja">ステップ 1 — 関係の強さを調べる</div>
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="en">Step 1 — measure relevance</div>
+        <div style="text-align:center;padding:8px 0;">$$\text{score} = QK^\top$$</div>
+        <p data-lang="ja" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">「いま欲しい情報（Q）」と「各単語の目印（K）」を掛け合わせて、<strong>関係の強さスコア</strong>を作ります。</p>
+        <p data-lang="en" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">Multiply "what I'm looking for (Q)" by "each word's label (K)" to get a <strong>relevance score</strong>.</p>
+      </div>
+
+      <div style="border-top:1px solid #CE93D8;padding-top:18px;">
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="ja">ステップ 2 — 注目の配分を決める</div>
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="en">Step 2 — decide the attention distribution</div>
+        <div style="text-align:center;padding:8px 0;">$$\text{weights} = \text{softmax}(QK^\top)$$</div>
+        <p data-lang="ja" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">スコアを softmax に通して、<strong>どこにどれだけ注目するかの配分</strong>に変えます。</p>
+        <p data-lang="en" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">Pass the scores through softmax to get <strong>how much to attend to each word</strong>.</p>
+      </div>
+
+      <div style="border-top:1px solid #CE93D8;padding-top:18px;">
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="ja">ステップ 3 — 情報を集める</div>
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="en">Step 3 — collect the information</div>
+        <div style="text-align:center;padding:8px 0;">$$\text{output} = \text{softmax}(QK^\top)\,V$$</div>
+        <p data-lang="ja" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">配分にしたがって各単語の中身（V）を集めます。関係が深い単語からはたくさん、浅い単語からは少しだけ受け取ります。</p>
+        <p data-lang="en" style="margin:4px 0 0;font-size:13px;color:#4A4A4A;">Collect each word's content (V) according to the distribution — more from relevant words, less from unrelated ones.</p>
+      </div>
+
+      <div style="border-top:1px solid #CE93D8;padding-top:18px;">
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="ja">3 ステップをまとめると</div>
+        <div style="font-size:12px;font-weight:700;color:#7B1FA2;margin-bottom:6px;" data-lang="en">All three steps combined</div>
+        <div style="text-align:center;padding:8px 0;">$$\text{Attention}(Q,K,V) = \text{softmax}(QK^\top)\,V$$</div>
+        <p data-lang="ja" style="margin:4px 0 0;font-size:13px;color:#777;">この式は新しいことを何も加えていません。ステップ 1〜3 をそのまま 1 行にまとめただけです。</p>
+        <p data-lang="en" style="margin:4px 0 0;font-size:13px;color:#777;">This adds nothing new — it's just steps 1–3 written on one line.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-blue" style="margin-top:14px;">
+    <h4 data-lang="ja">補足：$\sqrt{d}$ で割るのはなに？</h4>
+    <h4 data-lang="en">Note: what is the $\sqrt{d}$ division?</h4>
+    <p data-lang="ja">実際の Transformer では式が少し違い、スコアを $\sqrt{d}$ で割ってから softmax に入れます：</p>
+    <p data-lang="en">In practice, Transformer divides the scores by $\sqrt{d}$ before softmax:</p>
+    <div style="text-align:center;padding:6px 0;">$$\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right)V$$</div>
+    <p data-lang="ja" style="margin:6px 0 0;font-size:13px;">$Q$ や $K$ のベクトルが長いほど内積の値が大きくなりやすく、softmax が極端な配分を出してしまうことがあります。$\sqrt{d}$（$d$ はベクトルの長さ）で割ることでスコアを適度な大きさに抑えます。最初の理解では「<strong>スコアが暴れすぎないようにする調整</strong>」くらいで十分です。</p>
+    <p data-lang="en" style="margin:6px 0 0;font-size:13px;">Longer $Q$ and $K$ vectors tend to produce large dot products, pushing softmax toward extreme distributions. Dividing by $\sqrt{d}$ (where $d$ is the vector length) keeps scores in a reasonable range. For now, think of it as "<strong>a tweak to stop scores from getting too large</strong>."</p>
+  </div>
+
+  <!-- 7. Multi-head -->
+  <h2 class="section-title" data-lang="ja">⑦ Multi-head Attention ってなに？</h2>
+  <h2 class="section-title" data-lang="en">⑦ What is Multi-head Attention?</h2>
+
+  <div class="prose">
+    <p data-lang="ja">ここまでの Attention は「1 種類の見方で文全体を参照する」仕組みでした。でも実際の文には、同時に気にすべき関係が複数あります。</p>
+    <p data-lang="en">The Attention we've seen so far uses one "view" of the sequence. But real language has multiple kinds of relationships worth tracking at the same time.</p>
+  </div>
+
+  <div class="analogy">
+    <strong data-lang="ja">たとえるなら：</strong>
+    <strong data-lang="en">Analogy:</strong>
+    <p data-lang="ja" style="margin:8px 0 0;">1 人の先生だけで文を読むのではなく、</p>
+    <p data-lang="en" style="margin:8px 0 0;">Instead of one teacher reading the sentence, imagine:</p>
+    <ul style="margin:6px 0 0;padding-left:20px;font-size:14px;line-height:1.9;">
+      <li data-lang="ja">文法のつながりを見る先生</li>
+      <li data-lang="en">a teacher who looks for grammatical connections</li>
+      <li data-lang="ja">意味が近い単語を見る先生</li>
+      <li data-lang="en">a teacher who spots semantically similar words</li>
+      <li data-lang="ja">代名詞が誰を指すかを見る先生</li>
+      <li data-lang="en">a teacher who tracks what pronouns refer to</li>
+    </ul>
+    <p data-lang="ja" style="margin:6px 0 0;">が同時に文を読んでいる感じです。それぞれの先生が違う視点で関係を見つけ、最後に結果を合わせます。</p>
+    <p data-lang="en" style="margin:6px 0 0;">All reading simultaneously, each from a different angle, then pooling their findings.</p>
+  </div>
+
+  <div class="prose">
+    <p data-lang="ja"><strong>Multi-head Attention</strong> は、Attention の計算を <em>h</em> 個の「head（頭）」で並列に行い、それぞれが異なる関係を学習できるようにした仕組みです。結果を最後に結合することで、1 種類の Attention よりも豊かに文の情報を捉えられます。</p>
+    <p data-lang="en"><strong>Multi-head Attention</strong> runs $h$ Attention computations ("heads") in parallel, each free to learn a different type of relationship. The results are merged at the end, giving a richer picture of the sequence than a single Attention head could provide.</p>
+  </div>
+
+  <!-- 8. Transformer -->
+  <h2 class="section-title" data-lang="ja">⑧ Transformer は何をしているの？</h2>
+  <h2 class="section-title" data-lang="en">⑧ What does Transformer do?</h2>
+
+  <div class="prose">
+    <p data-lang="ja"><strong>Transformer</strong> は、Multi-head Attention と小さなフィードフォワードネットワーク（FFN）のブロックを何層も積み重ねたアーキテクチャです。CNN が畳み込み層を積み重ねるように、Transformer は Attention ブロックを積み重ねます。</p>
+    <p data-lang="en"><strong>Transformer</strong> is an architecture that stacks blocks of Multi-head Attention and a small feed-forward network (FFN). Just as CNN stacks convolution layers, Transformer stacks Attention blocks.</p>
+  </div>
+
+  <div class="diagram-box">
+    <div class="mermaid">
+flowchart TB
+    IN["入力トークン列\n（各単語→ベクトル）"]
+    subgraph BLK ["× N 層繰り返し"]
+      direction TB
+      MHA["Multi-head Attention\n（全単語ペアを参照）"]
+      FFN["Feed-Forward Network\n（位置ごとの変換）"]
+      MHA --> FFN
+    end
+    OUT["出力\n（次の単語の確率など）"]
+    IN --> BLK --> OUT
+    style IN  fill:#E8F5E9,stroke:#2E7D32
+    style MHA fill:#EDE7F6,stroke:#7B1FA2
+    style FFN fill:#E3F2FD,stroke:#1565C0
+    style OUT fill:#FFF3E0,stroke:#E65100
+    </div>
+    <p class="diagram-caption" data-lang="ja">Transformer = [Multi-head Attention → FFN] を N 層積み重ねたもの</p>
+    <p class="diagram-caption" data-lang="en">Transformer = [Multi-head Attention → FFN] repeated N times</p>
+  </div>
+
+  <!-- 9. ROCm との接続 -->
+  <h2 class="section-title" data-lang="ja">⑨ ROCm との接続</h2>
+  <h2 class="section-title" data-lang="en">⑨ Connection to ROCm</h2>
+
+  <div class="prose">
+    <p data-lang="ja">Attention の核心計算 <code>Q·Kᵀ</code> と <code>· V</code> は、どちらも<strong>大きな行列積（GEMM）</strong>です。中学生向けに言えば、<strong>大きな表どうしの掛け算</strong>です。ROCm では、この種の計算は主に rocBLAS などの行列計算ライブラリが支えます。</p>
+    <p data-lang="en">The core computations <code>Q·Kᵀ</code> and <code>· V</code> are both <strong>large matrix multiplications (GEMM)</strong> — in simple terms, <strong>multiplying big tables of numbers</strong>. In ROCm, this kind of work is mainly supported by matrix-math libraries such as rocBLAS.</p>
+
+    <p data-lang="ja">また、文が長くなると「単語どうしの組み合わせ」を全部比べる必要があり、メモリをたくさん使います。<strong>Flash Attention</strong> は、その計算を小さなかたまりに分けて、途中で使うメモリを減らす考え方です。gfx900 のような旧世代 GPU では GPU 内部の小さくて速い作業スペースが限られるため、恩恵が小さめになる場合があります。</p>
+    <p data-lang="en">As sequences get longer, Attention must compare many pairs of words, which uses a lot of memory. <strong>Flash Attention</strong> is the idea of breaking that work into smaller chunks so it needs less temporary memory. On older GPUs like gfx900, the small fast workspace inside the GPU is more limited, so the benefit can be smaller.</p>
+  </div>
+
+  <div class="callout callout-teal">
+    <h4 data-lang="ja">ここで出る難しい言葉を一言で</h4>
+    <h4 data-lang="en">Quick translations for the harder terms here</h4>
+    <p data-lang="ja"><strong>GEMM:</strong> 大きな表どうしの掛け算。<strong>Flash Attention:</strong> Attention を小分けにしてメモリ節約する工夫。<strong>GPU 内部の小さくて速い作業スペース:</strong> その場で計算を回すための小さな作業机、くらいの理解で十分です。</p>
+    <p data-lang="en"><strong>GEMM:</strong> multiplying large tables of numbers. <strong>Flash Attention:</strong> a way to split Attention into smaller chunks to save memory. <strong>The GPU's small fast workspace:</strong> think of it as a tiny desk inside the GPU used for immediate work.</p>
+  </div>
+
+  <div class="callout callout-green">
+    <h4 data-lang="ja">まとめ</h4>
+    <h4 data-lang="en">Summary</h4>
+    <ul>
+      <li data-lang="ja">畳み込みは「近くだけ見る」、Attention は「全部見て重みをつける」</li>
+      <li data-lang="en">Convolution sees only nearby; Attention sees all and assigns weights</li>
+      <li data-lang="ja">softmax がスコアを「どこにどれだけ注目するかの配分」に変える</li>
+      <li data-lang="en">softmax turns scores into an attention distribution across words</li>
+      <li data-lang="ja">Q（何が欲しいか）と K（各単語の目印）でスコアを計算し、配分にしたがって V（中身）を集める</li>
+      <li data-lang="en">Q (what I want) and K (each word's label) → score → collect V (content) by distribution</li>
+      <li data-lang="ja">Multi-head Attention は複数の見方で同時に文を参照する仕組み</li>
+      <li data-lang="en">Multi-head Attention reads the sequence from multiple perspectives simultaneously</li>
+      <li data-lang="ja">Transformer は Attention ブロックを積み重ねたもので、LLM の主要構成要素</li>
+      <li data-lang="en">Transformer stacks Attention blocks and is the backbone of modern LLMs</li>
+      <li data-lang="ja">核心計算は大きな行列計算で、ROCm では rocBLAS 系の経路が重要</li>
+      <li data-lang="en">The core computation is large matrix math, and rocBLAS-style paths are important in ROCm</li>
+    </ul>
+  </div>
+
+  <div class="next-card">
+    <div class="next-card-body">
+      <h3 data-lang="ja">次に読むなら: イメージでわかる深層学習</h3>
+      <h3 data-lang="en">Continue with: Visual Deep Learning</h3>
+      <p data-lang="ja">畳み込み・フィルタ・MIOpen solver の関係を、さらに詳しく解説しています。</p>
+      <p data-lang="en">Convolution, filters, and MIOpen solvers — explained in detail.</p>
+      <a href="deep-learning-for-rocm.html" data-lang="ja">イメージでわかる深層学習 →</a>
+      <a href="deep-learning-for-rocm.html" data-lang="en">Visual Deep Learning →</a>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initMermaidPage } from '../scripts/mermaid-page.js';
+  initMermaidPage();
+</script>
+<script>
+
+  const html = document.documentElement;
+  document.getElementById('btn-ja').addEventListener('click', function () {
+    html.setAttribute('data-language', 'ja');
+    html.setAttribute('lang', 'ja');
+    document.getElementById('btn-ja').classList.add('active');
+    document.getElementById('btn-en').classList.remove('active');
+  });
+  document.getElementById('btn-en').addEventListener('click', function () {
+    html.setAttribute('data-language', 'en');
+    html.setAttribute('lang', 'en');
+    document.getElementById('btn-en').classList.add('active');
+    document.getElementById('btn-ja').classList.remove('active');
+  });
+</script>
+</body>
+</html>
