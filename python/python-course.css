@@ -359,6 +359,29 @@ body {
 	border-left: 3px solid #ff9800;
 }
 
+/* ── details-fold: 折りたたみセクション ── */
+.content-section details {
+	margin-top: 12px;
+}
+
+.content-section details summary {
+	cursor: pointer;
+	font-weight: 700;
+	font-size: 15px;
+	color: var(--blue);
+	padding: 6px 0;
+	user-select: none;
+	list-style: revert;
+}
+
+.content-section details summary:hover {
+	text-decoration: underline;
+}
+
+.content-section details[open] > summary {
+	margin-bottom: 8px;
+}
+
 @media (max-width: 640px) {
 	.page { padding: 22px 16px 48px; }
 	.chapter-hero,
