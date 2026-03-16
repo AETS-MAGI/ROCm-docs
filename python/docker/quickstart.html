@@ -107,6 +107,7 @@
 		<p class="eyebrow">Quickstart — Docker</p>
 		<h1>GPU で 1 回動かす</h1>
 		<p>ROCm が入った Docker コンテナを使って、PyTorch で GPU 計算を 1 回動かすところまで進みます。環境を汚さず試せるのが Docker の強みです。</p>
+		<p style="font-size: 14px; color: var(--muted); margin-top: 8px;">この教室では、Docker の細かいフラグを毎回書く代わりに、<strong>compose.yaml</strong> を使います。最初に1回だけ用意すれば、以後は短いコマンドで同じ環境を繰り返し使えます。</p>
 	</section>
 
 	<!-- Step 1 -->
@@ -115,11 +116,16 @@
 		<p>必要なものは2つだけです。</p>
 		<ul style="font-size: 15px; line-height: 2; color: var(--muted); padding-left: 20px;">
 			<li><strong>AMD GPU</strong> が載った Linux マシン（ROCm 対応の GPU）</li>
-			<li><strong>Docker</strong> がインストールされていること</li>
+			<li><strong>Docker</strong> がインストールされていること（Docker Compose を含む）</li>
 		</ul>
 		<p>Docker が入っているか確認:</p>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker --version</code></pre></div>
-		<p>バージョンが表示されれば OK です。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker compose version</code></pre></div>
+		<p>どちらもバージョンが表示されれば OK です。</p>
+
+		<div class="info-box">
+			<strong>💡 Docker Compose について:</strong> 最近の Docker Desktop や <code>docker-ce</code> パッケージには <code>docker compose</code> が含まれています。<code>docker compose version</code> でバージョンが出ればそのまま使えます。
+		</div>
 
 		<p>GPU の対応状況はこちらで確認できます:</p>
 		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html" target="_blank" rel="noopener">AMD 公式: 対応 GPU・OS 一覧</a></p>
@@ -127,31 +133,59 @@
 
 	<!-- Step 2 -->
 	<div class="step-card">
-		<h2><span class="step-num">2</span>ROCm + PyTorch のコンテナを取得する</h2>
-		<p>AMD が公開している PyTorch 入りのイメージを使います。</p>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker pull rocm/pytorch:latest</code></pre></div>
-		<p>数 GB あるので、初回は少し時間がかかります。</p>
+		<h2><span class="step-num">2</span>compose.yaml を用意する</h2>
+		<p>作業用のフォルダを作り、その中に <code>compose.yaml</code> を1つ置きます。これが ROCm 環境の設定ファイルになります。</p>
+
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>mkdir -p ~/rocm-workspace && cd ~/rocm-workspace</code></pre></div>
+
+		<p>以下の内容で <code>compose.yaml</code> を作成してください。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+      - render
+    volumes:
+      - .:/workspace</code></pre></div>
+
+		<div class="info-box">
+			<strong>💡 何を書いたのか:</strong><br>
+			<code>image</code> — AMD が公開している PyTorch 入り Docker イメージ<br>
+			<code>devices</code> — GPU デバイスをコンテナに渡す<br>
+			<code>group_add</code> — GPU にアクセスする権限を追加<br>
+			<code>volumes</code> — このフォルダの中身をコンテナから読み書きできるようにする
+		</div>
+
+		<p style="font-size: 14px; color: var(--muted);">イメージの取得（数 GB）は初回の起動時に自動で行われます。</p>
 	</div>
 
 	<!-- Step 3 -->
 	<div class="step-card">
 		<h2><span class="step-num">3</span>コンテナを起動する</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
-  --device=/dev/kfd \
-  --device=/dev/dri \
-  --group-add video \
-  rocm/pytorch:latest</code></pre></div>
-
-		<div class="info-box">
-			<strong>フラグの意味:</strong><br>
-			<code>--device=/dev/kfd</code> と <code>--device=/dev/dri</code> — GPU デバイスをコンテナに渡す<br>
-			<code>--group-add video</code> — GPU にアクセスする権限を追加<br>
-			<code>--rm</code> — コンテナ終了時に自動で削除（やり直しやすい）
-		</div>
+		<p><code>compose.yaml</code> があるフォルダで、この1行を実行します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker compose run --rm rocm</code></pre></div>
+		<p>コンテナのシェルに入れたら成功です。</p>
 
 		<div class="warn-box">
 			<strong>GPU が見えない場合:</strong> ホスト側で <code>video</code> / <code>render</code> グループに入っているか、ROCm のカーネルドライバが入っているかを確認してください。
 		</div>
+
+		<details style="margin: 12px 0; font-size: 14px;">
+			<summary style="cursor: pointer; color: var(--blue); font-weight: 700;">docker run で直接起動したい場合（上級者向け）</summary>
+			<p style="margin-top: 8px; color: var(--muted); line-height: 1.7;">compose.yaml の中身を <code>docker run</code> のフラグに展開するとこうなります:</p>
+			<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  --group-add video \
+  --group-add render \
+  -v "$PWD":/workspace \
+  rocm/pytorch:latest</code></pre></div>
+			<p style="color: var(--muted); line-height: 1.7;">長いので、この教室では compose を使います。</p>
+		</details>
 	</div>
 
 	<!-- Step 4 -->
@@ -197,7 +231,8 @@ print('デバイス:', c.device)
 	<div class="success-box">
 		<strong>🎉 おめでとうございます！</strong><br>
 		Docker コンテナ内で GPU 計算が動きました。<br>
-		<code>torch.cuda</code> という名前ですが、AMD GPU でも使える API 名です（詳しくは第1章で）。
+		<code>torch.cuda</code> という名前ですが、AMD GPU でも使える API 名です（詳しくは第1章で）。<br>
+		次回からも <code>docker compose run --rm rocm</code> で同じ環境をすぐ使えます。
 	</div>
 
 	<h2 style="margin-top: 28px; font-size: 19px; color: var(--blue-deep);">次のステップ</h2>

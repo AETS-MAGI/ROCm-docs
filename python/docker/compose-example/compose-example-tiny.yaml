@@ -1,0 +1,14 @@
+# 初回用、docker compose run --rm rocm で起動する
+services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true
+    stdin_open: true
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+    volumes:
+      - .:/workspace
+    working_dir: /workspace

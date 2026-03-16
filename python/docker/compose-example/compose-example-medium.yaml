@@ -1,0 +1,11 @@
+# GPUを見せる最小構成
+
+services:
+  rocm:
+    image: rocm/pytorch:latest
+    tty: true
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
