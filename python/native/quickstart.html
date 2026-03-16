@@ -37,19 +37,6 @@
 			margin-right: 8px;
 			vertical-align: middle;
 		}
-		.cmd {
-			display: block;
-			background: var(--code-bg);
-			color: var(--code-ink);
-			padding: 14px 16px;
-			border-radius: 10px;
-			font-family: 'Consolas', 'Monaco', monospace;
-			font-size: 14px;
-			line-height: 1.6;
-			margin: 10px 0;
-			overflow-x: auto;
-			white-space: pre;
-		}
 		.output-example {
 			background: #f0f4f8;
 			border: 1px solid var(--line);
@@ -105,16 +92,6 @@
 </head>
 <body>
 <div class="page">
-	<!--
-	Codex review 2026-03-16:
-	初心者向け Quickstart としてかなり強い。
-	追加改善案:
-	1. GPU 名確認コマンドは `lspci | grep -Ei "vga|display|3d"` も候補。
-	   環境によっては `vga` だけだと拾いにくい
-	2. Step 5 は PyTorch 公式だけでなく AMD 側の PyTorch on ROCm 導線も併記すると、
-	   サイト全体の ROCm-first 方針とさらに揃う
-	3. warn-box の末尾に、将来 Appendix B への戻り先を置けると復帰しやすい
-	-->
 	<a class="back-link" href="../quickstart.html">← ルート選択に戻る</a>
 
 	<section class="chapter-hero">
@@ -129,7 +106,7 @@
 		<p>まず、お使いの GPU が ROCm の対応リストに載っているか調べます。</p>
 		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html" target="_blank" rel="noopener">AMD 公式: 対応 GPU・OS 一覧</a></p>
 		<p>自分の GPU 名がわからないときは、ターミナルで確認できます。</p>
-		<code class="cmd">lspci | grep -Ei "vga|display|3d"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>lspci | grep -Ei "vga|display|3d"</code></pre></div>
 		<div class="warn-box">
 			<strong>⚠ 載っていない場合:</strong> 旧世代の GPU（Vega 系など）では、動くこともありますが公式サポート外です。まずは対応 GPU で試すのがおすすめです。
 		</div>
@@ -144,14 +121,14 @@
 		<div class="warn-box">
 			<strong>よくある落とし穴:</strong> インストール後に <code>video</code> と <code>render</code> グループにユーザーを追加するのを忘れがちです。
 		</div>
-		<code class="cmd">sudo usermod -aG video,render $USER</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>sudo usermod -aG video,render $USER</code></pre></div>
 		<p>追加後は <strong>一度ログアウトして再ログイン</strong> してください（再起動でも OK）。</p>
 	</div>
 
 	<!-- Step 3 -->
 	<div class="step-card">
 		<h2><span class="step-num">3</span>GPU が見えるか確認する</h2>
-		<code class="cmd">rocminfo | head -30</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>rocminfo | head -30</code></pre></div>
 		<p>「Agent」のところに GPU 名が出ていれば OK です。</p>
 		<div class="output-example">Agent 1
   Name:                    gfx1100
@@ -165,8 +142,8 @@
 	<div class="step-card">
 		<h2><span class="step-num">4</span>Python 仮想環境をつくる</h2>
 		<p>システムの Python と分けるために、仮想環境を 1 つ作ります。</p>
-		<code class="cmd">python3 -m venv ~/rocm-env
-source ~/rocm-env/bin/activate</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -m venv ~/rocm-env
+source ~/rocm-env/bin/activate</code></pre></div>
 		<p>プロンプトの先頭に <code>(rocm-env)</code> が付いたら成功です。</p>
 	</div>
 
@@ -176,7 +153,7 @@ source ~/rocm-env/bin/activate</code>
 		<p>PyTorch 公式サイトで <strong>ROCm</strong> を選ぶと、正しいインストールコマンドが出ます。</p>
 		<p>👉 <a class="aside-link" href="https://pytorch.org/get-started/locally/" target="_blank" rel="noopener">PyTorch 公式: Get Started</a></p>
 		<p>たとえば ROCm 6.x 用の場合（バージョンは公式で確認してください）:</p>
-		<code class="cmd">pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2</code></pre></div>
 		<p>AMD 側のインストールガイドも参考になります:</p>
 		<p>👉 <a class="aside-link" href="https://rocm.docs.amd.com/projects/install-on-linux/en/develop/install/3rd-party/pytorch-install.html" target="_blank" rel="noopener">AMD 公式: PyTorch on ROCm インストール</a></p>
 
@@ -188,7 +165,7 @@ source ~/rocm-env/bin/activate</code>
 	<!-- Step 6 -->
 	<div class="step-card">
 		<h2><span class="step-num">6</span>PyTorch から GPU が見えるか確認する</h2>
-		<code class="cmd">python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code></pre></div>
 		<div class="output-example">HIP: 6.2.xxxxx
 GPU available: True</div>
 		<p><code>torch.version.hip</code> にバージョンが出て、<code>True</code> なら ROCm 版の PyTorch が GPU を認識しています。</p>
@@ -202,7 +179,7 @@ GPU available: True</div>
 	<div class="step-card">
 		<h2><span class="step-num">7</span>GPU で行列の掛け算を 1 回動かす</h2>
 		<p>これが今日のゴールです。</p>
-		<code class="cmd">python3 -c "
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "
 import torch
 device = torch.device('cuda')
 a = torch.randn(3, 3, device=device)
@@ -210,7 +187,7 @@ b = torch.randn(3, 3, device=device)
 c = torch.matmul(a, b)
 print('結果:', c)
 print('デバイス:', c.device)
-"</code>
+"</code></pre></div>
 		<div class="output-example">結果: tensor([[ 0.1234, -0.5678,  1.2345],
         [ 0.9876, -0.4321,  0.5432],
         [-0.1111,  0.2222,  0.3333]], device='cuda:0')
@@ -235,5 +212,6 @@ print('デバイス:', c.device)
 
 	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
 </div>
+<script src="../copy-code.js"></script>
 </body>
 </html>

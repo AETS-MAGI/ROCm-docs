@@ -23,13 +23,13 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 
 x = torch.randn(2, 3, dtype=torch.float32)
 
 print("shape :", x.shape)
 print("dtype :", x.dtype)
-print("device:", x.device)</code></pre>
+print("device:", x.device)</code></pre></div>
 		<p>困ったときは、まず <span class="code-inline">shape</span>、<span class="code-inline">dtype</span>、<span class="code-inline">device</span> の 3 つを見るだけでも整理しやすくなります。</p>
 	</section>
 
@@ -67,5 +67,6 @@ print("device:", x.device)</code></pre>
 		<a class="primary" href="./python-index.html">一覧へ戻る</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

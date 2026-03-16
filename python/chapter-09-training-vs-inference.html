@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -48,7 +48,7 @@ optimizer.step()
 after = model.weight.detach().clone()
 
 print("inference output:", answer.item())
-print("weight changed:", not torch.equal(before, after))</code></pre>
+print("weight changed:", not torch.equal(before, after))</code></pre></div>
 		<p>このコードでは、前半が推論、後半が学習です。最後の <span class="code-inline">weight changed</span> が <span class="code-inline">True</span> なら、「学習側では重みが動いた」と読めます。</p>
 	</section>
 
@@ -86,5 +86,6 @@ print("weight changed:", not torch.equal(before, after))</code></pre>
 		<a class="primary" href="./chapter-10-run-convolution.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

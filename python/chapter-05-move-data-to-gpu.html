@@ -23,14 +23,14 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 x = torch.tensor([[1.0, 2.0]], dtype=torch.float32)
 
 print("before:", x.device)
 x = x.to(device)
-print("after :", x.device)</code></pre>
+print("after :", x.device)</code></pre></div>
 		<p><span class="code-inline">before</span> と <span class="code-inline">after</span> を見比べるだけで、データがどこにあるかを追えるようになります。</p>
 	</section>
 
@@ -68,5 +68,6 @@ print("after :", x.device)</code></pre>
 		<a class="primary" href="./chapter-06-run-small-model.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

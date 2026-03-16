@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import time
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import time
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,7 +39,7 @@ if device.type == "cuda":
 
 print("device:", device)
 print("shape :", c.shape)
-print("sec   :", time.time() - t0)</code></pre>
+print("sec   :", time.time() - t0)</code></pre></div>
 		<p>このコードは、大きな行列の掛け算を 1 回だけ走らせて、その時間を見ています。最後の <span class="code-inline">print</span> 3 つが読めれば、実験コードの入口として十分です。</p>
 	</section>
 
@@ -77,5 +77,6 @@ print("sec   :", time.time() - t0)</code></pre>
 		<a class="primary" href="./appendix-help.html">Appendixへ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

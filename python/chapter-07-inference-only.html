@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,7 +40,7 @@ model.eval()
 with torch.no_grad():
     y = model(x)
 
-print(y)</code></pre>
+print(y)</code></pre></div>
 		<p>ここでやっているのは、入力から答えを出す <span class="code-inline">forward</span> だけです。重みを直したり、学習したりはしていません。</p>
 	</section>
 
@@ -78,5 +78,6 @@ print(y)</code></pre>
 		<a class="primary" href="./chapter-08-train-once.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

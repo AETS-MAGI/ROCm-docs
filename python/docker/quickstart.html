@@ -37,19 +37,6 @@
 			margin-right: 8px;
 			vertical-align: middle;
 		}
-		.cmd {
-			display: block;
-			background: var(--code-bg);
-			color: var(--code-ink);
-			padding: 14px 16px;
-			border-radius: 10px;
-			font-family: 'Consolas', 'Monaco', monospace;
-			font-size: 14px;
-			line-height: 1.6;
-			margin: 10px 0;
-			overflow-x: auto;
-			white-space: pre;
-		}
 		.output-example {
 			background: #f0f4f8;
 			border: 1px solid var(--line);
@@ -114,16 +101,6 @@
 </head>
 <body>
 <div class="page">
-	<!--
-	Codex review 2026-03-16:
-	Docker ルート分離は CANONICAL 準拠。
-	追加改善案:
-	1. `rocm/pytorch:latest` は将来の差分で挙動が変わりやすい。
-	   安定性を重視するなら、検証済みタグを例示する案もある
-	2. Docker 未経験者向けに「コンテナ = 使い捨ての作業箱」の一文があると、
-	   ルート選択後の心理コストがさらに下がる
-	3. ここも将来 Appendix B への失敗時導線を置きたい
-	-->
 	<a class="back-link" href="../quickstart.html">← ルート選択に戻る</a>
 
 	<section class="chapter-hero">
@@ -141,7 +118,7 @@
 			<li><strong>Docker</strong> がインストールされていること</li>
 		</ul>
 		<p>Docker が入っているか確認:</p>
-		<code class="cmd">docker --version</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker --version</code></pre></div>
 		<p>バージョンが表示されれば OK です。</p>
 
 		<p>GPU の対応状況はこちらで確認できます:</p>
@@ -152,18 +129,18 @@
 	<div class="step-card">
 		<h2><span class="step-num">2</span>ROCm + PyTorch のコンテナを取得する</h2>
 		<p>AMD が公開している PyTorch 入りのイメージを使います。</p>
-		<code class="cmd">docker pull rocm/pytorch:latest</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker pull rocm/pytorch:latest</code></pre></div>
 		<p>数 GB あるので、初回は少し時間がかかります。</p>
 	</div>
 
 	<!-- Step 3 -->
 	<div class="step-card">
 		<h2><span class="step-num">3</span>コンテナを起動する</h2>
-		<code class="cmd">docker run -it --rm \
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
   --device=/dev/kfd \
   --device=/dev/dri \
   --group-add video \
-  rocm/pytorch:latest</code>
+  rocm/pytorch:latest</code></pre></div>
 
 		<div class="info-box">
 			<strong>フラグの意味:</strong><br>
@@ -181,7 +158,7 @@
 	<div class="step-card">
 		<h2><span class="step-num">4</span>コンテナ内で GPU が見えるか確認する</h2>
 		<p>コンテナのシェルに入ったら、まず <code>rocminfo</code> で確認します。</p>
-		<code class="cmd">rocminfo | head -30</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>rocminfo | head -30</code></pre></div>
 		<div class="output-example">Agent 1
   Name:                    gfx1100
   ...</div>
@@ -191,7 +168,7 @@
 	<!-- Step 5 -->
 	<div class="step-card">
 		<h2><span class="step-num">5</span>PyTorch から GPU が見えるか確認する</h2>
-		<code class="cmd">python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "import torch; print('HIP:', torch.version.hip); print('GPU available:', torch.cuda.is_available())"</code></pre></div>
 		<div class="output-example">HIP: 6.2.xxxxx
 GPU available: True</div>
 		<p><code>True</code> が出れば、PyTorch が GPU を認識しています。</p>
@@ -201,7 +178,7 @@ GPU available: True</div>
 	<div class="step-card">
 		<h2><span class="step-num">6</span>GPU で行列の掛け算を 1 回動かす</h2>
 		<p>これが今日のゴールです。</p>
-		<code class="cmd">python3 -c "
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "
 import torch
 device = torch.device('cuda')
 a = torch.randn(3, 3, device=device)
@@ -209,7 +186,7 @@ b = torch.randn(3, 3, device=device)
 c = torch.matmul(a, b)
 print('結果:', c)
 print('デバイス:', c.device)
-"</code>
+"</code></pre></div>
 		<div class="output-example">結果: tensor([[ 0.1234, -0.5678,  1.2345],
         [ 0.9876, -0.4321,  0.5432],
         [-0.1111,  0.2222,  0.3333]], device='cuda:0')
@@ -234,5 +211,6 @@ print('デバイス:', c.device)
 
 	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
 </div>
+<script src="../copy-code.js"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 x = torch.randn(2, 3)
@@ -36,7 +36,7 @@ try:
     y = layer(x)
 except RuntimeError as e:
     print(type(e).__name__)
-    print(e)</code></pre>
+    print(e)</code></pre></div>
 		<p>ここでは、入力の最後の大きさ 3 と、<span class="code-inline">Linear(4, 2)</span> が期待する 4 が合っていません。だから止まる、と shape から説明できます。</p>
 	</section>
 
@@ -74,5 +74,6 @@ except RuntimeError as e:
 		<a class="primary" href="./chapter-13-read-small-rocm-script.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

@@ -8,14 +8,6 @@
 </head>
 <body>
 <main class="page">
-	<!--
-	Codex review 2026-03-16:
-	CANONICAL §13 に対して、前提条件の visible な明示だけがまだ弱い。
-	提案:
-	1. hero 直下に「この章は Quickstart または第0章を済ませた前提です」の短い案内を追加する
-	2. `HIP None + False` や `rocminfo` 失敗時の戻り先として、将来 Appendix B をリンクしたい
-	3. `torch.cuda` の説明はよくできているので、以降の章では「詳しくは第1章へ」で統一できる
-	-->
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
 	<header class="chapter-hero">
@@ -53,7 +45,7 @@
 	<section class="content-section">
 		<h2>確認コード（そのまま実行版）</h2>
 		<p><strong>コードを見る前に一点:</strong> 下のコードには <span class="code-inline">torch.cuda</span> という名前が出てきますが、これは NVIDIA 専用ではありません。ROCm 版 PyTorch も同じ名前を使って GPU を操作します（詳しくは後の「どこがROCm？」で説明します）。また <span class="code-inline">torch.version.hip</span> は ROCm に含まれる HIP という部品のバージョンを取得しています。<span class="code-inline">torch.cuda</span> と <span class="code-inline">torch.version.hip</span> が混在しているのはそういう理由です。</p>
-		<pre class="code-block"><code>import sys
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import sys
 import torch
 
 print("Python:", sys.version.split()[0])
@@ -63,26 +55,26 @@ print("GPU available:", torch.cuda.is_available())
 print("Device count:", torch.cuda.device_count())
 
 if torch.cuda.is_available():
-    print("Device[0]:", torch.cuda.get_device_name(0))</code></pre>
+    print("Device[0]:", torch.cuda.get_device_name(0))</code></pre></div>
 		<p>この章では、コードそのものよりも <strong>出てきた値をどう読むか</strong> が大事です。実行したら、まずは <span class="code-inline">HIP</span> と <span class="code-inline">GPU available</span> の 2 行を落ち着いて見ます。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>実行コマンド（コピペ用）</h2>
-		<pre class="code-block"><code># 例: venv の Python を使う場合
-./.venv/bin/python -c 'import sys, torch; print("Python:", sys.version.split()[0]); print("Torch:", torch.__version__); print("HIP:", torch.version.hip); print("GPU available:", torch.cuda.is_available()); print("Device count:", torch.cuda.device_count()); print("Device[0]:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "(skip)")'</code></pre>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># 例: venv の Python を使う場合
+./.venv/bin/python -c 'import sys, torch; print("Python:", sys.version.split()[0]); print("Torch:", torch.__version__); print("HIP:", torch.version.hip); print("GPU available:", torch.cuda.is_available()); print("Device count:", torch.cuda.device_count()); print("Device[0]:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "(skip)")'</code></pre></div>
 		<p>1行で実行できるので、「ファイルを作る前にまず確認したい」ときに便利です。<br>
 		<strong><span class="code-inline">-c</span> オプションについて:</strong> <span class="code-inline">python -c '...'</span> は、Python ファイルを作らずに引用符の中のコードを直接実行する書き方です。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>実行すると何が出る？</h2>
-		<pre class="code-block"><code>Python: 3.14.3
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>Python: 3.14.3
 Torch: 2.9.1+rocm6.3
 HIP: 6.3.x
 GPU available: True
 Device count: 1
-Device[0]: AMD Radeon RX Vega</code></pre>
+Device[0]: AMD Radeon RX Vega</code></pre></div>
 		<p>このように出れば、まずは <strong>ROCm 版 PyTorch が入っていて、GPU も見えている</strong> と考えて大丈夫です。最後に GPU 名まで出ていれば、入口としてはかなり良い状態です。<br>
 		<strong>注:</strong> Python や Torch のバージョン番号は環境によって異なります。数字が違っても問題ありません。<span class="code-inline">Torch: xxxxxx+rocm...</span> の形式で出ていれば ROCm 版と判断できます。</p>
 	</section>
@@ -155,5 +147,6 @@ Device[0]: AMD Radeon RX Vega</code></pre>
 		<a class="primary" href="./chapter-02-number-tables.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

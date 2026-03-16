@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +33,7 @@ x = torch.randn(1, 1, 5, 5, device=device)
 y = conv(x)
 
 print(x.shape)
-print(y.shape)</code></pre>
+print(y.shape)</code></pre></div>
 		<p>ここでの shape は、ざっくり言うと「枚数、チャネル、高さ、幅」の順です。最初は 4 つの数字が並んでいる、と見られれば十分です。</p>
 	</section>
 
@@ -71,5 +71,6 @@ print(y.shape)</code></pre>
 		<a class="primary" href="./chapter-11-peek-attention.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

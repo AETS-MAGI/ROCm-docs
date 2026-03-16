@@ -29,19 +29,6 @@
 			line-height: 1.8;
 			color: var(--muted);
 		}
-		.cmd {
-			display: block;
-			background: var(--code-bg);
-			color: var(--code-ink);
-			padding: 14px 16px;
-			border-radius: 10px;
-			font-family: 'Consolas', 'Monaco', monospace;
-			font-size: 14px;
-			line-height: 1.6;
-			margin: 10px 0;
-			overflow-x: auto;
-			white-space: pre;
-		}
 		.meaning-box {
 			background: #F3E5F5;
 			border-left: 5px solid #7B1FA2;
@@ -133,16 +120,6 @@
 </head>
 <body>
 <div class="page">
-	<!--
-	Codex review 2026-03-16:
-	Quickstart と第0章の役割分離が守られていてよい。
-	追加改善案:
-	1. 「ホスト Linux -> Docker -> ROCm runtime -> PyTorch」の矢印図を入れると、
-	   コンテナ越しに GPU を見ている感覚が伝わりやすい
-	2. Docker 未経験者向けに「コンテナは使い捨て環境」という短い定義があると、
-	   言葉のハードルがさらに下がる
-	3. ここからも将来 Appendix B / C への分岐リンクを置けると親切
-	-->
 	<a class="back-link" href="../python-index.html">← 教室トップへ</a>
 
 	<section class="chapter-hero">
@@ -175,11 +152,11 @@
 	<div class="explain-card">
 		<h2>docker run のフラグ — なぜあのオプションが要るのか</h2>
 
-		<code class="cmd">docker run -it --rm \
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>docker run -it --rm \
   --device=/dev/kfd \
   --device=/dev/dri \
   --group-add video \
-  rocm/pytorch:latest</code>
+  rocm/pytorch:latest</code></pre></div>
 
 		<div class="meaning-box">
 			<strong>💡 それぞれの意味:</strong><br>
@@ -235,7 +212,7 @@
 	<div class="explain-card">
 		<h2>torch.version.hip — ROCm 版かどうかを見分ける</h2>
 
-		<code class="cmd">python3 -c "import torch; print(torch.version.hip)"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "import torch; print(torch.version.hip)"</code></pre></div>
 
 		<div class="meaning-box">
 			<strong>💡 なぜ大事なのか:</strong> PyTorch には CPU 版、CUDA 版、ROCm 版があります。<code>rocm/pytorch</code> イメージを使っていれば ROCm 版が入っていますが、自分でパッケージを追加した場合は CPU 版が紛れ込むこともあります。<code>torch.version.hip</code> がバージョン番号を返せば ROCm 版です。
@@ -342,5 +319,6 @@
 
 	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
 </div>
+<script src="../copy-code.js"></script>
 </body>
 </html>

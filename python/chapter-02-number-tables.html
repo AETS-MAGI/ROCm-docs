@@ -11,16 +11,6 @@
 </head>
 <body>
 <main class="page">
-	<!--
-	Codex review 2026-03-16:
-	shape 導入は丁寧で初心者向け。
-	追加改善案:
-	1. 行と列の読み方は、コードに加えて KaTeX か小さな HTML 表で `bmatrix` 風の補助表示を置くと、
-	   数学が苦手な読者にさらに伝わりやすい
-	2. `shape = (2, 3)` と実際の 2x3 表を左右に並べる補助図があると、
-	   「数字の表」の感覚が一段早くつく
-	3. aktk-chan-with-book.png のような穏やかな画像は、この章の雰囲気と相性がよい
-	-->
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
 	<header class="chapter-hero">
@@ -56,7 +46,7 @@
 			<li><span class="code-inline">import numpy as np</span> の <span class="code-inline">as np</span> は「numpy を np という短縮名で使う」宣言です。<span class="code-inline">np</span> は世界中のコードで使われる慣習なので、自分で書くときも <span class="code-inline">np</span> にしておくと他の人のコードと読み合わせやすくなります。</li>
 			<li><span class="code-inline">dtype=np.float32</span> は「小数を 32 ビットで持つ型」の指定です。NumPy のデフォルトは 64 ビット（float64）ですが、GPU はメモリが有限で float32 を基本として最適化されているため、ROCm/GPU を使うコードでは最初から float32 を指定する習慣をつけておきます。</li>
 		</ul>
-		<pre class="code-block"><code>import numpy as np
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 
 x = np.array([[1, 2, 3],
               [4, 5, 6]], dtype=np.float32)
@@ -67,7 +57,7 @@ print(x)
 print("shape:", x.shape)
 print("dtype:", x.dtype)
 print("rows:", x.shape[0])
-print("cols:", x.shape[1])</code></pre>
+print("cols:", x.shape[1])</code></pre></div>
 		<p>この例では、2 行 3 列の表を 1 つのまとまりとして持っています。<span class="code-inline">(2, 3)</span> と見えたら、「2 行 3 列」と読めば大丈夫です。</p>
 
 		<!-- 補助図: shape と行列の対応 -->
@@ -87,19 +77,19 @@ print("cols:", x.shape[1])</code></pre>
 
 	<section class="content-section">
 		<h2>実行コマンド（コピペ用）</h2>
-		<pre class="code-block"><code>./.venv/bin/python -c 'import numpy as np; x=np.array([[1,2,3],[4,5,6]],dtype=np.float32); print("x:"); print(x); print("shape:", x.shape); print("dtype:", x.dtype); print("rows:", x.shape[0]); print("cols:", x.shape[1])'</code></pre>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np; x=np.array([[1,2,3],[4,5,6]],dtype=np.float32); print("x:"); print(x); print("shape:", x.shape); print("dtype:", x.dtype); print("rows:", x.shape[0]); print("cols:", x.shape[1])'</code></pre></div>
 		<p>まずはこの1行で、出力を見て「shape の読み方」を確認します。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>実行すると何が出る？</h2>
-		<pre class="code-block"><code>x:
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>x:
 [[1. 2. 3.]
  [4. 5. 6.]]
 shape: (2, 3)
 dtype: float32
 rows: 2
-cols: 3</code></pre>
+cols: 3</code></pre></div>
 		<ul class="point-list">
 			<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。<strong>行（横の並び）が先、列（縦の並び）が後</strong>という順は数学の行列の書き方（「m 行 n 列行列」）からきています。</li>
 			<li>数字が <span class="code-inline">1.</span> <span class="code-inline">2.</span> のように小数点付きで出るのは、<span class="code-inline">dtype=float32</span> を指定したため整数が小数に変換されたからです。エラーではありません。</li>
@@ -150,10 +140,10 @@ cols: 3</code></pre>
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>次の順で試します。1) コードを見て <span class="code-inline">shape</span> を <strong>実行前に予想</strong> する。2) 実行して答え合わせする。3) <span class="code-inline">rows</span>/<span class="code-inline">cols</span> を print して確認する。</p>
-		<pre class="code-block"><code>y = np.array([[10, 20],
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>y = np.array([[10, 20],
               [30, 40],
               [50, 60]], dtype=np.float32)
-print("shape:", y.shape)</code></pre>
+print("shape:", y.shape)</code></pre></div>
 		<p>予想できたら実行して確かめましょう。<br>
 		— 答えは実行結果で確認してください。ここを迷わず読めれば、第2章の到達目標は達成です。</p>
 	</section>
@@ -164,5 +154,6 @@ print("shape:", y.shape)</code></pre>
 		<a class="primary" href="./chapter-03-table-math.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

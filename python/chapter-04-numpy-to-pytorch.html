@@ -37,7 +37,7 @@
 	<section class="content-section">
 		<h2>確認コード</h2>
 		<p><strong>コードを見る前に一点:</strong> <span class="code-inline">torch.tensor(x_np)</span> は NumPy 配列のデータをコピーして PyTorch tensor を作ります。コピーなので、この後 NumPy 側を変えても tensor は変わりません（メモリを共有したい場合は <span class="code-inline">torch.from_numpy(x_np)</span> を使いますが、変更が連動するため混乱しやすく、最初は <span class="code-inline">torch.tensor()</span> を使うのが安全です）。</p>
-		<pre class="code-block"><code>import numpy as np
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 import torch
 
 x_np = np.array([[1, 2],
@@ -48,21 +48,21 @@ print("--- NumPy ---")
 print(x_np.shape, x_np.dtype)
 
 print("--- PyTorch tensor ---")
-print(x_t.shape, x_t.dtype, x_t.device)</code></pre>
+print(x_t.shape, x_t.dtype, x_t.device)</code></pre></div>
 		<p>形はほぼ同じでも、PyTorch の tensor には <span class="code-inline">.device</span> という属性が加わっています。いまはまず、shape と dtype を同じ気分で読めることが大事です。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>実行コマンド（コピペ用）</h2>
-		<pre class="code-block"><code>./.venv/bin/python -c 'import numpy as np, torch; x_np=np.array([[1,2],[3,4]],dtype=np.float32); x_t=torch.tensor(x_np); print("NumPy:", x_np.shape, x_np.dtype); print("Tensor:", x_t.shape, x_t.dtype, x_t.device)'</code></pre>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np, torch; x_np=np.array([[1,2],[3,4]],dtype=np.float32); x_t=torch.tensor(x_np); print("NumPy:", x_np.shape, x_np.dtype); print("Tensor:", x_t.shape, x_t.dtype, x_t.device)'</code></pre></div>
 	</section>
 
 	<section class="content-section">
 		<h2>実行すると何が出る？</h2>
-		<pre class="code-block"><code>--- NumPy ---
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>--- NumPy ---
 (2, 2) float32
 --- PyTorch tensor ---
-torch.Size([2, 2]) torch.float32 cpu</code></pre>
+torch.Size([2, 2]) torch.float32 cpu</code></pre></div>
 		<ul class="point-list">
 			<li><span class="code-inline">shape</span> の見え方が少し違います。NumPy は <span class="code-inline">(2, 2)</span>（タプル）、PyTorch は <span class="code-inline">torch.Size([2, 2])</span> と表示されますが、意味は同じです。<span class="code-inline">x_t.shape[0]</span> で行数を取り出すのも NumPy と同じ書き方です。</li>
 			<li><span class="code-inline">dtype</span> も表示が違います。NumPy は <span class="code-inline">float32</span>、PyTorch は <span class="code-inline">torch.float32</span> と出ます。同じ型を指しています。</li>
@@ -79,7 +79,7 @@ torch.Size([2, 2]) torch.float32 cpu</code></pre>
 	<section class="content-section">
 		<h2>PyTorch で tensor を直接作る方法</h2>
 		<p>NumPy を経由せずに tensor を作ることもできます。演習で使うので確認しておきましょう。</p>
-		<pre class="code-block"><code># リストから直接作る（NumPy の np.array() に相当）
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code># リストから直接作る（NumPy の np.array() に相当）
 t1 = torch.tensor([[1, 2, 3],
                    [4, 5, 6]], dtype=torch.float32)
 
@@ -90,7 +90,7 @@ t2 = torch.zeros(2, 3, dtype=torch.float32)
 t3 = torch.ones(3, 4, dtype=torch.float32)
 
 print(t1.shape, t1.device)
-print(t2.shape, t2.device)</code></pre>
+print(t2.shape, t2.device)</code></pre></div>
 		<p>どれも作った直後は <span class="code-inline">device: cpu</span> です。shape / dtype の考え方は NumPy と同じです。</p>
 	</section>
 
@@ -135,5 +135,6 @@ print(t2.shape, t2.device)</code></pre>
 		<a class="primary" href="./chapter-05-move-data-to-gpu.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

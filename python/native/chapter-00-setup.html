@@ -29,19 +29,6 @@
 			line-height: 1.8;
 			color: var(--muted);
 		}
-		.cmd {
-			display: block;
-			background: var(--code-bg);
-			color: var(--code-ink);
-			padding: 14px 16px;
-			border-radius: 10px;
-			font-family: 'Consolas', 'Monaco', monospace;
-			font-size: 14px;
-			line-height: 1.6;
-			margin: 10px 0;
-			overflow-x: auto;
-			white-space: pre;
-		}
 		.meaning-box {
 			background: #F3E5F5;
 			border-left: 5px solid #7B1FA2;
@@ -133,16 +120,6 @@
 </head>
 <body>
 <div class="page">
-	<!--
-	Codex review 2026-03-16:
-	第0章としてかなりよく整理されている。
-	追加改善案:
-	1. 新概念が続くので、「OS -> driver -> ROCm runtime -> PyTorch -> code」の1行図や
-	   Mermaid/簡易図を入れると用語密度を下げられる
-	2. `rocminfo` / `torch.version.hip` / `torch.cuda.is_available()` の役割差を
-	   2列か3列の比較表にすると復習しやすい
-	3. 将来 Appendix B / C への分岐リンクをここからも置くと、標準トラブルと旧世代補足を分けて案内しやすい
-	-->
 	<a class="back-link" href="../python-index.html">← 教室トップへ</a>
 
 	<section class="chapter-hero">
@@ -189,7 +166,7 @@
 	<div class="explain-card">
 		<h2>video / render グループ — なぜ必要なのか</h2>
 
-		<code class="cmd">groups</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>groups</code></pre></div>
 
 		<p>Quickstart で <code>sudo usermod -aG video,render $USER</code> を実行しました。</p>
 
@@ -209,8 +186,8 @@
 	<div class="explain-card">
 		<h2>Python 仮想環境（venv）— なぜ分けるのか</h2>
 
-		<code class="cmd">python3 -m venv ~/rocm-env
-source ~/rocm-env/bin/activate</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -m venv ~/rocm-env
+source ~/rocm-env/bin/activate</code></pre></div>
 
 		<div class="meaning-box">
 			<strong>💡 なぜ大事なのか:</strong> Python は、同じコマンド名 <code>python3</code> でもインストール先によって別のライブラリ環境を持ちます。仮想環境を使わないと、システムの Python とパッケージが混ざって「入れたはずの PyTorch が見つからない」「バージョンが違う」といった事故が起きます。
@@ -228,14 +205,14 @@ source ~/rocm-env/bin/activate</code>
 	<div class="explain-card">
 		<h2>torch.version.hip — ROCm 版かどうかを見分ける</h2>
 
-		<code class="cmd">python3 -c "import torch; print(torch.version.hip)"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "import torch; print(torch.version.hip)"</code></pre></div>
 
 		<div class="meaning-box">
 			<strong>💡 なぜ大事なのか:</strong> PyTorch には CPU 版、CUDA 版、ROCm 版があり、<code>pip install torch</code> だけだと CPU 版が入ることがあります。<code>torch.version.hip</code> がバージョン番号を返せば ROCm 版、<code>None</code> なら ROCm 版ではありません。
 		</div>
 
 		<p>もうひとつの確認方法:</p>
-		<code class="cmd">python3 -c "print(torch.cuda.is_available())"</code>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python3 -c "print(torch.cuda.is_available())"</code></pre></div>
 
 		<div class="mascot-row">
 			<img src="../../media/aktk-chan/aktk-chan-surprising.png" alt="アカツキちゃん">
@@ -350,5 +327,6 @@ source ~/rocm-env/bin/activate</code>
 
 	<a class="next-link" href="../chapter-01-gpu-visible.html">第1章へ進む →</a>
 </div>
+<script src="../copy-code.js"></script>
 </body>
 </html>

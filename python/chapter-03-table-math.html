@@ -11,16 +11,6 @@
 </head>
 <body>
 <main class="page">
-	<!--
-	Codex review 2026-03-16:
-	ASCII 図がすでに効いている。
-	追加改善案:
-	1. `A_{2x3} × B_{3x2} = C_{2x2}` を KaTeX で併記すると、
-	   「内側が一致・外側が残る」がさらに直感的になる
-	2. `a * b` と `a @ b` の違いは初心者が混乱しやすいので、小さな比較表を追加してもよい
-	3. `rocBLAS` は初出なので、「AMD GPU 向け行列計算エンジン」のようなやわらかい言い換えを併記すると、
-	   固有名詞の密度を下げられる
-	-->
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
 	<header class="chapter-hero">
@@ -51,7 +41,7 @@
 
 	<section class="content-section">
 		<h2>確認コード（文法未修でも読める版）</h2>
-		<pre class="code-block"><code>import numpy as np
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 
 a = np.array([[1, 2, 3],
               [4, 5, 6]], dtype=np.float32)
@@ -64,7 +54,7 @@ c = a @ b
 print("a.shape:", a.shape)
 print("b.shape:", b.shape)
 print("c.shape:", c.shape)
-print(c)</code></pre>
+print(c)</code></pre></div>
 		<p><span class="code-inline">a</span> は <span class="code-inline">(2, 3)</span>、<span class="code-inline">b</span> は <span class="code-inline">(3, 2)</span> です。結果の <span class="code-inline">c</span> は <span class="code-inline">(2, 2)</span> になります。</p>
 		<p><strong>shape のルール（重要）:</strong> 行列積 <span class="code-inline">(m, n) @ (n, p) → (m, p)</span><br>
 		「内側」の数字（a の列数 と b の行数）が一致していなければ計算できません。一致していれば、結果の shape は「外側」の2つの数字になります。</p>
@@ -74,7 +64,7 @@ print(c)</code></pre>
 			$$A_{2 \times 3} \times B_{3 \times 2} = C_{2 \times 2}$$
 		</div>
 		<div style="text-align: center; margin: 0 0 16px; font-size: 13px; color: var(--muted);">内側の $3$ が一致 → 外側の $2$ と $2$ が残る</div>
-		<pre class="code-block" style="background:#F5F5F5; font-size:13px; padding:10px 14px; border-radius:6px; margin:8px 0;">a: (2, <strong>3</strong>)
+		<pre style="background:#F5F5F5; font-size:13px; padding:10px 14px; border-radius:6px; margin:8px 0;">a: (2, <strong>3</strong>)
 b:    (<strong>3</strong>, 2)
           ↑ ここが一致している必要がある
 c: (2,       2)   ← 外側の2つが残る</pre>
@@ -84,17 +74,17 @@ c: (2,       2)   ← 外側の2つが残る</pre>
 
 	<section class="content-section">
 		<h2>実行コマンド（コピペ用）</h2>
-		<pre class="code-block"><code>./.venv/bin/python -c 'import numpy as np; a=np.array([[1,2,3],[4,5,6]],dtype=np.float32); b=np.array([[7,8],[9,10],[11,12]],dtype=np.float32); c=a@b; print("a.shape:",a.shape); print("b.shape:",b.shape); print("c.shape:",c.shape); print(c)'</code></pre>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np; a=np.array([[1,2,3],[4,5,6]],dtype=np.float32); b=np.array([[7,8],[9,10],[11,12]],dtype=np.float32); c=a@b; print("a.shape:",a.shape); print("b.shape:",b.shape); print("c.shape:",c.shape); print(c)'</code></pre></div>
 		<p>1行で実行して、まず shape が <span class="code-inline">(2, 3)</span> / <span class="code-inline">(3, 2)</span> / <span class="code-inline">(2, 2)</span> になるかを確認します。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>実行すると何が出る？</h2>
-		<pre class="code-block"><code>a.shape: (2, 3)
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>a.shape: (2, 3)
 b.shape: (3, 2)
 c.shape: (2, 2)
 [[ 58.  64.]
- [139. 154.]]</code></pre>
+ [139. 154.]]</code></pre></div>
 		<ul class="point-list">
 			<li>最重要は <span class="code-inline">c.shape: (2, 2)</span> です（数字の中身より先にここを確認）。</li>
 			<li>内側の次元が一致しているので、掛け算が成功しています。</li>
@@ -174,12 +164,12 @@ c.shape: (2, 2)
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>次の順で試しましょう。1) 先に <span class="code-inline">c.shape</span> を予想する。2) 実行して答え合わせ。3) 失敗したら内側次元を見直す。</p>
-		<pre class="code-block"><code>a = np.array([[1, 2],
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>a = np.array([[1, 2],
               [3, 4]], dtype=np.float32)   # (2, 2)
 b = np.array([[5],
               [6]], dtype=np.float32)      # (2, 1)
 c = a @ b
-print("c.shape:", c.shape)</code></pre>
+print("c.shape:", c.shape)</code></pre></div>
 		<p>予想できたら実行して確かめましょう。<br>
 		— 答えは実行結果で確認してください。ここが迷わず読めれば、第3章の目標達成です。</p>
 	</section>
@@ -190,5 +180,6 @@ print("c.shape:", c.shape)</code></pre>
 		<a class="primary" href="./chapter-04-numpy-to-pytorch.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

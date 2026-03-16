@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -42,7 +42,7 @@ optimizer.zero_grad()
 loss.backward()
 optimizer.step()
 
-print(loss.item())</code></pre>
+print(loss.item())</code></pre></div>
 		<p>学習の流れは、ざっくり言うと「答えを出す → ずれを数にする → 直す」です。この章ではそれを 1 回だけ回しています。</p>
 	</section>
 
@@ -80,5 +80,6 @@ print(loss.item())</code></pre>
 		<a class="primary" href="./chapter-09-training-vs-inference.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>

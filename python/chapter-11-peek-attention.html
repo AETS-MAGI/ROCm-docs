@@ -23,7 +23,7 @@
 
 	<section class="content-section">
 		<h2>最小コード</h2>
-		<pre class="code-block"><code>import torch
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,7 +39,7 @@ y, weights = attn(x, x, x)
 
 print(x.shape)
 print(y.shape)
-print(weights.shape)</code></pre>
+print(weights.shape)</code></pre></div>
 		<p>この例では、3 個の token を持つ入力を入れています。最初は「どの token をどれくらい見るかの重みが <span class="code-inline">weights</span> に出てくる」と読めれば十分です。</p>
 	</section>
 
@@ -77,5 +77,6 @@ print(weights.shape)</code></pre>
 		<a class="primary" href="./chapter-12-read-logs-and-shapes.html">次の章へ →</a>
 	</nav>
 </main>
+<script src="copy-code.js"></script>
 </body>
 </html>
