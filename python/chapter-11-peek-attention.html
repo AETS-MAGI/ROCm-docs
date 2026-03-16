@@ -85,6 +85,10 @@ weights shape: torch.Size([1, 3, 3])</div>
 			</tr>
 		</table>
 		<p><span class="code-inline">weights</span> が (3, 3) なのは、3 個の token が「お互いをどれくらい見ているか」を表しているからです。</p>
+
+		<div class="safe-box">
+			<span class="code-inline">x.shape</span>、<span class="code-inline">y.shape</span>、<span class="code-inline">weights.shape</span> の 3 つが読めればこの章は OK です。数式を全部追う必要はありません。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -101,10 +105,14 @@ weights shape: torch.Size([1, 3, 3])</div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">y, weights = ...</span> のように 2 つの戻り値を受け取る</li>
-			<li>キーワード引数で設定を分かりやすく書く</li>
-			<li>shape を 3 つ並べて見比べる</li>
+			<li><span class="code-inline">y, weights = ...</span> — 2 つの戻り値を受け取る</li>
+			<li>キーワード引数で設定を明示</li>
 		</ul>
+
+		<details>
+			<summary>Q / K / V をもう少し（クリックで開く）</summary>
+			<p><span class="code-inline">attn(x, x, x)</span> の 3 つの引数は順に Query、Key、Value です。ここでは全部同じ <span class="code-inline">x</span> を入れています（Self-Attention）。「同じものを 3 回渡して注目度を計算する」と読めれば先に進めます。Query が「何を探したいか」、Key が「何を手がかりにするか」、Value が「何を返すか」に対応します。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

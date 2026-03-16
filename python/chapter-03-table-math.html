@@ -117,41 +117,6 @@ c.shape: (2, 2)
 		</ul>
 	</section>
 
-		<!-- * と @ の比較表 -->
-		<table class="shape-table">
-			<thead>
-				<tr>
-					<th></th>
-					<th><span class="code-inline">a * b</span>（要素ごと）</th>
-					<th><span class="code-inline">a @ b</span>（行列積）</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><strong>計算内容</strong></td>
-					<td>同じ位置の要素を 1 個ずつ掛ける</td>
-					<td>行と列を掛けて足す（行列積）</td>
-				</tr>
-				<tr>
-					<td><strong>shape の条件</strong></td>
-					<td>同じ shape が必要</td>
-					<td>内側が一致すればOK</td>
-				</tr>
-				<tr>
-					<td><strong>結果の shape</strong></td>
-					<td>入力と同じ</td>
-					<td>外側が残る</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<ul class="point-list">
-			<li><span class="code-inline">c = a @ b</span> は「計算結果を c に入れる」という意味です。</li>
-			<li><span class="code-inline">print("a.shape:", a.shape)</span> のように、文字と値を一緒に表示できます。</li>
-			<li><span class="code-inline">shape</span> は「(行, 列)」の順です。行列積のルールは <span class="code-inline">(m, n) @ (n, p) → (m, p)</span> — 内側が一致、外側が結果になります。</li>
-		</ul>
-	</section>
-
 	<section class="content-section">
 		<h2>うまくいかなかったら</h2>
 		<details>

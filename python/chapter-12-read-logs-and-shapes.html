@@ -77,6 +77,10 @@ print("y shape:", y.shape)</code></pre></div>
 		<div class="output-example">x shape: torch.Size([2, 3])
 expected in_features: 3
 y shape: torch.Size([2, 2])</div>
+
+		<div class="safe-box">
+			エラーが出たら <strong>最後の行を読む → shape / device / dtype のどれかを確認</strong> — この 2 ステップだけで見通しがつきます。
+		</div>
 		<p><span class="code-inline">Linear(3, 2)</span> にしたので、入力の最後の 3 と一致して通るようになりました。</p>
 	</section>
 
@@ -89,11 +93,18 @@ y shape: torch.Size([2, 2])</div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">try</span> と <span class="code-inline">except</span> でエラーを受け取る</li>
-			<li>エラーの型と本文を分けて表示する</li>
-			<li>計算の前に確認したい値を先に <span class="code-inline">print()</span> する</li>
-			<li>エラーメッセージの最後の行にある数字を読む</li>
+			<li><span class="code-inline">try / except</span> — エラーを受け取る</li>
+			<li>計算の前に <span class="code-inline">print()</span> で値を確認</li>
 		</ul>
+
+		<details>
+			<summary>エラーメッセージの読み方のコツ（クリックで開く）</summary>
+			<ul class="point-list">
+				<li>エラーメッセージの型と本文を分けて表示すると、原因が見えやすくなります。</li>
+				<li>最後の行にある数字を読むのがコツです。</li>
+				<li>shape が合っているのに通らないときは dtype を疑います（「Float なのに Long が来た」のような形）。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">

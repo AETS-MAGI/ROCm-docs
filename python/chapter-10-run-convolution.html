@@ -67,6 +67,10 @@ print("出力 shape:", y.shape)</code></pre></div>
 		<div class="output-example">入力 shape: torch.Size([1, 1, 5, 5])
 出力 shape: torch.Size([1, 2, 5, 5])</div>
 		<p>最初は 4 つの数字が並んでいると見られれば十分です。</p>
+
+		<div class="safe-box">
+			変わったのは 2 番目の数字（チャネル）だけ — これが読めればこの章は OK です。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -77,10 +81,14 @@ print("出力 shape:", y.shape)</code></pre></div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">kernel_size=3</span> のようなキーワード引数を書く</li>
+			<li><span class="code-inline">kernel_size=3</span> — キーワード引数を書く</li>
 			<li>4 つの数字を shape として読む</li>
-			<li>部品 <span class="code-inline">conv</span> を関数のように呼ぶ</li>
 		</ul>
+
+		<details>
+			<summary>Conv2d の引数の意味（クリックで開く）</summary>
+			<p><span class="code-inline">Conv2d(1, 2, kernel_size=3, padding=1)</span> の 1 は入力チャネル。2 は出力チャネル。3 はフィルタの大きさ。<span class="code-inline">padding=1</span> は端に 0 を足して高さ・幅を変えない設定です。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

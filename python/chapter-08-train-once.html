@@ -96,9 +96,13 @@ loss（2回目）: 1.8228</div>
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
 			<li>変数へ段階ごとの結果を順に入れていく</li>
-			<li>メソッドを決まった順番で呼ぶ</li>
-			<li><span class="code-inline">loss.item()</span> で 1 個の数として取り出す</li>
+			<li><span class="code-inline">loss.item()</span> — 1 個の数として取り出す</li>
 		</ul>
+
+		<details>
+			<summary>zero_grad / backward / step の順番（クリックで開く）</summary>
+			<p>学習の 1 サイクルは「<span class="code-inline">zero_grad → backward → step</span>」のセットです。<span class="code-inline">zero_grad()</span> を忘れると前の勾配が残り、<span class="code-inline">backward()</span> を 2 回呼ぶとエラーになります。最初はこの順番を 1 セットずつ繰り返す形で覚えるのが安全です。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

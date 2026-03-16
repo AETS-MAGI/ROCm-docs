@@ -55,6 +55,10 @@ print("sec   :", time.time() - t0)</code></pre></div>
 shape : torch.Size([1024, 1024])
 sec   : 0.0012</div>
 		<p>最後の 3 行の <span class="code-inline">print</span> が、さきほどの 3 観点そのままです。「どこで」「何を」「どれくらいで」が読めれば、実験コードの入口として十分です。</p>
+
+		<div class="safe-box">
+			ここまで来たら、第1章からの全体を振り返るとよい復習になります。お疲れさまでした！
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -65,10 +69,14 @@ sec   : 0.0012</div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">import time</span> で時間計測の道具を使う</li>
-			<li><span class="code-inline">if</span> で GPU のときだけ同期を入れる</li>
-			<li>行列の掛け算、shape の表示、時間の表示を 1 本で読む</li>
+			<li><span class="code-inline">import time</span> — 時間計測</li>
+			<li><span class="code-inline">if device.type == "cuda"</span> — GPU のときだけ同期</li>
 		</ul>
+
+		<details>
+			<summary>synchronize() の意味（クリックで開く）</summary>
+			<p>GPU の計算は非同期で動くため、<span class="code-inline">synchronize()</span> を入れないと「まだ終わっていないのに時間を読んでしまう」ことがあります。実験で正確な時間を測りたいときに必要です。ROCm 版でも <span class="code-inline">torch.cuda.synchronize()</span> という名前が使われます。</p>
+		</details>
 	</section>
 
 	<section class="content-section">

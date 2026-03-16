@@ -74,6 +74,10 @@ print("weight changed:", not torch.equal(before, after))</code></pre></div>
 
 		<div class="output-example">inference output: 0.3127
 weight changed: True</div>
+
+		<div class="safe-box">
+			<span class="code-inline">weight changed: True</span> が見えれば、「学習側では重みが動いた」と確認できます。推論 vs 学習の違いはこの 1 行に出ます。
+		</div>
 	</section>
 
 	<section class="content-section">
@@ -84,10 +88,14 @@ weight changed: True</div>
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li>同じ変数を前半と後半で使い分ける</li>
-			<li><span class="code-inline">before</span> と <span class="code-inline">after</span> を比べる</li>
-			<li><span class="code-inline">not</span> で真偽を反転して読む</li>
+			<li><span class="code-inline">before</span> / <span class="code-inline">after</span> を比べて変化を確認</li>
+			<li><span class="code-inline">not torch.equal(...)</span> — 真偽を反転して読む</li>
 		</ul>
+
+		<details>
+			<summary>eval() だけでは不十分な理由（クリックで開く）</summary>
+			<p><span class="code-inline">model.eval()</span> だけでは「絶対に学習しない」わけではありません。学習しない流れは <span class="code-inline">no_grad()</span> とセットで見ると分かりやすいです。推論で答えを出しても、重みは変わりません。</p>
+		</details>
 	</section>
 
 	<section class="content-section">
