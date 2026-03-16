@@ -105,7 +105,7 @@ c.shape: (2, 2)
 		<h2>結果パターン別の次の一手</h2>
 		<ul class="point-list">
 			<li><strong>パターンA:</strong> <span class="code-inline">c.shape: (2, 2)</span> と出る → この章はクリア。次章へ進んでOK。</li>
-			<li><strong>パターンB:</strong> <span class="code-inline">ValueError: matmul ...</span> が出る → 内側次元が不一致。まず <span class="code-inline">a.shape</span> と <span class="code-inline">b.shape</span> を確認。</li>
+			<li><strong>パターンB:</strong> <span class="code-inline">ValueError: matmul: Input operand 1 has a mismatch...</span> のようなエラーが出る → 内側の次元が不一致です。<span class="code-inline">a.shape</span> と <span class="code-inline">b.shape</span> を print して「a の列数 = b の行数」になっているか確認します。例: <span class="code-inline">(2, 3) @ (2, 2)</span> は NG（3 ≠ 2）、<span class="code-inline">(2, 3) @ (3, 4)</span> は OK（3 = 3）。</li>
 			<li><strong>パターンC:</strong> <span class="code-inline">ModuleNotFoundError: numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
 			<li><strong>パターンD:</strong> 実行は通ったが不安 → 出力数値より先に shape だけ読んで合否判定する。</li>
 		</ul>
@@ -130,7 +130,8 @@ b = np.array([[5],
               [6]], dtype=np.float32)      # (2, 1)
 c = a @ b
 print("c.shape:", c.shape)</code></pre>
-		<p>正解は <span class="code-inline">(2, 1)</span> です。ここが迷わず読めれば、第3章の目標達成です。</p>
+		<p>予想できたら実行して確かめましょう。<br>
+		— 答えは実行結果で確認してください。ここが迷わず読めれば、第3章の目標達成です。</p>
 	</section>
 
 	<nav class="chapter-nav">
