@@ -1,34 +1,18 @@
 # ROCm-docs
 
-公開 URL:
+公開 URL: <https://aets-magi.github.io/ROCm-docs/>
 
-- <https://aets-magi.github.io/ROCm-docs/>
+ROCm-docs は、GPU・NumPy・PyTorch・ROCm を初学者向けにやさしくつなげて学ぶための静的サイトです。
 
-このディレクトリは、ROCm を中心にした公開ページと、その整理用ディレクトリをまとめたルートです。
+## 主な入口
 
-## 入口
+- サイト入口: `index.html`
+- 理論ページ: `theory/theory-index.html`
+- Python and ROCm 教室: `python/python-index.html`
+- 13章ガイド: `python/python-and-rocm-class.html`
 
-- 公開トップ: `index.html`
-- 理論ページもくじ: `theory/theory-index.html`
-- Python 説明ページ入口: `python/python-index.html`
-- Python and ROCm 教室 叩き台: `python/python-and-rocm-class.html`
+## 読み方のおすすめ
 
-## ディレクトリの役割
-
-- `theory/`
-  - GPU / ROCm / NumPy / PyTorch / training / inference などの公開説明ページ
-- `python/`
-  - Python の説明を書くための場所
-  - Python スクリプト置き場ではない
-- `scripts/`
-  - サイト生成や補助処理のスクリプト
-- `__tmp/`
-  - 運用メモ、一時メモ、下書き、整理前の作業ログ
-
-## 運用メモの置き場所
-
-運用メモや作業途中のメモは、次の場所に保存します。
-
-- `/home/limonene/ROCm-project/vega-hbmx-investigations/ROCm-docs/__tmp`
-
-`python/` には Python の説明ページだけを置き、雑多なメモは入れない方針です。
+1. `theory/theory-index.html` で GPU と ROCm の全体像をつかむ
+2. `theory/numpy-express.html` と `theory/pytorch-express.html` で NumPy / PyTorch の入口を読む
+3. `python/python-index.html` から、やりたいことベースの Python and ROCm 教室に進む

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Python and ROCm 教室 | ROCm-docs</title>
+	<title>Python and ROCm 教室 13章ガイド | ROCm-docs</title>
 	<style>
 		:root {
 			--navy: #0B3C5D;
@@ -11,7 +11,6 @@
 			--blue: #1565C0;
 			--amber: #C56A00;
 			--green: #2E7D32;
-			--purple: #5B4B8A;
 			--ink: #1F2933;
 			--muted: #5F6C7B;
 			--line: #D8E0E8;
@@ -23,8 +22,10 @@
 			margin: 0;
 			font-family: 'Calibri', 'Arial', sans-serif;
 			color: var(--ink);
-			background: radial-gradient(circle at top right, rgba(21,101,192,0.08), transparent 28%),
-				radial-gradient(circle at bottom left, rgba(91,75,138,0.07), transparent 26%), var(--bg);
+			background:
+				radial-gradient(circle at top right, rgba(21,101,192,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(0,121,107,0.08), transparent 26%),
+				var(--bg);
 		}
 		.page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px; }
 		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
@@ -41,7 +42,7 @@
 		}
 		.hero h1 { margin: 0 0 10px; font-size: 30px; line-height: 1.25; }
 		.hero .subtitle { margin: 0 0 12px; opacity: 0.84; font-size: 16px; }
-		.hero p { margin: 0; font-size: 16px; line-height: 1.7; opacity: 0.94; }
+		.hero p { margin: 0; font-size: 16px; line-height: 1.75; opacity: 0.95; }
 		.section-title {
 			font-size: 21px;
 			font-weight: 700;
@@ -50,8 +51,8 @@
 			padding-left: 14px;
 			margin: 36px 0 10px;
 		}
-		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.65; }
-		.info-box, .warn-box, .fact-box {
+		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+		.info-box, .fact-box, .warn-box {
 			border-radius: 12px;
 			padding: 16px 20px;
 			margin: 16px 0;
@@ -59,8 +60,19 @@
 			line-height: 1.7;
 		}
 		.info-box { background: #E3F2FD; border-left: 5px solid var(--blue); }
-		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); }
 		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
+		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); }
+		.template-list, .path-list {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 18px 22px;
+			font-size: 15px;
+			line-height: 1.8;
+		}
+		.template-list ul, .path-list ol { margin: 0; padding-left: 20px; }
+		.template-list li, .path-list li { margin-bottom: 8px; }
+		.template-list li:last-child, .path-list li:last-child { margin-bottom: 0; }
 		.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 		.card {
 			background: var(--card);
@@ -71,7 +83,7 @@
 			flex-direction: column;
 			gap: 10px;
 		}
-		.card .number {
+		.number {
 			display: inline-block;
 			width: fit-content;
 			padding: 4px 10px;
@@ -82,19 +94,8 @@
 			font-weight: 700;
 		}
 		.card h3 { margin: 0; font-size: 19px; line-height: 1.35; color: var(--navy); }
-		.card p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--muted); }
+		.card p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted); }
 		.card strong { color: var(--ink); }
-		.template-list, .path-list {
-			background: var(--card);
-			border: 1px solid var(--line);
-			border-radius: 14px;
-			padding: 18px 22px;
-			font-size: 15px;
-			line-height: 1.75;
-		}
-		.template-list ul, .path-list ol { margin: 0; padding-left: 20px; }
-		.template-list li, .path-list li { margin: 0 0 8px; }
-		.template-list li:last-child, .path-list li:last-child { margin-bottom: 0; }
 		.footer { margin-top: 34px; color: var(--muted); text-align: center; font-size: 13px; }
 		[data-lang] { display: none; }
 		html[data-language="ja"] [data-lang="ja"] { display: initial; }
@@ -115,7 +116,7 @@
 <body>
 <div class="page">
 	<div class="toolbar">
-		<a class="home-link" href="./python-index.html">← <span data-lang="ja">Python 入口へ</span><span data-lang="en">Back to Python index</span></a>
+		<a class="home-link" href="./python-index.html">← <span data-lang="ja">コース入口へ</span><span data-lang="en">Back to course home</span></a>
 		<div>
 			<button class="lang-btn active" id="btn-ja" type="button">JP</button>
 			<button class="lang-btn" id="btn-en" type="button">EN</button>
@@ -123,50 +124,45 @@
 	</div>
 
 	<section class="hero">
-		<h1 data-lang="ja">Python and ROCm 教室</h1>
-		<h1 data-lang="en">Python and ROCm Course</h1>
-		<p class="subtitle" data-lang="ja">`__tmp/会話メモ.md` をもとにした章立ての叩き台</p>
-		<p class="subtitle" data-lang="en">A curriculum draft based on the working memo in `__tmp/会話メモ.md`</p>
-		<p data-lang="ja">このページは、Python 文法を先に全部教えるのではなく、<strong>ROCm / NumPy / PyTorch でやりたいことを順に達成しながら、必要な Python を回収する</strong>ための叩き台です。最初は「GPU が見えるか確かめたい」から入り、最後は短い ROCm 実験コードを 1 本読めるところまでつなぎます。</p>
-		<p data-lang="en">This draft does not teach Python grammar in isolation first. Instead, it introduces Python through concrete ROCm / NumPy / PyTorch tasks, ending with the ability to read a short ROCm experiment script end to end.</p>
+		<h1 data-lang="ja">Python and ROCm 教室 13章ガイド</h1>
+		<h1 data-lang="en">13-Chapter Guide to Python and ROCm</h1>
+		<p class="subtitle" data-lang="ja">「何をしたいか」から進む学習ロードマップ</p>
+		<p class="subtitle" data-lang="en">A learning roadmap organized by goals, not grammar topics</p>
+		<p data-lang="ja">このページでは、Python と ROCm をつなぐ学習コースを 13 章で見渡せます。章名は「変数」「関数」ではなく、「GPU が見えるか確かめたい」「データを GPU に送りたい」「学習と推論の違いを見比べたい」のように、読む人の目的で並べています。</p>
+		<p data-lang="en">This page gives you the full 13-chapter learning path. Instead of grammar titles such as “variables” or “functions,” each chapter is named after a goal the learner actually wants to achieve.</p>
 	</section>
 
 	<div class="info-box">
-		<p data-lang="ja"><strong>設計ルール:</strong> 章名は `import` や `class` ではなく、`GPU が見えるか確かめたい`、`行列を計算したい`、`学習と推論の違いを見たい` のように「やりたいこと」で付けます。</p>
-		<p data-lang="en"><strong>Design rule:</strong> Chapter names are goal-first, not grammar-first. The learner starts from what they want to do, not from isolated Python topics.</p>
+		<p data-lang="ja"><strong>このガイドの使い方:</strong> 最初から順番に読んでもよいですし、今の自分の疑問に近い章から入っても大丈夫です。あとで前の章に戻りながら読んでも、ちゃんとつながる流れになっています。</p>
+		<p data-lang="en"><strong>How to use this guide:</strong> You can read from the beginning or jump straight to the chapter closest to your current question. The flow is designed so that going back to earlier chapters still feels natural.</p>
 	</div>
 
-	<div class="fact-box">
-		<p data-lang="ja"><strong>この教室の見方:</strong> コードを読んで、その章で必要だった Python を後から整理します。文法は主役ではなく、ROCm の実験を進めるための道具として出てきます。</p>
-		<p data-lang="en"><strong>How to use this course:</strong> Read the code first, then collect the Python ideas that appeared. Python is treated as a tool for ROCm-oriented experiments, not as the main subject.</p>
-	</div>
-
-	<h2 class="section-title" data-lang="ja">章の共通テンプレート</h2>
-	<h2 class="section-title" data-lang="en">Shared Chapter Template</h2>
-	<p class="section-lead" data-lang="ja">各章は、だいたい次の流れにすると読みやすくなります。</p>
-	<p class="section-lead" data-lang="en">Each chapter can follow the same readable pattern.</p>
+	<h2 class="section-title" data-lang="ja">各章でそろえる型</h2>
+	<h2 class="section-title" data-lang="en">What Each Chapter Should Include</h2>
+	<p class="section-lead" data-lang="ja">各章は、次の 6 つがそろうと読みやすくなります。</p>
+	<p class="section-lead" data-lang="en">Each chapter becomes much easier to follow when it includes these six parts.</p>
 
 	<div class="template-list">
 		<ul>
-			<li data-lang="ja"><strong>今日は何をしたい？</strong> まず目的を 1 行で固定する。</li>
-			<li data-lang="en"><strong>What do we want to do today?</strong> Fix the goal in one line.</li>
-			<li data-lang="ja"><strong>最小コード</strong> まずは動く最小例を見る。</li>
-			<li data-lang="en"><strong>Minimum code</strong> Show the smallest working example first.</li>
-			<li data-lang="ja"><strong>どこが ROCm？</strong> ROCm / HIP / GPU 側で何が大事かを短く確認する。</li>
-			<li data-lang="en"><strong>Where is the ROCm part?</strong> Briefly point out the GPU-side or ROCm-side meaning.</li>
-			<li data-lang="ja"><strong>ここで出てきた文法</strong> その章で自然に出た Python を整理する。</li>
-			<li data-lang="en"><strong>Python that appeared here</strong> Collect the syntax and ideas that came up naturally.</li>
-			<li data-lang="ja"><strong>よくあるつまずき</strong> `"cuda"` 表記や shape mismatch などを先回りして説明する。</li>
-			<li data-lang="en"><strong>Common stumbles</strong> Anticipate issues such as `"cuda"` names or shape mismatches.</li>
-			<li data-lang="ja"><strong>1 分演習</strong> 読んだ直後に 1 個だけ試す。</li>
-			<li data-lang="en"><strong>One-minute exercise</strong> End with one tiny task the learner can try immediately.</li>
+			<li data-lang="ja"><strong>今日は何をしたい？</strong> まず目的をはっきりさせる</li>
+			<li data-lang="en"><strong>What do we want to do today?</strong> Make the goal explicit</li>
+			<li data-lang="ja"><strong>最小コード</strong> いちばん小さく動く例を見る</li>
+			<li data-lang="en"><strong>Minimum code</strong> Show the smallest example that works</li>
+			<li data-lang="ja"><strong>どこが ROCm？</strong> GPU 側とのつながりを短く確認する</li>
+			<li data-lang="en"><strong>Where is the ROCm part?</strong> Briefly point out the GPU-side meaning</li>
+			<li data-lang="ja"><strong>ここで出てきた Python</strong> 必要になった文法だけ整理する</li>
+			<li data-lang="en"><strong>What Python appeared here?</strong> Collect only the syntax that was actually needed</li>
+			<li data-lang="ja"><strong>よくあるつまずき</strong> 読者が止まりやすい所を先回りする</li>
+			<li data-lang="en"><strong>Common mistakes</strong> Anticipate where beginners usually get stuck</li>
+			<li data-lang="ja"><strong>1 分演習</strong> 読んだ直後に小さく試す</li>
+			<li data-lang="en"><strong>Tiny exercise</strong> End with one small thing to try immediately</li>
 		</ul>
 	</div>
 
-	<h2 class="section-title" data-lang="ja">おすすめの入り方</h2>
-	<h2 class="section-title" data-lang="en">Suggested Path</h2>
-	<p class="section-lead" data-lang="ja">13 章全部を最初から一気に書く必要はなく、まずは最初の 5 章をそろえるだけでもかなり強い入口になります。</p>
-	<p class="section-lead" data-lang="en">You do not need all 13 chapters at once. Even the first 5 chapters already create a strong entry path.</p>
+	<h2 class="section-title" data-lang="ja">おすすめの流れ</h2>
+	<h2 class="section-title" data-lang="en">Recommended Path</h2>
+	<p class="section-lead" data-lang="ja">とくに最初の 5 章は、あとに続くページの土台になります。</p>
+	<p class="section-lead" data-lang="en">The first five chapters are especially important because they support many later pages.</p>
 
 	<div class="path-list">
 		<ol>
@@ -175,147 +171,152 @@
 			<li data-lang="ja">数字を表として持ちたい</li>
 			<li data-lang="en">Hold numbers as tables</li>
 			<li data-lang="ja">表どうしを計算したい</li>
-			<li data-lang="en">Compute table-to-table math</li>
+			<li data-lang="en">Multiply tables</li>
 			<li data-lang="ja">NumPy から PyTorch へ移りたい</li>
 			<li data-lang="en">Move from NumPy to PyTorch</li>
 			<li data-lang="ja">データを GPU に送りたい</li>
-			<li data-lang="en">Send data to the GPU</li>
+			<li data-lang="en">Move data to the GPU</li>
 		</ol>
 	</div>
 
-	<h2 class="section-title" data-lang="ja">13 章の叩き台</h2>
-	<h2 class="section-title" data-lang="en">13-Chapter Draft</h2>
-	<p class="section-lead" data-lang="ja">`会話メモ.md` の流れを、公開ページ向けに読みやすく並べ直した版です。</p>
-	<p class="section-lead" data-lang="en">A public-facing rewrite of the chapter flow proposed in the working memo.</p>
+	<h2 class="section-title" data-lang="ja">13 章の学習ロードマップ</h2>
+	<h2 class="section-title" data-lang="en">The 13-Chapter Learning Roadmap</h2>
+	<p class="section-lead" data-lang="ja">どの章も、コードと意味がつながることを大事にしながら進みます。</p>
+	<p class="section-lead" data-lang="en">Each chapter is designed to connect code with meaning in a practical way.</p>
 
 	<div class="card-grid">
 		<div class="card">
 			<span class="number">1</span>
-			<h3 data-lang="ja">GPU が見えるか確かめたい</h3>
+			<h3 data-lang="ja">GPUが見えるか確かめたい</h3>
 			<h3 data-lang="en">Check Whether the GPU Is Visible</h3>
-			<p data-lang="ja"><strong>やること:</strong> `torch.version.hip`、`torch.cuda.is_available()`、`torch.cuda.get_device_name(0)` を読んで、ROCm 版 PyTorch と GPU の見え方を確認する。</p>
-			<p data-lang="en"><strong>Task:</strong> Confirm the ROCm build and GPU visibility using `torch.version.hip` and the usual device checks.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> `import`、変数、`print`、`if`、文字列。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> `import`, variables, `print`, `if`, and strings.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> ROCm 版 PyTorch が動いているか、GPU が見えているかを自分で確かめられる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to check whether ROCm PyTorch is working and whether the GPU is visible.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `import`、変数、`print`、`if`。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `import`, variables, `print`, and `if`.</p>
 		</div>
 		<div class="card">
 			<span class="number">2</span>
 			<h3 data-lang="ja">数字を表として持ちたい</h3>
 			<h3 data-lang="en">Hold Numbers as Tables</h3>
-			<p data-lang="ja"><strong>やること:</strong> NumPy 配列を作って、`shape` を「表の大きさ」として読む。</p>
-			<p data-lang="en"><strong>Task:</strong> Create NumPy arrays and read `shape` as the size of a table.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> list、`np.array`、基本代入、コメント。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> lists, `np.array`, basic assignment, comments.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> NumPy 配列を「数字の表」として見て、shape を読めるようになる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the habit of reading NumPy arrays as tables of numbers with shapes.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> list、`np.array`、代入、コメント。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> lists, `np.array`, assignment, comments.</p>
 		</div>
 		<div class="card">
 			<span class="number">3</span>
 			<h3 data-lang="ja">表どうしを計算したい</h3>
-			<h3 data-lang="en">Compute Table-to-Table Math</h3>
-			<p data-lang="ja"><strong>やること:</strong> 行列積を試して、`@` と shape の読み方を結びつける。ROCm では rocBLAS / GEMM の入口として見る。</p>
-			<p data-lang="en"><strong>Task:</strong> Try matrix multiplication and connect `@` with shape reading. In ROCm terms, this is the entry point to GEMM-style thinking.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> `@`、返り値、`dtype`、shape の整合確認。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> `@`, return values, `dtype`, shape matching.</p>
+			<h3 data-lang="en">Multiply Tables</h3>
+			<p data-lang="ja"><strong>できるようになること:</strong> 行列積を shape から読めるようになり、AI の基本計算とのつながりが見えてくる。</p>
+			<p data-lang="en"><strong>You gain:</strong> a shape-first understanding of matrix multiplication and its link to AI workloads.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `@`、返り値、`dtype`。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `@`, return values, `dtype`.</p>
 		</div>
 		<div class="card">
 			<span class="number">4</span>
-			<h3 data-lang="ja">NumPy から PyTorch へ移りたい</h3>
+			<h3 data-lang="ja">NumPyからPyTorchへ移りたい</h3>
 			<h3 data-lang="en">Move from NumPy to PyTorch</h3>
-			<p data-lang="ja"><strong>やること:</strong> `torch.tensor` を見て、tensor を「GPU にも行ける数字の表」として理解する。</p>
-			<p data-lang="en"><strong>Task:</strong> Read `torch.tensor` as a number-table object that can also move to the GPU.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> `.shape`、`.dtype`、`.device`、NumPy と tensor の比較。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> `.shape`, `.dtype`, `.device`, and NumPy-vs-tensor comparison.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> tensor を「GPU にも行ける数字の表」として理解できる。</p>
+			<p data-lang="en"><strong>You gain:</strong> a practical mental model for tensors as number tables that can move to the GPU.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `.shape`、`.dtype`、`.device`。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `.shape`, `.dtype`, `.device`.</p>
 		</div>
 		<div class="card">
 			<span class="number">5</span>
-			<h3 data-lang="ja">データを GPU に送りたい</h3>
-			<h3 data-lang="en">Send Data to the GPU</h3>
-			<p data-lang="ja"><strong>やること:</strong> `torch.device("cuda" if ...)` と `.to(device)` を読んで、CPU と GPU の置き場所の違いを理解する。</p>
-			<p data-lang="en"><strong>Task:</strong> Use `torch.device(...)` and `.to(device)` to understand the difference between CPU and GPU placement.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> `if`、メソッド呼び出し、エラーメッセージの読み方。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> `if`, method calls, basic error reading.</p>
+			<h3 data-lang="ja">データをGPUに送りたい</h3>
+			<h3 data-lang="en">Move Data to the GPU</h3>
+			<p data-lang="ja"><strong>できるようになること:</strong> CPU と GPU の置き場所の違いを理解し、`.to(device)` を読めるようになる。</p>
+			<p data-lang="en"><strong>You gain:</strong> a clear understanding of CPU vs GPU placement and how `.to(device)` is used.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `if`、メソッド呼び出し、簡単なエラーの読み方。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `if`, method calls, and simple error reading.</p>
 		</div>
 		<div class="card">
 			<span class="number">6</span>
 			<h3 data-lang="ja">小さなモデルを動かしたい</h3>
-			<h3 data-lang="en">Run a Tiny Model</h3>
-			<p data-lang="ja"><strong>やること:</strong> `nn.Sequential`、`nn.Linear`、`nn.ReLU` を使った最小モデルで `model(x)` を読む。</p>
-			<p data-lang="en"><strong>Task:</strong> Read `model(x)` using a tiny `nn.Sequential` network.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> オブジェクト、メソッド、関数っぽく呼べるモデル。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> objects, methods, and callable model objects.</p>
+			<h3 data-lang="en">Run a Small Model</h3>
+			<p data-lang="ja"><strong>できるようになること:</strong> `nn.Sequential` や `model(x)` の読み方がわかる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to read `nn.Sequential` and understand what `model(x)` means.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> オブジェクト、メソッド、関数のように呼べるモデル。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> objects, methods, and callable models.</p>
 		</div>
 		<div class="card">
 			<span class="number">7</span>
 			<h3 data-lang="ja">推論だけしたい</h3>
 			<h3 data-lang="en">Do Inference Only</h3>
-			<p data-lang="ja"><strong>やること:</strong> `model.eval()` と `torch.no_grad()` を見て、「答えを出すだけ」のモードを理解する。</p>
-			<p data-lang="en"><strong>Task:</strong> Learn inference mode through `model.eval()` and `torch.no_grad()`.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> `with`、`requires_grad`、状態切り替え。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> `with`, `requires_grad`, and mode switching.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> `eval()` と `no_grad()` を見て、答えを出すだけのモードを理解できる。</p>
+			<p data-lang="en"><strong>You gain:</strong> a clear picture of what inference mode means through `eval()` and `no_grad()`.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `with`、状態切り替え。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `with` and mode switching.</p>
 		</div>
 		<div class="card">
 			<span class="number">8</span>
 			<h3 data-lang="ja">学習してみたい</h3>
-			<h3 data-lang="en">Try Training Once</h3>
-			<p data-lang="ja"><strong>やること:</strong> `loss`、`optimizer.zero_grad()`、`backward()`、`step()` を 1 回だけ回して、重みが変わる感覚をつかむ。</p>
-			<p data-lang="en"><strong>Task:</strong> Run one minimal training step and see that weights actually change.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> 連続したメソッド呼び出し、状態更新。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> chained method calls and state updates.</p>
+			<h3 data-lang="en">Train Once</h3>
+			<p data-lang="ja"><strong>できるようになること:</strong> `loss`、`backward()`、`step()` が重み更新につながることを見られる。</p>
+			<p data-lang="en"><strong>You gain:</strong> a first view of how `loss`, `backward()`, and `step()` actually change model weights.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> 連続したメソッド呼び出し、更新の流れ。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> chained method calls and update flow.</p>
 		</div>
 		<div class="card">
 			<span class="number">9</span>
 			<h3 data-lang="ja">学習と推論の違いを見比べたい</h3>
 			<h3 data-lang="en">Compare Training and Inference</h3>
-			<p data-lang="ja"><strong>やること:</strong> `train()` / `eval()`、`no_grad()` の有無、重み更新の有無を対比して、「使っているだけでは賢くならない」を説明できるようにする。</p>
-			<p data-lang="en"><strong>Task:</strong> Compare training and inference clearly enough to explain why ordinary use does not update the model.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> 比較表の読み方、条件ごとの見分け。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> reading comparisons and distinguishing behaviors.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> 「使うだけでは学習しない」を、自分の言葉で説明しやすくなる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to explain why ordinary model use is not the same as training.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> 比較の読み方、条件ごとの差。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> comparison reading and difference spotting.</p>
 		</div>
 		<div class="card">
 			<span class="number">10</span>
 			<h3 data-lang="ja">たたみこみを動かしてみたい</h3>
-			<h3 data-lang="en">Try a Convolution</h3>
-			<p data-lang="ja"><strong>やること:</strong> `nn.Conv2d` と 4 次元 tensor を見て、画像っぽいデータと shape の読み方に慣れる。ROCm では MIOpen へつながる入口として見る。</p>
-			<p data-lang="en"><strong>Task:</strong> Use `nn.Conv2d` and a 4D tensor to get used to image-like shapes and the MIOpen-side mental model.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> batch / channel の説明、shape 展開。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> batch/channel interpretation and larger shape reading.</p>
+			<h3 data-lang="en">Run a Convolution</h3>
+			<p data-lang="ja"><strong>できるようになること:</strong> `Conv2d` と画像っぽい 4 次元 tensor を shape で追えるようになる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to follow `Conv2d` and image-like 4D tensors through their shapes.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> batch、channel、shape 展開。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> batch, channel, and larger shape reading.</p>
 		</div>
 		<div class="card">
 			<span class="number">11</span>
-			<h3 data-lang="ja">Attention をのぞきたい</h3>
+			<h3 data-lang="ja">Attentionをのぞきたい</h3>
 			<h3 data-lang="en">Peek into Attention</h3>
-			<p data-lang="ja"><strong>やること:</strong> Q / K / V の shape、転置、`softmax`、`nn.MultiheadAttention` を見て、コードと式を結びつける。</p>
-			<p data-lang="en"><strong>Task:</strong> Connect Q / K / V shapes, transpose, `softmax`, and `nn.MultiheadAttention` with the matching formulas.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> 多次元 shape、数式とコードの対応。</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> Q / K / V、転置、softmax をコードと shape で見比べられる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to compare Q / K / V, transpose, and softmax through code and shapes.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> 多次元 shape、コードと式の対応。</p>
 			<p data-lang="en"><strong>Python that appears:</strong> higher-dimensional shapes and code-to-math reading.</p>
 		</div>
 		<div class="card">
 			<span class="number">12</span>
-			<h3 data-lang="ja">ログと shape を読めるようになりたい</h3>
+			<h3 data-lang="ja">ログとshapeを読めるようになりたい</h3>
 			<h3 data-lang="en">Read Logs and Shapes</h3>
-			<p data-lang="ja"><strong>やること:</strong> `print`、f-string、shape mismatch、例外メッセージを使って、実験コードで止まったときに何がズレたか読めるようにする。</p>
-			<p data-lang="en"><strong>Task:</strong> Use `print`, f-strings, and shape errors to identify what went wrong in an experiment script.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> f-string、簡単なデバッグ、例外メッセージの読み方。</p>
-			<p data-lang="en"><strong>Python that appears:</strong> f-strings, simple debugging, and exception reading.</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> shape mismatch や簡単なログから、「どこがずれたか」を見つけやすくなる。</p>
+			<p data-lang="en"><strong>You gain:</strong> the ability to spot what went wrong from shape mismatches and simple logs.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> `print`、f-string、簡単なデバッグ。</p>
+			<p data-lang="en"><strong>Python that appears:</strong> `print`, f-strings, and basic debugging.</p>
 		</div>
 		<div class="card">
 			<span class="number">13</span>
-			<h3 data-lang="ja">小さな ROCm 実験コードを 1 本読めるようになりたい</h3>
+			<h3 data-lang="ja">小さなROCm実験コードを1本読めるようになりたい</h3>
 			<h3 data-lang="en">Read One Small ROCm Experiment Script</h3>
-			<p data-lang="ja"><strong>やること:</strong> `import` 群、device 判定、tensor 作成、モデル、forward、場合によっては backward までを 1 本の短いコードでつなげて読む。</p>
-			<p data-lang="en"><strong>Task:</strong> Read one short script that includes imports, device selection, tensor creation, a model, forward, and possibly backward.</p>
-			<p data-lang="ja"><strong>ここで出る Python:</strong> ここまでの内容をまとめて回収する。</p>
+			<p data-lang="ja"><strong>できるようになること:</strong> device 判定、tensor 作成、モデル、forward、場合によっては backward までを 1 本の短いコードとして追える。</p>
+			<p data-lang="en"><strong>You gain:</strong> the confidence to follow a short script that includes device selection, tensors, a model, forward, and possibly backward.</p>
+			<p data-lang="ja"><strong>ここで出る Python:</strong> それまでの内容をまとめて使う。</p>
 			<p data-lang="en"><strong>Python that appears:</strong> a recap of everything introduced earlier.</p>
 		</div>
 	</div>
 
+	<div class="fact-box">
+		<p data-lang="ja"><strong>大事な考え方:</strong> Python の文法は、このコースでは主役ではありません。やりたいことを 1 つずつ達成する中で、必要な分だけ自然に覚えていく方針です。</p>
+		<p data-lang="en"><strong>Core idea:</strong> Python grammar is not the main character here. The course teaches it naturally as needed while solving concrete ROCm-related tasks.</p>
+	</div>
+
 	<div class="warn-box">
-		<p data-lang="ja"><strong>このページの位置づけ:</strong> これはまだ叩き台です。各章を 1 ページずつ public page に分割する前の、章順と役割の確認用として置いています。</p>
-		<p data-lang="en"><strong>Status of this page:</strong> This is still a draft. It is mainly here to confirm chapter order and scope before splitting the material into separate public pages.</p>
+		<p data-lang="ja"><strong>はじめて読む人へ:</strong> 難しそうに見える章があっても、全部を一気に理解する必要はありません。今の自分の疑問に近い章から入って、あとで戻る読み方で大丈夫です。</p>
+		<p data-lang="en"><strong>For first-time readers:</strong> even if some chapters look advanced, you do not need to master everything at once. It is fine to start from the chapter that matches your current question and come back later.</p>
 	</div>
 
 	<p class="footer">
-		<span data-lang="ja">元メモ: `ROCm-docs/__tmp/会話メモ.md`</span>
-		<span data-lang="en">Source memo: `ROCm-docs/__tmp/会話メモ.md`</span>
+		<span data-lang="ja">気になる章から入って、必要になったら前の章へ戻る読み方でも大丈夫です。</span>
+		<span data-lang="en">It is perfectly fine to start from the chapter you need and return to earlier ones when necessary.</span>
 	</p>
 </div>
 

@@ -3,13 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Python explanations | ROCm-docs</title>
+	<title>Python and ROCm 教室 | ROCm-docs</title>
 	<style>
 		:root {
 			--navy: #0B3C5D;
-			--teal: #00796B;
 			--blue: #1565C0;
+			--teal: #00796B;
 			--amber: #C56A00;
+			--green: #2E7D32;
 			--ink: #1F2933;
 			--muted: #5F6C7B;
 			--line: #D8E0E8;
@@ -21,10 +22,12 @@
 			margin: 0;
 			font-family: 'Calibri', 'Arial', sans-serif;
 			color: var(--ink);
-			background: radial-gradient(circle at top right, rgba(0,121,107,0.08), transparent 28%),
-				radial-gradient(circle at bottom left, rgba(21,101,192,0.07), transparent 26%), var(--bg);
+			background:
+				radial-gradient(circle at top right, rgba(21,101,192,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(0,121,107,0.08), transparent 26%),
+				var(--bg);
 		}
-		.page { max-width: 920px; margin: 0 auto; padding: 32px 24px 60px; }
+		.page { max-width: 960px; margin: 0 auto; padding: 32px 24px 60px; }
 		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
 		.home-link { color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 700; }
 		.home-link:hover { text-decoration: underline; }
@@ -37,30 +40,29 @@
 			padding: 40px 36px 30px;
 			margin-bottom: 28px;
 		}
-		.hero h1 { margin: 0 0 10px; font-size: 30px; }
-		.hero p { margin: 0; line-height: 1.7; font-size: 16px; }
-		.box {
-			background: var(--card);
-			border: 1px solid var(--line);
-			border-radius: 14px;
-			padding: 20px 22px;
-			margin: 16px 0;
-			line-height: 1.75;
-			font-size: 15px;
-		}
+		.hero h1 { margin: 0 0 10px; font-size: 30px; line-height: 1.25; }
+		.hero .subtitle { margin: 0 0 12px; opacity: 0.84; font-size: 16px; }
+		.hero p { margin: 0; line-height: 1.75; font-size: 16px; }
 		.section-title {
 			font-size: 21px;
 			font-weight: 700;
 			color: var(--navy);
 			border-left: 5px solid var(--blue);
 			padding-left: 14px;
-			margin: 34px 0 10px;
+			margin: 36px 0 10px;
 		}
-		.card-grid {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 16px;
+		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+		.info-box, .fact-box, .warn-box {
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin: 16px 0;
+			font-size: 15px;
+			line-height: 1.7;
 		}
+		.info-box { background: #E3F2FD; border-left: 5px solid var(--blue); }
+		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
+		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); }
+		.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 		.card {
 			background: var(--card);
 			border: 1px solid var(--line);
@@ -68,39 +70,32 @@
 			padding: 20px 22px 18px;
 			display: flex;
 			flex-direction: column;
-			gap: 8px;
+			gap: 10px;
 		}
-		.card h2 {
-			margin: 0;
-			font-size: 19px;
-			color: var(--navy);
-			line-height: 1.35;
-		}
-		.card p {
-			margin: 0;
-			color: var(--muted);
-			font-size: 14px;
-			line-height: 1.65;
-		}
-		.card .filename {
-			font-family: monospace;
-			font-size: 12px;
-			color: #90A4AE;
-		}
+		.card h2 { margin: 0; font-size: 19px; color: var(--navy); line-height: 1.35; }
+		.card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
 		.card .btn {
 			display: inline-block;
 			margin-top: auto;
-			padding: 7px 16px;
-			border-radius: 7px;
+			padding: 8px 16px;
+			border-radius: 8px;
 			text-decoration: none;
 			color: #fff;
 			background: var(--blue);
 			font-weight: 700;
 			font-size: 13px;
 		}
-		.info { background: #E3F2FD; border-left: 5px solid var(--blue); }
-		.warn { background: #FFF8E1; border-left: 5px solid var(--amber); }
-		.box strong { color: var(--navy); }
+		.path-box {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 18px 22px;
+			font-size: 15px;
+			line-height: 1.8;
+		}
+		.path-box ol, .path-box ul { margin: 0; padding-left: 20px; }
+		.path-box li { margin-bottom: 8px; }
+		.path-box li:last-child { margin-bottom: 0; }
 		.footer { margin-top: 32px; color: var(--muted); text-align: center; font-size: 13px; }
 		[data-lang] { display: none; }
 		html[data-language="ja"] [data-lang="ja"] { display: initial; }
@@ -109,6 +104,7 @@
 		html[data-language="ja"] p[data-lang="ja"], html[data-language="en"] p[data-lang="en"] { display: block; }
 		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"],
 		html[data-language="ja"] h2[data-lang="ja"], html[data-language="en"] h2[data-lang="en"] { display: block; }
+		html[data-language="ja"] span[data-lang="ja"], html[data-language="en"] span[data-lang="en"] { display: inline; }
 		@media (max-width: 760px) {
 			.card-grid { grid-template-columns: 1fr; }
 		}
@@ -117,7 +113,7 @@
 <body>
 <div class="page">
 	<div class="toolbar">
-		<a class="home-link" href="../index.html">← <span data-lang="ja">トップへ</span><span data-lang="en">Back to index</span></a>
+		<a class="home-link" href="../index.html">← <span data-lang="ja">サイト入口へ</span><span data-lang="en">Back to site home</span></a>
 		<div>
 			<button class="lang-btn active" id="btn-ja" type="button">JP</button>
 			<button class="lang-btn" id="btn-en" type="button">EN</button>
@@ -125,39 +121,78 @@
 	</div>
 
 	<section class="hero">
-		<h1 data-lang="ja">Python 説明ページ</h1>
-		<h1 data-lang="en">Python Explanation Pages</h1>
-		<p data-lang="ja">このディレクトリは Python スクリプト置き場ではなく、Python の文法や考え方を説明する公開ページを置くための場所です。</p>
-		<p data-lang="en">This directory is not for Python scripts. It is meant for public pages that explain Python syntax and Python thinking.</p>
+		<h1 data-lang="ja">Python and ROCm 教室</h1>
+		<h1 data-lang="en">Python and ROCm Course</h1>
+		<p class="subtitle" data-lang="ja">やりたいことから Python と ROCm を学ぶコース</p>
+		<p class="subtitle" data-lang="en">A course that teaches Python and ROCm through concrete goals</p>
+		<p data-lang="ja">このコースは、変数や関数から順番に入るのではなく、「GPU が見えるか確かめたい」「行列を計算したい」「小さなモデルを動かしたい」という目標から始まります。必要な Python は、その場で少しずつ覚えていけば大丈夫です。</p>
+		<p data-lang="en">This course does not begin with abstract grammar topics. It starts from concrete goals such as checking the GPU, doing matrix math, and running a small model, while introducing only the Python needed at each step.</p>
 	</section>
 
-	<div class="box info">
-		<p data-lang="ja"><strong>この場所の役割:</strong> Python 文法を順番に並べるよりも、「GPU を見たい」「行列を計算したい」「学習と推論を見分けたい」のような目的から入る説明ページをここに置きます。</p>
-		<p data-lang="en"><strong>Role of this place:</strong> Instead of listing Python grammar in isolation, this section starts from goals such as checking the GPU, doing matrix math, and telling training from inference.</p>
+	<div class="info-box">
+		<p data-lang="ja"><strong>このコースが向いている人:</strong> Python を全部覚えてから GPU に進むのではなく、まず手を動かしながら NumPy・PyTorch・ROCm のつながりを知りたい人。</p>
+		<p data-lang="en"><strong>This course is for:</strong> learners who do not want to master all of Python first, but want to understand how NumPy, PyTorch, and ROCm connect while doing small practical tasks.</p>
 	</div>
 
-	<div class="box warn">
-		<p data-lang="ja"><strong>置かないもの:</strong> 実行用スクリプト、運用メモ、雑多な作業メモはここに置きません。そうしたものは `scripts/` か `__tmp/` 側で扱います。</p>
-		<p data-lang="en"><strong>What should not go here:</strong> Runnable scripts, operational notes, and rough working memos do not belong here. Those should go under `scripts/` or `__tmp/` instead.</p>
+	<h2 class="section-title" data-lang="ja">まず何を読む？</h2>
+	<h2 class="section-title" data-lang="en">Where Should You Start?</h2>
+	<p class="section-lead" data-lang="ja">最初の数章だけでも、かなり多くのページが読みやすくなります。</p>
+	<p class="section-lead" data-lang="en">Even the first few chapters make many other pages easier to read.</p>
+
+	<div class="path-box">
+		<ol>
+			<li data-lang="ja"><strong>GPU が見えるか確かめたい</strong> で、ROCm 環境と PyTorch の最初の見え方を確認する</li>
+			<li data-lang="en"><strong>Check whether the GPU is visible</strong> to confirm the first PyTorch / ROCm setup signs</li>
+			<li data-lang="ja"><strong>数字を表として持ちたい</strong> と <strong>表どうしを計算したい</strong> で、shape と行列の読み方に慣れる</li>
+			<li data-lang="en"><strong>Hold numbers as tables</strong> and <strong>Multiply tables</strong> to get comfortable with shapes and matrices</li>
+			<li data-lang="ja"><strong>NumPy から PyTorch へ移りたい</strong> で、tensor の見方に進む</li>
+			<li data-lang="en"><strong>Move from NumPy to PyTorch</strong> to start reading tensors naturally</li>
+		</ol>
 	</div>
 
-	<h2 class="section-title" data-lang="ja">入口ページ</h2>
-	<h2 class="section-title" data-lang="en">Entry Pages</h2>
+	<h2 class="section-title" data-lang="ja">このコースで身につくこと</h2>
+	<h2 class="section-title" data-lang="en">What This Course Builds</h2>
 
 	<div class="card-grid">
 		<div class="card">
-			<h2 data-lang="ja">Python and ROCm 教室</h2>
-			<h2 data-lang="en">Python and ROCm Course</h2>
-			<p class="filename">python-and-rocm-class.html</p>
-			<p data-lang="ja">`会話メモ.md` をもとにした叩き台です。文法名ではなく「何をしたいか」ベースで 13 章を並べ、各章に「最小コード」「どこが ROCm？」「ここで出てきた文法」を持たせる構成にしています。</p>
-			<p data-lang="en">A draft based on the working memo. It uses a goal-first 13-chapter structure, with each chapter centered on minimum code, the ROCm-specific point, and the Python that appears naturally.</p>
-			<a class="btn" href="./python-and-rocm-class.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a>
+			<h2 data-lang="ja">コードの読み方</h2>
+			<h2 data-lang="en">Reading Code</h2>
+			<p data-lang="ja">`torch.tensor(...)`、`.to(device)`、`model(x)`、`loss.backward()` のような行を見たときに、「これは何をしている行か」を一つずつ結びつけられるようになります。</p>
+			<p data-lang="en">You learn to look at lines like `torch.tensor(...)`, `.to(device)`, `model(x)`, and `loss.backward()` and understand what each one is doing.</p>
+		</div>
+		<div class="card">
+			<h2 data-lang="ja">shape の感覚</h2>
+			<h2 data-lang="en">Shape Intuition</h2>
+			<p data-lang="ja">NumPy の配列、PyTorch の tensor、行列積、Attention の形までを、「数字の表」として追いやすくなります。</p>
+			<p data-lang="en">You build a clear “tables of numbers” intuition that carries from NumPy arrays to PyTorch tensors, matrix multiplication, and attention shapes.</p>
+		</div>
+		<div class="card">
+			<h2 data-lang="ja">ROCm とのつながり</h2>
+			<h2 data-lang="en">The ROCm Connection</h2>
+			<p data-lang="ja">Python のコードを書いているときでも、その下で GPU が使われ、rocBLAS や MIOpen のような計算ライブラリにつながっていく感覚をつかめます。</p>
+			<p data-lang="en">You begin to see how simple Python code can connect downward to GPU work through ROCm libraries such as rocBLAS and MIOpen.</p>
+		</div>
+		<div class="card">
+			<h2 data-lang="ja">実験コードへの自信</h2>
+			<h2 data-lang="en">Confidence with Small Experiments</h2>
+			<p data-lang="ja">短いスクリプトを読んだときに、「わからない単語だらけで止まる」状態から抜けて、自分で追える範囲が増えていきます。</p>
+			<p data-lang="en">Instead of stopping at every unfamiliar line, you gradually become able to follow short experiment scripts by yourself.</p>
 		</div>
 	</div>
 
+	<div class="fact-box">
+		<p data-lang="ja"><strong>次に進むなら:</strong> 13 章の全体像は <a href="./python-and-rocm-class.html">学習ロードマップ</a> で見られます。</p>
+		<p data-lang="en"><strong>Next step:</strong> you can see the full 13-chapter path on the <a href="./python-and-rocm-class.html">course roadmap</a>.</p>
+	</div>
+
+	<div class="warn-box">
+		<p data-lang="ja"><strong>おすすめの前提:</strong> GPU そのものや ROCm の全体像がまだぼんやりしているなら、先に <a href="../theory/theory-index.html">理論ページ</a> を軽く読んでおくと、このコースがかなり追いやすくなります。</p>
+		<p data-lang="en"><strong>Recommended prep:</strong> if GPUs and ROCm still feel vague, a quick look at the <a href="../theory/theory-index.html">theory pages</a> makes this course much easier to follow.</p>
+	</div>
+
 	<p class="footer">
-		<span data-lang="ja">ここから先は、章ページを少しずつ増やしていく想定です。</span>
-		<span data-lang="en">More chapter pages can branch out from here over time.</span>
+		<span data-lang="ja">少しずつ読み進めれば大丈夫です。全部を一度に理解する必要はありません。</span>
+		<span data-lang="en">You do not need to understand everything at once. Small steps are enough.</span>
 	</p>
 </div>
 

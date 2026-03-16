@@ -4,15 +4,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="./styles/mermaid-layout.css">
-	<title>ROCm-docs | ROCm learning and notes hub</title>
+	<title>ROCm-docs | ROCm を学ぶ入口</title>
 	<style>
 		:root {
 			--navy: #0B3C5D;
 			--teal: #00796B;
 			--blue: #1565C0;
-			--amber: #C56A00;
 			--green: #2E7D32;
-			--purple: #5B4B8A;
+			--amber: #C56A00;
 			--ink: #1F2933;
 			--muted: #5F6C7B;
 			--line: #D8E0E8;
@@ -24,47 +23,45 @@
 			margin: 0;
 			font-family: 'Calibri', 'Arial', sans-serif;
 			color: var(--ink);
-			background: radial-gradient(circle at top right, rgba(0,121,107,0.08), transparent 28%),
-				radial-gradient(circle at bottom left, rgba(91,75,138,0.07), transparent 26%), var(--bg);
+			background:
+				radial-gradient(circle at top right, rgba(0,121,107,0.08), transparent 28%),
+				radial-gradient(circle at bottom left, rgba(21,101,192,0.08), transparent 26%),
+				var(--bg);
 		}
 		.page { max-width: 980px; margin: 0 auto; padding: 32px 24px 60px; }
 		.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
 		.site-link { display: inline-flex; align-items: center; gap: 8px; color: var(--navy); font-size: 14px; font-weight: 700; text-decoration: none; }
 		.site-link:hover { text-decoration: underline; }
-		.lang-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--navy); background: transparent; color: var(--navy); transition: all 0.2s; }
+		.lang-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--navy); background: transparent; color: var(--navy); }
 		.lang-btn.active { background: var(--navy); color: #fff; }
 		.hero {
 			background: linear-gradient(135deg, #004D40 0%, #00796B 55%, #26A69A 100%);
 			color: #fff;
 			border-radius: 18px;
 			padding: 40px 36px 34px;
-			margin-bottom: 32px;
+			margin-bottom: 30px;
 		}
-		.hero h1 { margin: 0 0 10px; font-size: 30px; line-height: 1.25; }
-		.hero .subtitle { margin: 0 0 14px; opacity: 0.84; font-size: 16px; }
-		.hero p { margin: 0; font-size: 16px; line-height: 1.7; opacity: 0.94; }
+		.hero h1 { margin: 0 0 10px; font-size: 31px; line-height: 1.25; }
+		.hero .subtitle { margin: 0 0 14px; opacity: 0.86; font-size: 16px; }
+		.hero p { margin: 0; font-size: 16px; line-height: 1.75; opacity: 0.95; }
 		.section-title {
 			font-size: 21px;
 			font-weight: 700;
 			color: var(--navy);
 			border-left: 5px solid var(--teal);
 			padding-left: 14px;
-			margin: 42px 0 8px;
+			margin: 40px 0 10px;
 		}
-		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.65; }
-		.fact-box, .warn-box, .info-box {
+		.section-lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+		.info-box, .fact-box {
 			border-radius: 12px;
 			padding: 16px 20px;
 			margin: 16px 0;
 			font-size: 15px;
 			line-height: 1.7;
 		}
-		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
-		.warn-box { background: #FFF8E1; border-left: 5px solid var(--amber); }
 		.info-box { background: #E3F2FD; border-left: 5px solid var(--blue); }
-		.fact-box strong { color: var(--green); }
-		.warn-box strong { color: var(--amber); }
-		.info-box strong { color: var(--blue); }
+		.fact-box { background: #E8F5E9; border-left: 5px solid var(--green); }
 		.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 		.card {
 			background: var(--card);
@@ -73,16 +70,15 @@
 			padding: 22px 22px 18px;
 			display: flex;
 			flex-direction: column;
-			gap: 8px;
+			gap: 10px;
 		}
-		.card h3 { margin: 0; font-size: 19px; color: var(--navy); line-height: 1.35; }
-		.card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
-		.card .filename { font-family: monospace; font-size: 12px; color: #90A4AE; }
-		.card .actions { margin-top: auto; padding-top: 6px; }
+		.card h2 { margin: 0; font-size: 20px; color: var(--navy); line-height: 1.35; }
+		.card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
 		.card .btn {
 			display: inline-block;
-			padding: 7px 16px;
-			border-radius: 7px;
+			margin-top: auto;
+			padding: 8px 16px;
+			border-radius: 8px;
 			text-decoration: none;
 			color: #fff;
 			background: var(--teal);
@@ -90,17 +86,17 @@
 			font-size: 13px;
 		}
 		.card .btn.alt { background: var(--blue); }
-		.list-box {
+		.path-box {
 			background: var(--card);
 			border: 1px solid var(--line);
-			border-radius: 12px;
+			border-radius: 14px;
 			padding: 18px 22px;
 			font-size: 15px;
-			line-height: 1.75;
+			line-height: 1.8;
 		}
-		.list-box ul { margin: 0; padding-left: 20px; }
-		.list-box li { margin: 0 0 8px; }
-		.list-box li:last-child { margin-bottom: 0; }
+		.path-box ol, .path-box ul { margin: 0; padding-left: 20px; }
+		.path-box li { margin-bottom: 8px; }
+		.path-box li:last-child { margin-bottom: 0; }
 		.footer { margin-top: 34px; color: var(--muted); text-align: center; font-size: 13px; }
 		[data-lang] { display: none; }
 		html[data-language="ja"] [data-lang="ja"] { display: initial; }
@@ -108,13 +104,12 @@
 		html[data-language="ja"] div[data-lang="ja"], html[data-language="en"] div[data-lang="en"] { display: block; }
 		html[data-language="ja"] p[data-lang="ja"], html[data-language="en"] p[data-lang="en"] { display: block; }
 		html[data-language="ja"] h1[data-lang="ja"], html[data-language="en"] h1[data-lang="en"],
-		html[data-language="ja"] h2[data-lang="ja"], html[data-language="en"] h2[data-lang="en"],
-		html[data-language="ja"] h3[data-lang="ja"], html[data-language="en"] h3[data-lang="en"] { display: block; }
+		html[data-language="ja"] h2[data-lang="ja"], html[data-language="en"] h2[data-lang="en"] { display: block; }
 		html[data-language="ja"] span[data-lang="ja"], html[data-language="en"] span[data-lang="en"] { display: inline; }
-		@media (max-width: 720px) {
+		@media (max-width: 760px) {
 			.card-grid { grid-template-columns: 1fr; }
 			.hero { padding: 30px 22px 24px; }
-			.hero h1 { font-size: 25px; }
+			.hero h1 { font-size: 26px; }
 		}
 	</style>
 </head>
@@ -129,64 +124,62 @@
 	</div>
 
 	<section class="hero">
-		<h1 data-lang="ja">ROCm-docs</h1>
-		<h1 data-lang="en">ROCm-docs</h1>
-		<p class="subtitle" data-lang="ja">ROCm learning and notes hub</p>
-		<p class="subtitle" data-lang="en">ROCm learning and notes hub</p>
-		<p data-lang="ja">このサイトは、ROCm を中学生や初学者にも追いやすい形で説明するページ群と、補助的な整理用ディレクトリをまとめた入口です。公開 URL は <a href="https://aets-magi.github.io/ROCm-docs/" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;">https://aets-magi.github.io/ROCm-docs/</a> です。</p>
-		<p data-lang="en">This site is the entry point for beginner-friendly ROCm explanations and a few supporting directories used to organize the project. The public URL is <a href="https://aets-magi.github.io/ROCm-docs/" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;">https://aets-magi.github.io/ROCm-docs/</a>.</p>
+		<h1 data-lang="ja">ROCm を学ぶ入口</h1>
+		<h1 data-lang="en">A Friendly Starting Point for ROCm</h1>
+		<p class="subtitle" data-lang="ja">GPU・NumPy・PyTorch・ROCm を、やさしくつなげて学ぶサイト</p>
+		<p class="subtitle" data-lang="en">A beginner-friendly site that connects GPU basics, NumPy, PyTorch, and ROCm</p>
+		<p data-lang="ja">このサイトでは、GPU の基本から始めて、NumPy や PyTorch を通して ROCm に近づいていきます。難しい言葉を先に暗記するよりも、「何ができるのか」「どう読むのか」を小さなページで少しずつつかめる構成にしています。</p>
+		<p data-lang="en">This site starts from GPU basics and gradually leads you toward ROCm through NumPy and PyTorch. Instead of memorising terminology first, it focuses on what you can do and how to read the code step by step.</p>
 	</section>
 
 	<div class="info-box">
-		<p data-lang="ja"><strong>まず見る場所:</strong> 理論ページの入口は <a href="./theory/theory-index.html">theory/theory-index.html</a>、Python 説明ページの入口は <a href="./python/python-index.html">python/python-index.html</a> です。</p>
-		<p data-lang="en"><strong>Where to start:</strong> The theory entry point is <a href="./theory/theory-index.html">theory/theory-index.html</a>, and the Python explanation entry point is <a href="./python/python-index.html">python/python-index.html</a>.</p>
+		<p data-lang="ja"><strong>はじめてなら:</strong> まずは <a href="./theory/theory-index.html">理論ページ</a> で GPU と ROCm の全体像をつかみ、そのあと <a href="./python/python-index.html">Python and ROCm 教室</a> に進むのがおすすめです。</p>
+		<p data-lang="en"><strong>If you're new:</strong> start with the <a href="./theory/theory-index.html">theory pages</a> to get the big picture, then move on to the <a href="./python/python-index.html">Python and ROCm course</a>.</p>
 	</div>
 
-	<h2 class="section-title" data-lang="ja">公開ページ</h2>
-	<h2 class="section-title" data-lang="en">Public Pages</h2>
-	<p class="section-lead" data-lang="ja">普段の閲覧で使うのはこの 2 つです。理論ページ群は `theory/`、Python 説明は `python/` に置きます。</p>
-	<p class="section-lead" data-lang="en">These are the main public entry points. Theory pages live under `theory/`, and Python explanations live under `python/`.</p>
+	<h2 class="section-title" data-lang="ja">このサイトで学べること</h2>
+	<h2 class="section-title" data-lang="en">What You Can Learn Here</h2>
+	<p class="section-lead" data-lang="ja">「GPU とは何か」から「PyTorch のコードが ROCm でどう動くか」までを、入口から順番にたどれます。</p>
+	<p class="section-lead" data-lang="en">You can go from “What is a GPU?” to “How does PyTorch code run through ROCm?” in a clear beginner path.</p>
 
 	<div class="card-grid">
 		<div class="card">
-			<h3 data-lang="ja">理論ページもくじ</h3>
-			<h3 data-lang="en">Theory Index</h3>
-			<p class="filename">theory/theory-index.html</p>
-			<p data-lang="ja">GPU の基礎、ROCm の全体像、NumPy / PyTorch の入口、学習 / 推論 / Attention までの説明ページを集めた中心入口です。</p>
-			<p data-lang="en">The main index for GPU basics, the ROCm stack, NumPy / PyTorch introductions, and pages on training, inference, and attention.</p>
-			<div class="actions"><a class="btn" href="./theory/theory-index.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a></div>
+			<h2 data-lang="ja">理論ページ</h2>
+			<h2 data-lang="en">Theory Pages</h2>
+			<p data-lang="ja">GPU のしくみ、メモリと帯域幅、ROCm の全体像、NumPy / PyTorch の入口、学習と推論のちがいなどを、図やたとえを使って説明します。</p>
+			<p data-lang="en">Learn GPU basics, memory and bandwidth, the ROCm stack, NumPy / PyTorch introductions, and the difference between training and inference through analogies and diagrams.</p>
+			<a class="btn" href="./theory/theory-index.html"><span data-lang="ja">理論ページへ</span><span data-lang="en">Open theory pages</span></a>
 		</div>
 		<div class="card">
-			<h3 data-lang="ja">Python 説明ページ</h3>
-			<h3 data-lang="en">Python Explanation Pages</h3>
-			<p class="filename">python/python-index.html</p>
-			<p data-lang="ja">`python/` は Python スクリプト置き場ではなく、Python の文法や考え方を説明するための公開ページ用ディレクトリです。</p>
-			<p data-lang="en">`python/` is not for Python scripts. It is the public directory for pages that explain Python syntax and mental models.</p>
-			<div class="actions"><a class="btn alt" href="./python/python-index.html"><span data-lang="ja">開く</span><span data-lang="en">Open</span></a></div>
+			<h2 data-lang="ja">Python and ROCm 教室</h2>
+			<h2 data-lang="en">Python and ROCm Course</h2>
+			<p data-lang="ja">Python の文法を先に全部やるのではなく、「GPU が見えるか確かめたい」「行列を計算したい」「小さなモデルを動かしたい」から入る学習コースです。</p>
+			<p data-lang="en">This course does not begin with abstract grammar. It starts from goals such as checking the GPU, doing matrix math, and running a small model.</p>
+			<a class="btn alt" href="./python/python-index.html"><span data-lang="ja">Python コースへ</span><span data-lang="en">Open Python course</span></a>
 		</div>
 	</div>
 
-	<h2 class="section-title" data-lang="ja">ディレクトリの役割</h2>
-	<h2 class="section-title" data-lang="en">Directory Roles</h2>
-	<p class="section-lead" data-lang="ja">迷いやすいディレクトリだけ、先に意味を固定しておきます。</p>
-	<p class="section-lead" data-lang="en">These are the directories that benefit most from explicit role definitions.</p>
+	<h2 class="section-title" data-lang="ja">おすすめの進み方</h2>
+	<h2 class="section-title" data-lang="en">Suggested Reading Order</h2>
+	<p class="section-lead" data-lang="ja">迷ったら、次の順で読むとつながりやすいです。</p>
+	<p class="section-lead" data-lang="en">If you're not sure where to begin, this order works well.</p>
 
-	<div class="list-box">
-		<ul>
-			<li data-lang="ja"><strong>`theory/`</strong> : ROCm / GPU / AI の説明ページ本体。</li>
-			<li data-lang="en"><strong>`theory/`</strong> : Main explanation pages for ROCm / GPU / AI.</li>
-			<li data-lang="ja"><strong>`python/`</strong> : Python の説明を書くための場所。実行用スクリプト置き場ではありません。</li>
-			<li data-lang="en"><strong>`python/`</strong> : A place for Python explanation pages. It is not a storage area for runnable scripts.</li>
-			<li data-lang="ja"><strong>`scripts/`</strong> : サイト生成や補助処理のためのスクリプト。</li>
-			<li data-lang="en"><strong>`scripts/`</strong> : Helper scripts for site generation and supporting tasks.</li>
-			<li data-lang="ja"><strong>`__tmp/`</strong> : 運用メモ、一時メモ、下書き、整理前のメモを置く場所。公開コンテンツの本体はここに置かない方針です。</li>
-			<li data-lang="en"><strong>`__tmp/`</strong> : Temporary operational notes, drafts, and unpolished working memos. This is not intended to hold the main public content.</li>
-		</ul>
+	<div class="path-box">
+		<ol>
+			<li data-lang="ja"><a href="./theory/gpu-basics.html">GPU のしくみ</a> で、CPU と GPU の違いをつかむ</li>
+			<li data-lang="en"><a href="./theory/gpu-basics.html">GPU Basics</a> to understand the difference between CPU and GPU</li>
+			<li data-lang="ja"><a href="./theory/rocm-overview-for-beginners.html">ROCm の全体構造</a> で、アプリから GPU までの流れを見る</li>
+			<li data-lang="en"><a href="./theory/rocm-overview-for-beginners.html">ROCm Overview</a> to see the path from the app down to the GPU</li>
+			<li data-lang="ja"><a href="./theory/numpy-express.html">NumPy特急便</a> と <a href="./theory/pytorch-express.html">PyTorch特急便</a> で、数字の表と tensor の読み方に慣れる</li>
+			<li data-lang="en"><a href="./theory/numpy-express.html">NumPy Express</a> and <a href="./theory/pytorch-express.html">PyTorch Express</a> to get comfortable with number tables and tensors</li>
+			<li data-lang="ja"><a href="./python/python-and-rocm-class.html">Python and ROCm 教室</a> で、やりたいことベースの 13 章をたどる</li>
+			<li data-lang="en"><a href="./python/python-and-rocm-class.html">Python and ROCm Course</a> to follow the 13-chapter goal-based learning path</li>
+		</ol>
 	</div>
 
-	<div class="warn-box">
-		<p data-lang="ja"><strong>運用メモの置き場所:</strong> 作業途中のメモや運用メモは <code>/home/limonene/ROCm-project/vega-hbmx-investigations/ROCm-docs/__tmp</code> 以下に保存します。`python/` には説明ページだけを置きます。</p>
-		<p data-lang="en"><strong>Where to store working notes:</strong> Operational notes and in-progress memos should go under <code>/home/limonene/ROCm-project/vega-hbmx-investigations/ROCm-docs/__tmp</code>. Keep `python/` for explanation pages only.</p>
+	<div class="fact-box">
+		<p data-lang="ja"><strong>このサイトの雰囲気:</strong> できるだけ短い説明、少なめの前提知識、そして「コードと意味がつながること」を大事にしています。</p>
+		<p data-lang="en"><strong>The spirit of this site:</strong> short explanations, low prerequisite knowledge, and a strong focus on connecting code with meaning.</p>
 	</div>
 
 	<p class="footer">
