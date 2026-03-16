@@ -86,6 +86,13 @@
 			font-size: 13px;
 		}
 		.card .btn.alt { background: var(--blue); }
+		.card-mascot {
+			width: 64px;
+			height: auto;
+			border-radius: 10px;
+			float: right;
+			margin: 0 0 8px 12px;
+		}
 		.path-box {
 			background: var(--card);
 			border: 1px solid var(--line);
@@ -154,6 +161,7 @@
 
 	<div class="card-grid">
 		<div class="card">
+			<img class="card-mascot" src="./media/aktk-chan/aktk-chan-discovery.png" alt="アカツキちゃん">
 			<h2 data-lang="ja">まず GPU で遊ぶ（Quickstart）</h2>
 			<h2 data-lang="en">Quickstart</h2>
 			<p data-lang="ja">10〜30分で GPU 計算を 1 回動かします。ネイティブ Linux と Docker の 2 つのルートから選べます。</p>
@@ -170,8 +178,8 @@
 		<div class="card">
 			<h2 data-lang="ja">しくみをやさしく知る（theory）</h2>
 			<h2 data-lang="en">Theory Pages</h2>
-			<p data-lang="ja">GPU のしくみ、ROCm の全体像、学習と推論のちがいなどを、図やたとえを使って説明します。必要になったら読む — のスタイルで。</p>
-			<p data-lang="en">Learn GPU basics, the ROCm stack, and the difference between training and inference through analogies and diagrams. Read when you need it.</p>
+			<p data-lang="ja">GPU のしくみ、ROCm の全体像、学習と推論のちがいなどを、図やたとえを使って解説します。背景をあとで知りたくなったときに読むページです。</p>
+			<p data-lang="en">GPU basics, the ROCm stack, and training vs. inference explained with analogies and diagrams. Come back here when you want the background story.</p>
 			<a class="btn" href="./theory/theory-index.html" style="background: var(--amber);"><span data-lang="ja">理論ページへ</span><span data-lang="en">Open theory</span></a>
 		</div>
 	</div>
