@@ -105,6 +105,8 @@ Device[0]: AMD Radeon RX Vega</code></pre>
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
 		<p>ROCm 版 PyTorch でも、GPU の入口に <span class="code-inline">torch.cuda</span> という名前が残っています。ここはたしかにややこしいのですが、<strong>NVIDIA 専用という意味で読むのではなく、GPU を使う入口の名前がそのまま残っている</strong> と考えると分かりやすいです。ROCm 環境でも、ここを通って GPU の状態を見ます。</p>
+		<p>これは意図的な設計で、もともと CUDA 用に書かれたコードが AMD GPU でもなるべくそのまま動くように、ROCm 版 PyTorch は <span class="code-inline">torch.cuda</span> という名前の API をそのまま引き継いでいます。</p>
+		<p><strong>HIP と ROCm の関係:</strong> ROCm はドライバ・ライブラリ・コンパイラなどをまとめた「大きなソフトウェアの集合体」です。HIP（ヒップ）はその中の一部品で、GPU 向けのプログラミング言語 API を担当します。<span class="code-inline">torch.version.hip</span> が返す値は HIP のバージョンです。「HIP のバージョンが分かる ≒ ROCm 環境にいる」と読むことができます。</p>
 	</section>
 
 	<section class="content-section">
@@ -114,6 +116,7 @@ Device[0]: AMD Radeon RX Vega</code></pre>
 			<li><span class="code-inline">print()</span> で確認したい値を出す</li>
 			<li><span class="code-inline">if</span> で「GPU が見えているときだけ」を分ける</li>
 			<li><span class="code-inline">torch.version.hip</span> のように、<strong>ドットでつながる名前</strong>をたどって情報を読む</li>
+			<li><span class="code-inline">sys.version.split()[0]</span> の読み方: <span class="code-inline">sys.version</span> は <span class="code-inline">"3.11.9 (main, Apr 2024, ...)"</span> のような長い文字列を返します。<span class="code-inline">.split()</span> で空白で分割してリストにし、<span class="code-inline">[0]</span> で先頭の要素（バージョン番号だけ）を取り出しています。</li>
 		</ul>
 	</section>
 
@@ -131,6 +134,7 @@ Device[0]: AMD Radeon RX Vega</code></pre>
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>次の順で確認してみましょう。<span class="code-inline">GPU available</span>、<span class="code-inline">HIP</span>、<span class="code-inline">Device count</span> の3つを紙にメモすると、次章以降で迷いにくくなります。</p>
+		<p>この3つをメモしておく理由: 次章からテンソル（数値の表）を GPU に送る操作が出てきます。そのとき「そもそも GPU が見えているのか」「ROCm 版なのか」を出発点として把握しておくと、エラーが出たときに「GPU の問題なのか・コードの問題なのか」を素早く切り分けられます。</p>
 	</section>
 
 	<nav class="chapter-nav">
