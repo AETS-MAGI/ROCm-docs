@@ -185,14 +185,12 @@
       - /dev/kfd
       - /dev/dri
     group_add:
-      - video
-      - render</code></pre></div>
+      - video</code></pre></div>
 		<div class="meaning-box">
 			<strong>💡 追加した行の意味:</strong><br>
 			<code>devices: /dev/kfd</code> — ROCm のカーネルドライバ（KFD）をコンテナに渡す。これがないと GPU にアクセスできない。<br>
 			<code>devices: /dev/dri</code> — DRM（Direct Rendering Manager）デバイスを渡す。GPU のレンダリング機能に必要。<br>
-			<code>group_add: video</code> — デバイスファイルの読み書き権限を追加。<br>
-			<code>group_add: render</code> — 同上。環境によってはこれがないと Permission denied になる。
+			<code>group_add: video</code> — GPU デバイスファイルの読み書き権限を追加。
 		</div>
 
 		<div class="mascot-row">
@@ -204,26 +202,32 @@
 
 		<p>この段階で <code>rocminfo</code> と <code>torch.cuda.is_available()</code> が動きます。</p>
 
+		<div class="info-box">
+			<strong>💡 Permission denied が出るときは:</strong> Ubuntu 20.04 以降では <code>render</code> グループも必要になることがあります。そのときは <code>group_add</code> に <code>render</code> を追加してください。
+		</div>
+
 		<h3>Stage 4: ホストとファイルを共有する</h3>
-		<p>最後に、ホスト側のフォルダをコンテナ内で使えるようにします。Quickstart で作った compose.yaml はこの状態です。</p>
+		<p>最後に、ホスト側のフォルダをコンテナ内で使えるようにし、入った瞬間に作業ディレクトリに立つようにします。Quickstart で作った compose.yaml はこの状態です。</p>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>services:
   rocm:
     image: rocm/pytorch:latest
     tty: true
+    stdin_open: true
     devices:
       - /dev/kfd
       - /dev/dri
     group_add:
       - video
-      - render
     volumes:
-      - .:/workspace</code></pre></div>
+      - .:/workspace
+    working_dir: /workspace</code></pre></div>
 		<div class="meaning-box">
-			<strong>💡 volumes の意味:</strong><br>
-			<code>. :/workspace</code> — <code>compose.yaml</code> があるフォルダ（<code>.</code>）をコンテナ内の <code>/workspace</code> に結びつける。<br>
-			ホスト側でファイルを編集すると、コンテナ内にも反映されます。逆もまた同じです。
+			<strong>💡 追加した行の意味:</strong><br>
+			<code>stdin_open: true</code> — コンテナの標準入力を開いたままにする（<code>docker run</code> の <code>-i</code> に相当）。<br>
+			<code>volumes: .:/workspace</code> — <code>compose.yaml</code> があるフォルダ（<code>.</code>）をコンテナ内の <code>/workspace</code> に結びつける。ホスト側でファイルを編集すると、コンテナ内にも反映されます。<br>
+			<code>working_dir: /workspace</code> — コンテナに入った瞬間に <code>/workspace</code> に立つようにする。
 		</div>
-		<p>これが Quickstart で使った完成形です。たった12行ですが、<strong>GPU アクセス・Python 環境・ファイル共有</strong>がすべて揃っています。</p>
+		<p>これが Quickstart で使った完成形です。<strong>GPU アクセス・Python 環境・ファイル共有</strong>がすべて揃っています。</p>
 	</div>
 
 	<!-- docker run との対応 -->
@@ -234,8 +238,8 @@
   --device=/dev/kfd \
   --device=/dev/dri \
   --group-add video \
-  --group-add render \
   -v "$PWD":/workspace \
+  -w /workspace \
   rocm/pytorch:latest</code></pre></div>
 
 		<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0;">
@@ -251,7 +255,7 @@
 					<td style="padding: 8px 10px;"><code>rocm/pytorch:latest</code>（末尾）</td>
 				</tr>
 				<tr style="border-bottom: 1px solid var(--line);">
-					<td style="padding: 8px 10px;"><code>tty: true</code></td>
+					<td style="padding: 8px 10px;"><code>tty: true</code> + <code>stdin_open: true</code></td>
 					<td style="padding: 8px 10px;"><code>-it</code></td>
 				</tr>
 				<tr style="border-bottom: 1px solid var(--line);">
@@ -262,9 +266,13 @@
 					<td style="padding: 8px 10px;"><code>group_add: - video</code></td>
 					<td style="padding: 8px 10px;"><code>--group-add video</code></td>
 				</tr>
-				<tr>
+				<tr style="border-bottom: 1px solid var(--line);">
 					<td style="padding: 8px 10px;"><code>volumes: - .:/workspace</code></td>
 					<td style="padding: 8px 10px;"><code>-v "$PWD":/workspace</code></td>
+				</tr>
+				<tr>
+					<td style="padding: 8px 10px;"><code>working_dir: /workspace</code></td>
+					<td style="padding: 8px 10px;"><code>-w /workspace</code></td>
 				</tr>
 			</tbody>
 		</table>
