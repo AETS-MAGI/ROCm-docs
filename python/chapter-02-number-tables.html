@@ -19,39 +19,92 @@
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
 		<p>AI や GPU の話では、数字は 1 個ずつよりも「まとまった表」で出てくることが多いです。まずは NumPy 配列を作って、<span class="code-inline">shape</span> を「表の大きさ」として読めるようにします。</p>
+		<ul class="point-list">
+			<li>この章のゴールは、<strong>配列を作る → shape を読む</strong> の2点です。</li>
+			<li>Python 文法が未修でも大丈夫なように、必要な記号だけこの章で説明します。</li>
+			<li>ROCm や GPU の本番利用は次章以降。ここでは「数字を表で扱う感覚」を作ります。</li>
+		</ul>
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>実行前チェック（20秒）</h2>
+		<ul class="point-list">
+			<li>第1章で使った Python をそのまま使います（例: <span class="code-inline">./.venv/bin/python</span>）。</li>
+			<li><span class="code-inline">numpy</span> が入っているか不安なら、<span class="code-inline">pip show numpy</span> を実行します。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>確認コード（文法未修でも読める版）</h2>
 		<pre class="code-block"><code>import numpy as np
 
 x = np.array([[1, 2, 3],
               [4, 5, 6]], dtype=np.float32)
 
+print("x:")
 print(x)
-print(x.shape)
-print(x.dtype)</code></pre>
+
+print("shape:", x.shape)
+print("dtype:", x.dtype)
+print("rows:", x.shape[0])
+print("cols:", x.shape[1])</code></pre>
 		<p>この例では、2 行 3 列の表を 1 つのまとまりとして持っています。<span class="code-inline">(2, 3)</span> と見えたら、「2 行 3 列」と読めば大丈夫です。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>実行コマンド（コピペ用）</h2>
+		<pre class="code-block"><code>./.venv/bin/python -c 'import numpy as np; x=np.array([[1,2,3],[4,5,6]],dtype=np.float32); print("x:"); print(x); print("shape:", x.shape); print("dtype:", x.dtype); print("rows:", x.shape[0]); print("cols:", x.shape[1])'</code></pre>
+		<p>まずはこの1行で、出力を見て「shape の読み方」を確認します。</p>
+	</section>
+
+	<section class="content-section">
+		<h2>実行すると何が出る？</h2>
+		<pre class="code-block"><code>x:
+[[1. 2. 3.]
+ [4. 5. 6.]]
+shape: (2, 3)
+dtype: float32
+rows: 2
+cols: 3</code></pre>
+		<ul class="point-list">
+			<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。</li>
+			<li><span class="code-inline">dtype: float32</span> は「小数を32ビットで持つ」型です。</li>
+			<li><span class="code-inline">rows</span> と <span class="code-inline">cols</span> を別で出すと、行列の向きで混乱しにくくなります。</li>
+		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
 		<p>この章のコードは CPU 側ですが、ここで作る「shape を読む習慣」がそのまま PyTorch と GPU の章につながります。ROCm でも、まずは何行何列なのかを読めることが大事です。</p>
+		<p>第1章で確認した GPU は、次の章以降で「この形のデータをどう計算するか」に使います。つまり第2章は、GPU計算の前に必要な土台です。</p>
 	</section>
 
 	<section class="content-section">
-		<h2>ここで出てきたPython</h2>
+		<h2>ここで出てきたPython（未修向けミニ文法）</h2>
 		<ul class="point-list">
-			<li>入れ子の <span class="code-inline">[]</span> で表の形を作る</li>
-			<li>変数 <span class="code-inline">x</span> にまとまりを入れておく</li>
-			<li><span class="code-inline">x.shape</span> や <span class="code-inline">x.dtype</span> のように属性を読む</li>
+			<li><span class="code-inline">import numpy as np</span> は「NumPy を np という短い名前で使う」宣言です。</li>
+			<li><span class="code-inline">=</span> は「代入」。右側の結果を左側の変数に入れます。</li>
+			<li>入れ子の <span class="code-inline">[]</span> で表の形を作ります（1行が1つの <span class="code-inline">[]</span>）。</li>
+			<li><span class="code-inline">x.shape</span> や <span class="code-inline">x.dtype</span> は、x の情報を読む書き方です。</li>
+			<li><span class="code-inline">x.shape[0]</span> は1つ目（行数）、<span class="code-inline">x.shape[1]</span> は2つ目（列数）です。</li>
+		</ul>
+	</section>
+
+	<section class="content-section">
+		<h2>結果パターン別の次の一手</h2>
+		<ul class="point-list">
+			<li><strong>パターンA:</strong> <span class="code-inline">shape: (2, 3)</span> と出た → この章はクリア。次章へ進んでOK。</li>
+			<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
+			<li><strong>パターンC:</strong> shape が想定と違う → 入れ子の <span class="code-inline">[]</span> の行数と列数を見直します。</li>
+			<li><strong>パターンD:</strong> 実行はできたが意味が曖昧 → <span class="code-inline">rows</span> と <span class="code-inline">cols</span> を必ず表示して確認します。</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li>各行の長さがそろっていないと、きれいな表として扱いにくくなります。</li>
+			<li>各行の長さがそろっていないと、配列化で失敗したり意図しない型になったりします。</li>
+			<li>例: <span class="code-inline">[[1,2,3],[4,5]]</span> のような不ぞろい形は避けます。</li>
 			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように気をつけます。</li>
 			<li><span class="code-inline">dtype</span> は「数字の種類」です。最初は <span class="code-inline">float32</span> と見えたら十分です。</li>
 		</ul>
@@ -59,7 +112,12 @@ print(x.dtype)</code></pre>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>数字を入れ替えて、<span class="code-inline">3 行 2 列</span> の配列を 1 つ作ってみましょう。実行したら <span class="code-inline">shape</span> がどう表示されるかを見ます。</p>
+		<p>次の順で試します。1) まず <span class="code-inline">shape</span> を予想する。2) 実行して答え合わせする。3) <span class="code-inline">rows</span>/<span class="code-inline">cols</span> でも確認する。</p>
+		<pre class="code-block"><code>y = np.array([[10, 20],
+              [30, 40],
+              [50, 60]], dtype=np.float32)
+print("shape:", y.shape)</code></pre>
+		<p>正解は <span class="code-inline">(3, 2)</span> です。ここを迷わず読めれば、第2章の到達目標は達成です。</p>
 	</section>
 
 	<nav class="chapter-nav">

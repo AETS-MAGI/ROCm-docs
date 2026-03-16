@@ -31,12 +31,15 @@
 		<ul class="point-list">
 			<li>いま使う Python 環境を決める（例: <span class="code-inline">.venv/bin/python</span>）。</li>
 			<li><span class="code-inline">pip show torch</span> で torch が入っていることを確認する。</li>
-			<li>ROCm 環境なら、torch バージョンに <span class="code-inline">+rocm</span> が付くことが多いです。</li>
+			<li>ROCm 環境なら、torch バージョンに <span class="code-inline">+rocm</span> が付くことが多いです。<br>
+				例: <span class="code-inline">Version: 2.5.0+rocm6.2</span> → ROCm 版　／　<span class="code-inline">Version: 2.5.0+cu121</span> → CUDA 版（AMD GPU では使えない）　／　<span class="code-inline">Version: 2.5.0</span> → CPU 版の可能性</li>
 		</ul>
+		<p><strong>venv（仮想環境）について:</strong> <span class="code-inline">.venv/bin/python</span> はプロジェクトごとに分離した Python 環境を指します。単に <span class="code-inline">python</span> と打つと、システムに複数の Python が入っている場合にどれが動くか分かりにくくなります。パスを明示することで「今どの torch が入っているか」がはっきりします。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>確認コード（そのまま実行版）</h2>
+		<p><strong>コードを見る前に一点:</strong> 下のコードには <span class="code-inline">torch.cuda</span> という名前が出てきますが、これは NVIDIA 専用ではありません。ROCm 版 PyTorch も同じ名前を使って GPU を操作します（詳しくは後の「どこがROCm？」で説明します）。また <span class="code-inline">torch.version.hip</span> は ROCm に含まれる HIP という部品のバージョンを取得しています。<span class="code-inline">torch.cuda</span> と <span class="code-inline">torch.version.hip</span> が混在しているのはそういう理由です。</p>
 		<pre class="code-block"><code>import sys
 import torch
 
@@ -55,7 +58,8 @@ if torch.cuda.is_available():
 		<h2>実行コマンド（コピペ用）</h2>
 		<pre class="code-block"><code># 例: venv の Python を使う場合
 ./.venv/bin/python -c 'import sys, torch; print("Python:", sys.version.split()[0]); print("Torch:", torch.__version__); print("HIP:", torch.version.hip); print("GPU available:", torch.cuda.is_available()); print("Device count:", torch.cuda.device_count()); print("Device[0]:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "(skip)")'</code></pre>
-		<p>1行で実行できるので、「ファイルを作る前にまず確認したい」ときに便利です。</p>
+		<p>1行で実行できるので、「ファイルを作る前にまず確認したい」ときに便利です。<br>
+		<strong><span class="code-inline">-c</span> オプションについて:</strong> <span class="code-inline">python -c '...'</span> は、Python ファイルを作らずに引用符の中のコードを直接実行する書き方です。</p>
 	</section>
 
 	<section class="content-section">
@@ -66,7 +70,8 @@ HIP: 6.3.x
 GPU available: True
 Device count: 1
 Device[0]: AMD Radeon RX Vega</code></pre>
-		<p>このように出れば、まずは <strong>ROCm 版 PyTorch が入っていて、GPU も見えている</strong> と考えて大丈夫です。最後に GPU 名まで出ていれば、入口としてはかなり良い状態です。</p>
+		<p>このように出れば、まずは <strong>ROCm 版 PyTorch が入っていて、GPU も見えている</strong> と考えて大丈夫です。最後に GPU 名まで出ていれば、入口としてはかなり良い状態です。<br>
+		<strong>注:</strong> Python や Torch のバージョン番号は環境によって異なります。数字が違っても問題ありません。<span class="code-inline">Torch: xxxxxx+rocm...</span> の形式で出ていれば ROCm 版と判断できます。</p>
 	</section>
 
 	<section class="content-section">
@@ -83,10 +88,17 @@ Device[0]: AMD Radeon RX Vega</code></pre>
 	<section class="content-section">
 		<h2>結果パターン別の次の一手</h2>
 		<ul class="point-list">
-			<li><strong>パターンA:</strong> HIPあり + True + count>=1 → この章はクリア。次章へ進んでOK。</li>
-			<li><strong>パターンB:</strong> HIPあり + False → ROCm 版は入っているが GPU が使えていない。まず <span class="code-inline">rocminfo</span> で GPU が見えるか確認。</li>
-			<li><strong>パターンC:</strong> HIP None + False → torch 自体が ROCm 版ではない可能性。<span class="code-inline">pip show torch</span> でバージョン表記を確認。</li>
-			<li><strong>パターンD:</strong> True だが Device 名が不自然 → 一度 Python を再起動して再実行。複数環境混在の可能性も確認。</li>
+			<li><strong>パターンA:</strong> HIPあり + True + count>=1 → この章はクリア。次章へ進んでOK。<br>
+				（<span class="code-inline">GPU available: True</span> であれば <span class="code-inline">Device count</span> は必ず 1 以上になります。）</li>
+			<li><strong>パターンB:</strong> HIPあり + False → ROCm 版 PyTorch は入っているが、GPU がまだ見えていない状態です。<br>
+				これは「Python から見えない」問題で、まずシステム（ドライバ）レベルで GPU を認識しているか確認します。<br>
+				→ ターミナルで <span class="code-inline">rocminfo</span> を実行し、出力の中に <span class="code-inline">amdgpu</span> や <span class="code-inline">gfx</span> で始まる行が出ていれば、ドライバは GPU を認識しています。それでも PyTorch から見えない場合は、ユーザを <span class="code-inline">video</span> / <span class="code-inline">render</span> グループに追加できているか確認します（<span class="code-inline">groups</span> コマンドで確認）。</li>
+			<li><strong>パターンC:</strong> HIP None + False → torch 自体が ROCm 版ではない可能性があります。<br>
+				<span class="code-inline">pip show torch</span> を実行し、<span class="code-inline">Version:</span> の行を確認します。<span class="code-inline">+rocm</span> が含まれていれば ROCm 版、<span class="code-inline">+cu</span> なら CUDA 版（AMD GPU では動作しません）、何も付いていなければ CPU 版です。<br>
+				ROCm 版を入れ直す場合は PyTorch 公式サイトの ROCm 向けインストールコマンドを使います。</li>
+			<li><strong>パターンD:</strong> True だが Device 名がおかしい → 一度 Python を再起動して再実行します。<br>
+				「おかしい Device 名」の例: <span class="code-inline">llvmpipe</span>、<span class="code-inline">cpu</span>、<span class="code-inline">Virtio GPU</span> など、AMD GPU の製品名らしくないものが出た場合です（正常例: <span class="code-inline">AMD Radeon RX ...</span>）。<br>
+				複数の Python 環境が混在している可能性があります。<span class="code-inline">which python</span> または <span class="code-inline">which python3</span> で今どの Python を使っているか確認し、意図した venv の Python を明示的に指定して実行し直します。</li>
 		</ul>
 	</section>
 
