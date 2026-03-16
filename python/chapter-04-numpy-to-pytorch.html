@@ -26,17 +26,14 @@
 		</ul>
 	</section>
 
-	<section class="content-section">
-		<h2>実行前チェック（20秒）</h2>
-		<ul class="point-list">
-			<li>第1章で確認した Python 環境を使います（例: <span class="code-inline">./.venv/bin/python</span>）。</li>
-			<li><span class="code-inline">pip show torch</span> で torch が入っていて、バージョンに <span class="code-inline">+rocm</span> が付いていることを確認します（第1章で確認済みなら不要）。</li>
-		</ul>
-	</section>
+
 
 	<section class="content-section">
 		<h2>確認コード</h2>
-		<p><strong>コードを見る前に一点:</strong> <span class="code-inline">torch.tensor(x_np)</span> は NumPy 配列のデータをコピーして PyTorch tensor を作ります。コピーなので、この後 NumPy 側を変えても tensor は変わりません（メモリを共有したい場合は <span class="code-inline">torch.from_numpy(x_np)</span> を使いますが、変更が連動するため混乱しやすく、最初は <span class="code-inline">torch.tensor()</span> を使うのが安全です）。</p>
+		<details>
+			<summary>torch.tensor() の動作について（クリックで開く）</summary>
+			<p><span class="code-inline">torch.tensor(x_np)</span> は NumPy 配列のデータをコピーして PyTorch tensor を作ります。コピーなので、この後 NumPy 側を変えても tensor は変わりません（メモリを共有したい場合は <span class="code-inline">torch.from_numpy(x_np)</span> を使いますが、変更が連動するため混乱しやすく、最初は <span class="code-inline">torch.tensor()</span> を使うのが安全です）。</p>
+		</details>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 import torch
 
@@ -52,22 +49,27 @@ print(x_t.shape, x_t.dtype, x_t.device)</code></pre></div>
 		<p>形はほぼ同じでも、PyTorch の tensor には <span class="code-inline">.device</span> という属性が加わっています。いまはまず、shape と dtype を同じ気分で読めることが大事です。</p>
 	</section>
 
-	<section class="content-section">
-		<h2>実行コマンド（コピペ用）</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>./.venv/bin/python -c 'import numpy as np, torch; x_np=np.array([[1,2],[3,4]],dtype=np.float32); x_t=torch.tensor(x_np); print("NumPy:", x_np.shape, x_np.dtype); print("Tensor:", x_t.shape, x_t.dtype, x_t.device)'</code></pre></div>
-	</section>
+
 
 	<section class="content-section">
-		<h2>実行すると何が出る？</h2>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>--- NumPy ---
+		<h2>実行するとこう出ます</h2>
+		<div class="output-example">--- NumPy ---
 (2, 2) float32
 --- PyTorch tensor ---
-torch.Size([2, 2]) torch.float32 cpu</code></pre></div>
-		<ul class="point-list">
-			<li><span class="code-inline">shape</span> の見え方が少し違います。NumPy は <span class="code-inline">(2, 2)</span>（タプル）、PyTorch は <span class="code-inline">torch.Size([2, 2])</span> と表示されますが、意味は同じです。<span class="code-inline">x_t.shape[0]</span> で行数を取り出すのも NumPy と同じ書き方です。</li>
-			<li><span class="code-inline">dtype</span> も表示が違います。NumPy は <span class="code-inline">float32</span>、PyTorch は <span class="code-inline">torch.float32</span> と出ます。同じ型を指しています。</li>
-			<li><span class="code-inline">device: cpu</span> と出ています。tensor を作っただけではまだ CPU 上にあります。<strong>GPU に乗っていない</strong>ことを確認してください（次章で <span class="code-inline">cuda</span> に変わります）。</li>
-		</ul>
+torch.Size([2, 2]) torch.float32 cpu</div>
+
+		<div class="safe-box">
+			<span class="code-inline">device: cpu</span> と出ていれば正常です。この章はGPUに乗せる前の準備 — 次章で <span class="code-inline">cuda:0</span> に変わります。
+		</div>
+
+		<details>
+			<summary>表示の違いについて（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><span class="code-inline">shape</span> の見え方が少し違います。NumPy は <span class="code-inline">(2, 2)</span>（タプル）、PyTorch は <span class="code-inline">torch.Size([2, 2])</span> と表示されますが、意味は同じです。<span class="code-inline">x_t.shape[0]</span> で行数を取り出すのも NumPy と同じ書き方です。</li>
+				<li><span class="code-inline">dtype</span> も表示が違います。NumPy は <span class="code-inline">float32</span>、PyTorch は <span class="code-inline">torch.float32</span> と出ます。同じ型を指しています。</li>
+				<li><span class="code-inline">device: cpu</span> と出ています。tensor を作っただけではまだ CPU 上です。<strong>GPU に乗っていない</strong>ことを確認してください（次章で <span class="code-inline">cuda</span> に変わります）。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
@@ -105,12 +107,15 @@ print(t2.shape, t2.device)</code></pre></div>
 	</section>
 
 	<section class="content-section">
-		<h2>結果パターン別の次の一手</h2>
-		<ul class="point-list">
-			<li><strong>パターンA:</strong> <span class="code-inline">device: cpu</span> と出た → 正常です。この章はクリア。次章で GPU に移動します。</li>
-			<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named torch</span> → torch 未導入。ROCm 版のインストールコマンドを PyTorch 公式サイトで確認して再実行します（<span class="code-inline">pip install torch</span> は CUDA 版が入るので注意）。</li>
-			<li><strong>パターンC:</strong> <span class="code-inline">dtype</span> 表示が <span class="code-inline">torch.float32</span> ではなく <span class="code-inline">torch.float64</span> と出た → NumPy 配列の dtype が float64 のままです。<span class="code-inline">dtype=np.float32</span> を明示して作り直します。</li>
-		</ul>
+		<h2>うまくいかなかったら</h2>
+		<details>
+			<summary>結果パターン別の次の一手（クリックで開く）</summary>
+			<ul class="point-list">
+				<li><strong>パターンA:</strong> <span class="code-inline">device: cpu</span> と出た → 正常。この章はクリア。次章で GPU に移動します。</li>
+				<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named torch</span> → torch 未導入。ROCm 版のインストールコマンドを PyTorch 公式サイトで確認（<span class="code-inline">pip install torch</span> は CUDA 版が入るので注意）。</li>
+				<li><strong>パターンC:</strong> <span class="code-inline">dtype</span> が <span class="code-inline">torch.float64</span> になった → NumPy 配列の dtype が float64 のままです。<span class="code-inline">dtype=np.float32</span> を明示して作り直します。</li>
+			</ul>
+		</details>
 	</section>
 
 	<section class="content-section">
