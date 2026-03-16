@@ -24,6 +24,8 @@
 			<li>Python 文法が未修でも大丈夫なように、必要な記号だけこの章で説明します。</li>
 			<li>ROCm や GPU の本番利用は次章以降。ここでは「数字を表で扱う感覚」を作ります。</li>
 		</ul>
+		<p><strong>なぜ Python リストではなく NumPy を使うの？</strong><br>
+		Python にはもともとリスト（<span class="code-inline">[[1,2,3],[4,5,6]]</span>）という書き方があります。しかし「表の大きさを一発で調べる」「GPU にデータを送る」「行列の足し算・掛け算を一度に計算する」といった操作はリストが苦手です。NumPy はこれらを得意とする専用ライブラリで、shape・dtype（数字の型）をひとまとめに管理できます。次章以降で使う PyTorch テンソルも、この shape と dtype の考え方をそのまま引き継いでいます。</p>
 	</section>
 
 	<section class="content-section">
@@ -36,6 +38,11 @@
 
 	<section class="content-section">
 		<h2>確認コード（文法未修でも読める版）</h2>
+		<p><strong>コードを見る前に2点:</strong></p>
+		<ul class="point-list">
+			<li><span class="code-inline">import numpy as np</span> の <span class="code-inline">as np</span> は「numpy を np という短縮名で使う」宣言です。<span class="code-inline">np</span> は世界中のコードで使われる慣習なので、自分で書くときも <span class="code-inline">np</span> にしておくと他の人のコードと読み合わせやすくなります。</li>
+			<li><span class="code-inline">dtype=np.float32</span> は「小数を 32 ビットで持つ型」の指定です。NumPy のデフォルトは 64 ビット（float64）ですが、GPU はメモリが有限で float32 を基本として最適化されているため、ROCm/GPU を使うコードでは最初から float32 を指定する習慣をつけておきます。</li>
+		</ul>
 		<pre class="code-block"><code>import numpy as np
 
 x = np.array([[1, 2, 3],
@@ -67,8 +74,9 @@ dtype: float32
 rows: 2
 cols: 3</code></pre>
 		<ul class="point-list">
-			<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。</li>
-			<li><span class="code-inline">dtype: float32</span> は「小数を32ビットで持つ」型です。</li>
+			<li><span class="code-inline">shape: (2, 3)</span> は「2 行 3 列」です。<strong>行（横の並び）が先、列（縦の並び）が後</strong>という順は数学の行列の書き方（「m 行 n 列行列」）からきています。</li>
+			<li>数字が <span class="code-inline">1.</span> <span class="code-inline">2.</span> のように小数点付きで出るのは、<span class="code-inline">dtype=float32</span> を指定したため整数が小数に変換されたからです。エラーではありません。</li>
+			<li><span class="code-inline">dtype: float32</span> はこのデータが GPU に送れる形であることを示しています。float64 だと GPU での処理速度が落ちたり、一部の操作が使えなくなる場合があります。</li>
 			<li><span class="code-inline">rows</span> と <span class="code-inline">cols</span> を別で出すと、行列の向きで混乱しにくくなります。</li>
 		</ul>
 	</section>
@@ -77,16 +85,18 @@ cols: 3</code></pre>
 		<h2>どこがROCm？</h2>
 		<p>この章のコードは CPU 側ですが、ここで作る「shape を読む習慣」がそのまま PyTorch と GPU の章につながります。ROCm でも、まずは何行何列なのかを読めることが大事です。</p>
 		<p>第1章で確認した GPU は、次の章以降で「この形のデータをどう計算するか」に使います。つまり第2章は、GPU計算の前に必要な土台です。</p>
+		<p><strong>NumPy 配列 → PyTorch テンソルへの橋渡し:</strong> 次章から登場する PyTorch の「テンソル」は、NumPy 配列と非常によく似た構造です。<span class="code-inline">x.shape</span> で大きさを読む・<span class="code-inline">dtype</span> で型を管理する、という考え方はそのまま使えます。NumPy との大きな違いは「GPU に置ける」「自動微分（AI の学習に必要な計算）ができる」の2点だけです。この章で shape と dtype の読み方を身につけておけば、テンソルに移ったときに新しく覚えることが格段に減ります。</p>
+		<p><strong>float32 と ROCm の関係:</strong> GPU のメモリは CPU より少なく、float32 は float64 の半分のサイズです。ROCm/AMD GPU は float32 演算を前提として最適化されており、AI モデルのほとんどが float32 または それより小さい型を使います。この章から float32 を使っているのは、その習慣を最初から身につけるためです。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>ここで出てきたPython（未修向けミニ文法）</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">import numpy as np</span> は「NumPy を np という短い名前で使う」宣言です。</li>
+			<li><span class="code-inline">import numpy as np</span> は「NumPy を np という短い名前で使う」宣言です。以降のコードで <span class="code-inline">np.array()</span> と書けるのは、この宣言があるからです。</li>
 			<li><span class="code-inline">=</span> は「代入」。右側の結果を左側の変数に入れます。</li>
 			<li>入れ子の <span class="code-inline">[]</span> で表の形を作ります（1行が1つの <span class="code-inline">[]</span>）。</li>
 			<li><span class="code-inline">x.shape</span> や <span class="code-inline">x.dtype</span> は、x の情報を読む書き方です。</li>
-			<li><span class="code-inline">x.shape[0]</span> は1つ目（行数）、<span class="code-inline">x.shape[1]</span> は2つ目（列数）です。</li>
+			<li><span class="code-inline">x.shape</span> が返す <span class="code-inline">(2, 3)</span> は「タプル」という型です。リストに似ていますが変更できません。<span class="code-inline">[0]</span> で先頭の値（行数）、<span class="code-inline">[1]</span> で次の値（列数）を取り出せるのはリストと同じ書き方です。</li>
 		</ul>
 	</section>
 
@@ -95,7 +105,7 @@ cols: 3</code></pre>
 		<ul class="point-list">
 			<li><strong>パターンA:</strong> <span class="code-inline">shape: (2, 3)</span> と出た → この章はクリア。次章へ進んでOK。</li>
 			<li><strong>パターンB:</strong> <span class="code-inline">ModuleNotFoundError: No module named numpy</span> → numpy未導入。<span class="code-inline">pip install numpy</span> 後に再実行。</li>
-			<li><strong>パターンC:</strong> shape が想定と違う → 入れ子の <span class="code-inline">[]</span> の行数と列数を見直します。</li>
+			<li><strong>パターンC:</strong> shape が想定と違う → よくある原因は2つです。① 行ごとの要素数がそろっていない（例: <span class="code-inline">[[1,2,3],[4,5]]</span> のように行によって列数が違う）、② 外側の <span class="code-inline">[]</span> を忘れて1次元になってしまった（例: <span class="code-inline">np.array([1,2,3,4,5,6])</span> は shape が <span class="code-inline">(6,)</span> になる）。</li>
 			<li><strong>パターンD:</strong> 実行はできたが意味が曖昧 → <span class="code-inline">rows</span> と <span class="code-inline">cols</span> を必ず表示して確認します。</li>
 		</ul>
 	</section>
@@ -103,21 +113,22 @@ cols: 3</code></pre>
 	<section class="content-section">
 		<h2>よくあるつまずき</h2>
 		<ul class="point-list">
-			<li>各行の長さがそろっていないと、配列化で失敗したり意図しない型になったりします。</li>
-			<li>例: <span class="code-inline">[[1,2,3],[4,5]]</span> のような不ぞろい形は避けます。</li>
-			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように気をつけます。</li>
-			<li><span class="code-inline">dtype</span> は「数字の種類」です。最初は <span class="code-inline">float32</span> と見えたら十分です。</li>
+			<li>各行の長さがそろっていないと、配列化で失敗したり意図しない型になったりします。例: <span class="code-inline">[[1,2,3],[4,5]]</span> のような不ぞろい形は避けます。</li>
+			<li><span class="code-inline">(2, 3)</span> を「2 列 3 行」と逆に読まないように気をつけます。<strong>「行が先、列が後」</strong> — 数学で「m 行 n 列の行列」と書くのと同じ順です。</li>
+			<li>出力の数字に <span class="code-inline">.</span> が付く（<span class="code-inline">1.</span> など）のは <span class="code-inline">dtype=float32</span> で小数型になったためです。エラーではありません。</li>
+			<li><span class="code-inline">dtype</span> を指定しないと NumPy のデフォルト（float64）になります。GPU を使うときは float32 を明示する習慣をつけましょう。</li>
 		</ul>
 	</section>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>次の順で試します。1) まず <span class="code-inline">shape</span> を予想する。2) 実行して答え合わせする。3) <span class="code-inline">rows</span>/<span class="code-inline">cols</span> でも確認する。</p>
+		<p>次の順で試します。1) コードを見て <span class="code-inline">shape</span> を <strong>実行前に予想</strong> する。2) 実行して答え合わせする。3) <span class="code-inline">rows</span>/<span class="code-inline">cols</span> を print して確認する。</p>
 		<pre class="code-block"><code>y = np.array([[10, 20],
               [30, 40],
               [50, 60]], dtype=np.float32)
 print("shape:", y.shape)</code></pre>
-		<p>正解は <span class="code-inline">(3, 2)</span> です。ここを迷わず読めれば、第2章の到達目標は達成です。</p>
+		<p>予想できたら実行して確かめましょう。<br>
+		— 答えは実行結果で確認してください。ここを迷わず読めれば、第2章の到達目標は達成です。</p>
 	</section>
 
 	<nav class="chapter-nav">
