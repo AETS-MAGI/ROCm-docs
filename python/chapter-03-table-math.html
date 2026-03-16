@@ -115,6 +115,36 @@ c.shape: (2, 2)
 			<li><span class="code-inline">*</span> — 要素ごとの掛け算（行列積とは別物）</li>
 			<li><span class="code-inline">c = a @ b</span> — 結果を c に入れて、shape を確認</li>
 		</ul>
+
+		<details>
+			<summary>* と @ の違い早見表（クリックで開く）</summary>
+			<table class="shape-table">
+				<thead>
+					<tr>
+						<th></th>
+						<th><span class="code-inline">a * b</span>（要素ごと）</th>
+						<th><span class="code-inline">a @ b</span>（行列積）</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><strong>計算内容</strong></td>
+						<td>同じ位置の要素を掛ける</td>
+						<td>行と列を掛けて足す</td>
+					</tr>
+					<tr>
+						<td><strong>shape の条件</strong></td>
+						<td>同じ shape が必要</td>
+						<td>内側が一致すればOK</td>
+					</tr>
+					<tr>
+						<td><strong>結果の shape</strong></td>
+						<td>入力と同じ</td>
+						<td>外側が残る</td>
+					</tr>
+				</tbody>
+			</table>
+		</details>
 	</section>
 
 	<section class="content-section">
