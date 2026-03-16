@@ -42,6 +42,16 @@
 			border-radius: 18px;
 			padding: 28px 24px 24px;
 			margin-bottom: 26px;
+			display: flex;
+			align-items: flex-start;
+			gap: 20px;
+		}
+		.hero-img {
+			width: 150px;
+			height: auto;
+			flex-shrink: 0;
+			border-radius: 12px;
+			order: 1;
 		}
 		.hero h1 {
 			margin: 0 0 10px;
@@ -150,7 +160,8 @@
 		}
 		@media (max-width: 640px) {
 			.page { padding: 22px 16px 48px; }
-			.hero { padding: 24px 18px 20px; }
+			.hero { padding: 24px 18px 20px; flex-direction: column; align-items: center; text-align: center; }
+			.hero-img { width: 100px; order: -1; }
 			.hero h1 { font-size: 29px; }
 			.chapter h2 { font-size: 21px; }
 			.chapter-number {
@@ -169,8 +180,11 @@
 	<a class="home-link" href="../index.html">← サイト入口へ</a>
 
 	<section class="hero">
-		<h1>Python and ROCm 教室</h1>
-		<p>このコースは、Python の文法を先に全部覚えるためのものではありません。「GPU でやりたいこと」を一つずつ進めながら、必要な Python をその都度拾っていくスタイルです。</p>
+		<img class="hero-img" src="../media/aktk-chan/aktk-chan-rocm-hero.png" alt="アカツキちゃん — ROCm 教室">
+		<div>
+			<h1>Python and ROCm 教室</h1>
+			<p>このコースは、Python の文法を先に全部覚えるためのものではありません。「GPU でやりたいこと」を一つずつ進めながら、必要な Python をその都度拾っていくスタイルです。</p>
+		</div>
 	</section>
 
 	<section class="start-box" style="background: #E8F5E9; border-radius: 14px; padding: 18px 22px; margin-bottom: 24px;">
