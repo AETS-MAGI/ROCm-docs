@@ -143,21 +143,23 @@
   rocm:
     image: rocm/pytorch:latest
     tty: true
+    stdin_open: true
     devices:
       - /dev/kfd
       - /dev/dri
     group_add:
       - video
-      - render
     volumes:
-      - .:/workspace</code></pre></div>
+      - .:/workspace
+    working_dir: /workspace</code></pre></div>
 
 		<div class="info-box">
 			<strong>💡 何を書いたのか:</strong><br>
 			<code>image</code> — AMD が公開している PyTorch 入り Docker イメージ<br>
 			<code>devices</code> — GPU デバイスをコンテナに渡す<br>
 			<code>group_add</code> — GPU にアクセスする権限を追加<br>
-			<code>volumes</code> — このフォルダの中身をコンテナから読み書きできるようにする
+			<code>volumes</code> — このフォルダの中身をコンテナから読み書きできるようにする<br>
+			<code>working_dir</code> — コンテナに入った瞬間に作業フォルダに立つようにする
 		</div>
 
 		<p style="font-size: 14px; color: var(--muted);">イメージの取得（数 GB）は初回の起動時に自動で行われます。</p>
@@ -171,7 +173,8 @@
 		<p>コンテナのシェルに入れたら成功です。</p>
 
 		<div class="warn-box">
-			<strong>GPU が見えない場合:</strong> ホスト側で <code>video</code> / <code>render</code> グループに入っているか、ROCm のカーネルドライバが入っているかを確認してください。
+			<strong>GPU が見えない場合:</strong> ホスト側で <code>video</code> グループに入っているか、ROCm のカーネルドライバが入っているかを確認してください。<br>
+			それでも Permission denied が出る場合は、<code>group_add</code> に <code>render</code> を追加してみてください（Ubuntu 20.04 以降で必要になることがあります）。
 		</div>
 
 		<details style="margin: 12px 0; font-size: 14px;">
@@ -181,8 +184,8 @@
   --device=/dev/kfd \
   --device=/dev/dri \
   --group-add video \
-  --group-add render \
   -v "$PWD":/workspace \
+  -w /workspace \
   rocm/pytorch:latest</code></pre></div>
 			<p style="color: var(--muted); line-height: 1.7;">長いので、この教室では compose を使います。</p>
 		</details>
