@@ -10,62 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-概ね良好だが、いくつか改善ポイントがある。
-
-git diff で確認すると「修正済み」とマークされているファイル（working tree に変更あり）。
-内容確認: CANONICAL 準拠のセクション名は「確認コード」だが、ここでは「確認コード」セクションが
-存在し、その後「実行するとこう出ます」セクションがある。構造は整っている。
-
-CANONICAL準拠:
-- 実行コマンド: なし（独立セクションとして存在しない）
-- 出力例: あり（「実行するとこう出ます」セクション、CPU/GPU 差を正確に表示）
-- どこがROCm: あり（「cuda」という名前の意味を明示しており良い。第1章との橋渡し言及あり）
-- つまずき: あり（「うまくいかなかったら」 + 「よくあるつまずき」）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- 「確認コード」セクションの冒頭 details（torch.tensor() 動作について）は技術的に正確だが、
-  「コピーかメモリ共有か」という説明は初心者には不必要に混乱させる可能性がある。
-  「最初は torch.tensor() だけ覚えれば大丈夫」で十分で、from_numpy の言及は details 最末尾に
-  「上級者向け補足」として置くか省くのが望ましい。
-- 「PyTorch で tensor を直接作る方法」セクション（行83-96）は内容的には有益だが、
-  位置がメインフローの途中に挿入されておりリズムを崩す。「1分演習」の直前か details に移動推奨。
-- 実行コマンドが示されていない（第2章・3章と同様）。
-- safe-box の「cuda:0 に変わります」という記述は、ROCm でも cuda:0 と表示されることを
-  前提としているが、これが ROCm の場合も同じであることを一言確認しておくと安心。
-
-改善候補:
-- torch.tensor() vs from_numpy の比較を details の最後に「上級者向け補足」として移動
-- 「PyTorch で tensor を直接作る方法」セクションを「1分演習」直前の補足 details に移動
-- safe-box に「ROCm でも cuda:0 と表示されます」を明記
-- 実行コマンドを一言（python chapter04.py）追記
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: NumPy → PyTorch。論理的に自然で良好。
-
-■ 新概念の飛躍チェック:
-  - torch.tensor() / .device / import torch — 新概念だが shape/dtype は既習で負荷は低い。
-  - ただし冒頭 details の「torch.tensor() はコピー、from_numpy はメモリ共有」は
-    初心者には情報過多。「torch.tensor() を使えば大丈夫」で十分。
-  → details 内で「上級者向け補足」と明記するか、from_numpy 言及を省略。
-
-■ 構造上の問題:
-  - 「PyTorch で tensor を直接作る方法」セクションが CANONICAL §7.2 の流れ
-    （コード → 出力 → ROCm接点 → Python → 演習）を分断している。
-  → このセクションを「ここで出てきたPython」内の details に移動するか
-    演習の直前に配置すると流れが自然になる。
-
-■ safe-box の補足:
-  - 「次章で cuda:0 に変わります」とあるが、ROCm でも cuda:0 と表示される確認が
-    本文中で再確認されていない（第1章からの距離がある）。
-  → 「ROCm 環境でも cuda:0 と表示されます」を safe-box に1文追加推奨。
-
-■ CANONICAL構造: セクション名「確認コード」。Ch5以降「最小コード」と不統一。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第4章</p>
 		<h1>NumPyからPyTorchへ移りたい</h1>
@@ -102,6 +46,7 @@ print(x_np.shape, x_np.dtype)
 
 print("--- PyTorch tensor ---")
 print(x_t.shape, x_t.dtype, x_t.device)</code></pre></div>
+		<p>このコードを <span class="code-inline">chapter04.py</span> というファイル名で保存して、<span class="code-inline">python chapter04.py</span> と実行します。</p>
 		<p>形はほぼ同じでも、PyTorch の tensor には <span class="code-inline">.device</span> という属性が加わっています。いまはまず、shape と dtype を同じ気分で読めることが大事です。</p>
 	</section>
 
@@ -115,7 +60,7 @@ print(x_t.shape, x_t.dtype, x_t.device)</code></pre></div>
 torch.Size([2, 2]) torch.float32 cpu</div>
 
 		<div class="safe-box">
-			<span class="code-inline">device: cpu</span> と出ていれば正常です。この章はGPUに乗せる前の準備 — 次章で <span class="code-inline">cuda:0</span> に変わります。
+			<span class="code-inline">device: cpu</span> と出ていれば正常です。この章はGPUに乗せる前の準備 — 次章で <span class="code-inline">cuda:0</span> に変わります。ROCm 環境でも <span class="code-inline">cuda:0</span> と表示されます（第1章の <span class="code-inline">torch.cuda</span> と同じ理由です）。
 		</div>
 
 		<details>

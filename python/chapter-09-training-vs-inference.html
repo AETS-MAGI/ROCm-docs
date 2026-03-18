@@ -10,62 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-比較表（shape-table）で推論と学習の差異を整理しているのは優れた設計。
-ただし全章の中でも「説明の密度」が最も低く、コードの可読性に懸念がある。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、2行のみ）
-- どこがROCm: あり（薄め。「仕事が多い」1行のみ）
-- つまずき: あり（eval のみでは不十分、という指摘あり）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- コード内で `(model(x) - y_true).pow(2).mean()` という書き方が突然登場する（行64）。
-  第8章では `nn.MSELoss()` を使っていたのに、ここではインライン計算式に変わっており、
-  説明なしの切り替えは読者を混乱させる可能性がある。
-  「第8章の MSELoss と同じ意味です」という注釈が必要。
-- `.detach().clone()` が初出で無説明（行57, 69）。
-  「重みのコピーを取る」という意味の簡単な説明が本文かコメントに欲しい。
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- コードが推論と学習を1つのブロックに混在させている（行59-67）。
-  コードブロックを2つに分けるか、コメントで「ここから推論」「ここから学習」を
-  明示すると追いやすくなる（現状はコードの後の説明文に委ねている）。
-- 出力例が2行のみで「inference output の値」と「weight changed: True」だけ。
-  before/after の重みの値も出力例に含めるとより実感が伴う。
-- 1分演習（optimizer.step() をコメントアウト）は良い。
-
-改善候補:
-- `.detach().clone()` に「重みの現在値をコピーして保存します」というコードコメントを追加
-- `(model(x) - y_true).pow(2).mean()` の直前に「MSELoss と同じ計算を手書きしています」を追加
-- コードブロックを推論部/学習部に分けるか、コメントを強化
-- 出力例に before/after の重み値を追加
-- セクション名「最小コード」を「確認コード」に統一
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: 学習を1回やった → 推論と見比べる。自然。比較表が効果的。
-
-■ 新概念の飛躍チェック ★断絶あり★:
-  - 第8章では loss = loss_fn(pred, y_true) で nn.MSELoss() を使っていたのに、
-    第9章では loss = (model(x) - y_true).pow(2).mean() に説明なく切り替わる。
-  → 「第8章の MSELoss と同じ計算を、手書きで書いています」を1行追加。
-    または MSELoss をそのまま使うことで断絶を避ける。
-  - .detach().clone() が初出で無説明。
-  → コード内コメントまたは本文に「重みの現在値を、変化を追うためにコピー」を追加。
-
-■ コードの可読性:
-  - 推論部分と学習部分が1つのブロックに混在しており、境界が見えにくい。
-  → コード内コメントで # --- 推論 --- / # --- 学習 --- の区切りを入れると追いやすい。
-
-■ 出力例:
-  - 2行のみ。before/after の重みの値も出力例に含めると変化の実感が掘めやすい。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第9章</p>
 		<h1>学習と推論の違いを見比べたい</h1>
@@ -99,7 +43,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -110,18 +54,23 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 x = torch.tensor([[1.0]], device=device)
 y_true = torch.tensor([[2.0]], device=device)
 
+# 変化を追うため、学習前の重みの値をコピーして保存しておきます
 before = model.weight.detach().clone()
 
+# --- 推論（forward だけ） ---
 model.eval()
 with torch.no_grad():
     answer = model(x)
 
+# --- 学習（forward → loss → backward → step） ---
 model.train()
+# (model(x) - y_true).pow(2).mean() は第8章の nn.MSELoss() と同じ計算を手書きしています
 loss = (model(x) - y_true).pow(2).mean()
 optimizer.zero_grad()
 loss.backward()
 optimizer.step()
 
+# 学習後の重みをコピーして、変化を確認します
 after = model.weight.detach().clone()
 
 print("inference output:", answer.item())
@@ -137,8 +86,14 @@ weight changed: True</div>
 	</section>
 
 	<section class="content-section">
+		<h2>実行コマンド</h2>
+		<p>ファイルを <span class="code-inline">chapter09.py</span> という名前で保存したら、ターミナルで次のコマンドを実行します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python chapter09.py</code></pre></div>
+	</section>
+
+	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>推論は forward だけ、学習は forward に加えて backward と update も入ります。ROCm の見方では、学習のほうが GPU にやらせる仕事が多い、と考えると整理しやすいです。</p>
+		<p>推論は forward だけ、学習は forward に加えて backward（勾配の計算）と step（重みの更新）も入ります。ROCm の見方では、学習のほうが GPU にやらせる仕事がずっと多くなります。特に backward の勾配計算は大量の行列演算を含むため、GPU の並列処理が効きやすい場面です。</p>
 	</section>
 
 	<section class="content-section">

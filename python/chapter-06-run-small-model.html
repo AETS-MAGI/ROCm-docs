@@ -10,61 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-構成はシンプルで短く、flow-steps による shape の流れ図は有効。
-ただし説明の跳躍がいくつかあり、前章までとの密度差が目立つ。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、入力・出力 shape の2行）
-- どこがROCm: あり（薄め。「ROCm の見方では行列計算が何度も出ている」の1行のみ）
-- つまずき: あり（device 不一致への言及あり）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- `nn.Sequential` という概念が突然登場する。前章の `nn.Linear` は第5章の device 不一致例で
-  登場したが、初出のきちんとした説明はなかった。第6章がモデルの初出であれば
-  「モデルとは何か」の1段落説明が必要。
-- `nn.ReLU()` の説明が「マイナスを 0 にする簡単な部品」とあるが、なぜそれが必要かが不明。
-  details に逃がしてよいが、本文にも一言触れた方が良い。
-- `torch.randn(1, 4, device=device)` の shape (1, 4) の「1」がバッチサイズであることの
-  説明がない。初心者は「なぜ 1 が先に来るのか」と詰まりやすい。
-- どこがROCm の説明が「考えるとつながりやすい」で終わっており、具体性がない。
-  「model.to(device) で GPU に送ることで、model の重み計算が GPU で動く」という具体的な
-  接続説明があると良い。
-- safe-box の「数値の中身は気にしなくて大丈夫」は良い。
-
-改善候補:
-- 「今日は何をしたい？」に「モデルとは、入力を受け取って出力を返す部品の組み合わせです」を追加
-- バッチサイズ（shape の最初の 1）について一言説明を追加
-- nn.ReLU の存在理由を本文に一言（details への誘導でよい）
-- セクション名「最小コード」を「確認コード」に統一
-- どこがROCm を「model.to(device) で GPU 計算になる」まで具体化
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: GPUにデータを送った → モデルを動かす。論理は自然。
-
-■ 新概念の飛躍チェック ★この章は飛躍がもっとも大きい★:
-  - nn.Sequential / nn.Linear / nn.ReLU — 3つの新概念が同時初出。
-  - 「モデル」という概念自体の定義がない。
-  → 「今日は何をしたい？」の冒頭に「モデルとは、入力を受け取って
-    出力を返す部品の組み合わせです」を1行追加。
-  - torch.randn(1, 4, ...) の shape (1, 4) の「1」がバッチサイズだが無説明。
-  → 「先頭の 1 は『1個分のデータ』を意味します（バッチサイズ）」を追加。
-  - nn.ReLU() が「なぜ必要か」の説明がない。
-  → 「直線的な計算だけでは表現力が足りないため、
-    マイナスを 0 にする簡単な部品を挙みます」を1行追加。
-
-■ どこがROCm？が極薄:
-  → 「model.to(device) で GPU に置くと、model 内の行列計算が
-    すべて GPU 側で動きます」に具体化。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第6章</p>
 		<h1>小さなモデルを動かしたい</h1>
@@ -73,6 +18,7 @@ CANONICAL準拠:
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
+		<p>モデルとは、入力を受け取って出力を返す「部品の組み合わせ」です。PyTorch では <span class="code-inline">nn.Sequential</span> を使って部品を順につなぎ、ひとつのモデルとして扱います。</p>
 		<p><span class="code-inline">model(x)</span> という一行が、実際には「入力をモデルに通して答えを作る」動きだと分かることが目標です。まずはとても小さなモデルで、形がどう変わるかを追います。</p>
 
 		<p>shape はこう流れます。</p>
@@ -95,7 +41,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -112,9 +58,12 @@ y = model(x)
 
 print("入力 shape:", x.shape)
 print("出力 shape:", y.shape)</code></pre></div>
+
+		<p>このコードを <span class="code-inline">chapter06.py</span> として保存して、<span class="code-inline">python chapter06.py</span> で実行します。</p>
+
 		<div class="output-example">入力 shape: torch.Size([1, 4])
 出力 shape: torch.Size([1, 2])</div>
-		<p>数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
+		<p>shape の先頭にある <span class="code-inline">1</span> は「1個分のデータ」を意味します（バッチサイズと呼びます）。数字 4 個を受け取り、最後は 2 個の答えへ変えていると読めます。</p>
 
 		<div class="safe-box">
 			モデルを通したら shape が変わった — それが確認できればこの章は OK です。数値の中身は気にしなくて大丈夫です。
@@ -123,13 +72,15 @@ print("出力 shape:", y.shape)</code></pre></div>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>モデルと入力の両方を GPU に送っておけば、下の重い計算は GPU 側で進みます。ROCm の見方では、この中に行列計算が何度も出ていると考えるとつながりやすいです。</p>
+		<p>コードの <span class="code-inline">.to(device)</span> でモデルと入力を両方 GPU に置くと、<span class="code-inline">model(x)</span> の中の行列計算がすべて GPU 側で動きます。<span class="code-inline">nn.Linear</span> は内部では行列の掛け算と足し算を行っているので、GPU の得意な計算そのものです。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
 			<li><span class="code-inline">nn.Sequential(...)</span> — 部品を順につなぐ</li>
+			<li><span class="code-inline">nn.Linear(4, 8)</span> — 数字 4 個を受け取り 8 個に変換する部品（行列計算を行う）</li>
+			<li><span class="code-inline">nn.ReLU()</span> — マイナスの値を 0 にする部品。直線的な計算だけでは表現力が限られるため、間に挿みます</li>
 			<li><span class="code-inline">model(x)</span> — モデルを関数のように呼ぶ</li>
 		</ul>
 

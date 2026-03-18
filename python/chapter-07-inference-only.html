@@ -10,62 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-コンパクトで焦点が絞られており、目的は明確。
-ただし前章（第6章）との繋がりを補足する言葉が少なく、
-「推論」という概念が突然ではないか確認が必要。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div。tensor 値 + requires_grad の2行）
-- どこがROCm: あり（薄め。「推論のほうが仕事が少ない」1行のみ）
-- つまずき: あり（eval のみでは不十分な点に言及）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- 「推論（inference）」という言葉が定義なく使われている。
-  「できあがったモデルに入力を通して答えを受け取る場面」と本文にあるのは良いが、
-  「学習と推論の違い」を先に読んでいない読者（第9章は後）には文脈が薄い。
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- `requires_grad` が `False` であることを確認する意義を出力の直後に説明してほしい。
-  現状は「勾配計算が省略されていると分かります」とあるが、
-  「勾配とは何か」を知らない読者には唐突。一言でよい。
-- 出力例の tensor 値（0.1532, -0.0478）がランダム初期化のため毎回変わる。
-  「数値は毎回変わりますが False は変わりません」という一文があると安心。
-- どこがROCm が「GPU 上にあれば GPU 側で動く」の1行のみで薄い。
-  「model.to(device) で GPU に置いておけば、eval + no_grad の推論も GPU で走る」を明記。
-- 1分演習が「同じ x で2回実行して落ち着いて読む」だけで具体的な発見がない。
-  「2回目の出力値が1回目と同じことを確認」などにするとより目的が明確。
-
-改善候補:
-- 冒頭または「今日は何をしたい？」に「推論とは〜（一文）」を追記
-- 出力例の直後に「数値は毎回変わりますが requires_grad: False は変わりません」を追加
-- 1分演習を「2回実行して出力値が同じことを確認する」に変更
-- セクション名「最小コード」を「確認コード」に統一
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: モデルを動かした → 「推論だけ」。自然な流れ。
-
-■ 新概念の飛躍チェック:
-  - 「推論（inference）」の定義が不十分。「できあがったモデル」とあるが
-    読者はまだ学習を見ていない（次章）ので「できあがった」が分からない可能性。
-  → 「まだ学習（次章）をしていなくても、モデルに入力を通して答えを出すことはできます。
-    これを推論と呼びます」のように学習との対比を先に軽く触れる。
-  - requires_grad が False と出るが「勾配」の意味を知らない読者には唐突。
-  → 「False は『このモデルの重みを調整しようとしていない（＝学習していない）』
-    という意味です」を出力例直後に追加。
-  - 出力値（0.1532 など）がランダム初期化で毎回変わるが記載なし。
-  → 「数値は毎回変わりますが、requires_grad: False は変わりません」を追加。
-
-■ 1分演習:
-  - 「同じ x で 2 回実行」だけでは発見がない。
-  → 「2 回実行して requires_grad が両方 False であることを確認」に具体化。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第7章</p>
 		<h1>推論だけしたい</h1>
@@ -74,7 +18,8 @@ CANONICAL準拠:
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
-		<p>推論は、できあがったモデルに入力を通して答えを受け取る場面です。ここでは <span class="code-inline">eval()</span> と <span class="code-inline">no_grad()</span> を使って、「学習はしないで使うだけ」を短い形で確認します。</p>
+		<p>まだ学習（次章）をしていなくても、モデルに入力を通して答えを出すことはできます。これを<strong>推論</strong>と呼びます。推論は「答えを出すだけ」で、重みを変えません。</p>
+		<p>ここでは <span class="code-inline">eval()</span> と <span class="code-inline">no_grad()</span> を使って、「学習はしないで使うだけ」を短い形で確認します。</p>
 
 		<dl class="term-card">
 			<dt>eval()</dt>
@@ -85,7 +30,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -105,9 +50,13 @@ with torch.no_grad():
 
 print(y)
 print(y.requires_grad)</code></pre></div>
+
+		<p>このコードを <span class="code-inline">chapter07.py</span> として保存して、<span class="code-inline">python chapter07.py</span> で実行します。</p>
+
 		<div class="output-example">tensor([[ 0.1532, -0.0478]], device='cuda:0')
 False</div>
-		<p><span class="code-inline">requires_grad</span> が <span class="code-inline">False</span> — 勾配計算が省略されていると分かります。ここでやっているのは forward だけです。</p>
+		<p>tensor の数値は毎回変わります（ランダムな重みで初期化されるため）。ただし <span class="code-inline">requires_grad</span> は何度実行しても <span class="code-inline">False</span> のままです。</p>
+		<p><span class="code-inline">False</span> は「このモデルの重みを調整しようとしていない（＝学習していない）」という意味です。ここでやっているのは答えを出すだけ（forward）です。</p>
 
 		<div class="safe-box">
 			<span class="code-inline">eval()</span> + <span class="code-inline">no_grad()</span> のセットで「推論だけ」の姿勢になります。学習との違いは次章で見比べます。
@@ -116,7 +65,7 @@ False</div>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>モデルと入力が GPU 上にあれば、推論の計算は GPU 側で動きます。ROCm の見方では、推論は「答えを出すだけ」なので、学習より仕事が少ない流れです。</p>
+		<p><span class="code-inline">model.to(device)</span> で GPU に置いておけば、<span class="code-inline">eval()</span> + <span class="code-inline">no_grad()</span> の推論も GPU 側で動きます。推論は「答えを出すだけ」なので、学習より使う計算量が少なく、GPU の負荷も軽めです。</p>
 	</section>
 
 	<section class="content-section">
@@ -144,7 +93,7 @@ False</div>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>同じ <span class="code-inline">x</span> で 2 回実行して、まずは「答えを出す流れ」が落ち着いて読めるかを見てみましょう。</p>
+		<p>コードをそのまま 2 回実行してみましょう。tensor の数値は変わっても、<span class="code-inline">requires_grad</span> が両方とも <span class="code-inline">False</span> であることを確認してみてください。</p>
 	</section>
 
 	<nav class="chapter-nav">

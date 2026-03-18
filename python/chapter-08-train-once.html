@@ -10,61 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-学習の4ステップ（flow-steps）と term-card による用語解説が良好。
-出力例に数値変化が見えており、「学習が進んだ」という実感を与えられる設計。
-ただしいくつか説明の跳躍がある。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、前後の weight と loss2回分を表示）
-- どこがROCm: あり（薄め。「推論より仕事が増える」1行のみ）
-- つまずき: あり（zero_grad 忘れ・backward 2回呼び出しの注意あり）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- `nn.MSELoss()` が突然登場。MSE（平均二乗誤差）の意味説明がなく、
-  「予測と正解のずれを1個の数にしたもの」とだけある。これで十分な読者もいるが、
-  「なぜ差を2乗するのか」を疑問に思う読者への一言（details でよい）があると丁寧。
-- `SGD` という用語が無説明で登場。「重みを少し動かす方法のひとつ」程度の説明が欲しい。
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- 出力例の数値が「たとえばこう表示されます」と前置きしてあるのは良い。
-  ただし loss が毎回変わる理由（ランダム初期化）への言及がない。
-- `model.weight.item()` で重みを取り出す操作が初出であり、`.item()` の意味を
-  「ここで出てきたPython」でのみ説明しているが、コード内コメントで補足があると親切。
-- どこがROCm が「ROCm の見方では〜重くなりやすい場面」の1行のみで薄い。
-  backward と step の計算が GPU 側で行われる、という具体的な繋がりを追加したい。
-- 1分演習（for loop で5回繰り返し）は実践的で良いが、
-  loop の書き方を初めて見る読者向けのヒント（インデントに注意など）があると安心。
-
-改善候補:
-- MSELoss の意味を details または本文1行で補足
-- SGD を「重みを少し動かす方法の一種」と本文で一言説明
-- セクション名「最小コード」を「確認コード」に統一
-- 1分演習のコードヒントにインデント例を追加
-- どこがROCm に「backward と step も GPU 側で動く」を明記
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: 推論 → 学習。自然。flow-steps と4ステップ図が良好。
-
-■ 新概念の飛躍チェック:
-  - nn.MSELoss() — 何の略か、なぜこれを使うのかの説明がない。
-  → term-card に「loss_fn（MSELoss）」を追加し「予測と正解の差を2乗して平均したもの。
-    差が大きいほど値が大きくなる」程度の説明を。
-  - torch.optim.SGD — SGD が何か、lr=0.1 が何かの説明がない。
-  → 「SGD は重みの動かし方のひとつ。lr=0.1 は一度に動かす量です（小さいほど慎重）」を追加。
-
-■ 1分演習の飛躍 ★重要★:
-  - for i in range(5): が初出。読者はこの構文を知らない可能性が高い。
-  → 「for i in range(5): は『5 回繰り返す』という意味です。
-    中のコードはインデント（字下げ）して書きます」を追加。
-  - インデント不備は Python 挫折の代表的原因。ここで拾わないと繰り返す。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第8章</p>
 		<h1>学習してみたい</h1>
@@ -90,6 +35,10 @@ CANONICAL準拠:
 			<dd>モデルが出した予測値。まだ正解とは離れている。</dd>
 			<dt>loss</dt>
 			<dd>予測と正解のずれを 1 個の数にしたもの。小さいほどよい。</dd>
+			<dt>MSELoss</dt>
+			<dd>ずれの測り方のひとつ（Mean Squared Error：平均二乗誤差）。予測と正解の差を2乗して平均する。差が大きいほど値が大きくなる。</dd>
+			<dt>SGD（optimizer）</dt>
+			<dd>重みの動かし方のひとつ（Stochastic Gradient Descent）。<span class="code-inline">lr=0.1</span> は「一度に動かす量」で、小さいほど慎重に動かす。</dd>
 			<dt>backward()</dt>
 			<dd>ずれを「どの重みをどっちに直せばいいか」に変換する。</dd>
 			<dt>step()</dt>
@@ -98,7 +47,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -128,9 +77,11 @@ print("重み（学習後）:", model.weight.item())
 pred2 = model(x)
 loss2 = loss_fn(pred2, y_true)
 print("loss（2回目）:", loss2.item())</code></pre></div>
+		<p>このコードを <span class="code-inline">chapter08.py</span> として保存して、<span class="code-inline">python chapter08.py</span> で実行します。</p>
+
 		<p>学習の流れは、ざっくり言うと「答えを出す → ずれを数にする → 直す」です。上のコードでは 1 回やった後にもう 1 回繰り返して、loss の変化と重みの変化を両方見ています。</p>
 
-		<p>実行すると、たとえばこう表示されます。</p>
+		<p>実行すると、たとえばこう表示されます。数値はランダムな重みで初期化されるため、毎回変わります。</p>
 		<div class="output-example">重み（学習前）: 0.3127
 loss（1回目）: 2.8452
 重み（学習後）: 0.6502
@@ -144,7 +95,7 @@ loss（2回目）: 1.8228</div>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>学習では、推論の forward に加えて、ずれの逆向きの計算と重み更新も入ります。ROCm の見方では、推論より仕事が増えるので、そのぶん重くなりやすい場面です。</p>
+		<p>学習では、推論の <span class="code-inline">forward</span> に加えて、<span class="code-inline">backward()</span>（逆向きの計算）と <span class="code-inline">step()</span>（重み更新）も GPU 側で動きます。モデルとデータを <span class="code-inline">.to(device)</span> で GPU に置いておけば、この3段階がすべて GPU 上で行われます。推論より仕事が多い分、GPU を使う恩恵が大きくなる場面です。</p>
 	</section>
 
 	<section class="content-section">
@@ -173,6 +124,14 @@ loss（2回目）: 1.8228</div>
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>上のコードで、学習の繰り返しを 5 回に増やしてみましょう。<span class="code-inline">for i in range(5):</span> で囲んで、毎回の loss を <span class="code-inline">print</span> します。回を重ねるごとに loss が下がっていくのを見届けてみてください。</p>
+		<p><strong>ヒント：</strong> <span class="code-inline">for i in range(5):</span> は「5 回繰り返す」という意味です。繰り返したいコードは、その下にインデント（スペース 4 つ分の字下げ）して書きます。インデントがズレると Python はエラーになります。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>for i in range(5):
+    optimizer.zero_grad()
+    pred = model(x)
+    loss = loss_fn(pred, y_true)
+    loss.backward()
+    optimizer.step()
+    print(f"ステップ {i+1} — loss:", loss.item())</code></pre></div>
 	</section>
 
 	<nav class="chapter-nav">

@@ -10,64 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-N, C, H, W の表と flow-steps の組み合わせが効果的。
-エラー例（in_channels 不一致）のコードと出力が具体的で有益。
-章のゴール設定「shape の流れをつかむ」が明確に保たれている。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、入力・出力 shape の2行）
-- どこがROCm: あり（非常に薄め。「定番の処理を速く動かすための経路が大事」のみ）
-- つまずき: あり（in_channels 不一致エラーの実例コードあり）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- 「畳み込み」という概念が「画像っぽい shape を持つデータが流れる」という形でしか
-  説明されていない。「畳み込みとは何か」の直感的な説明（1行でよい）がないため、
-  初心者が「なぜ Conv2d を使うのか」を掴めないまま進む可能性がある。
-  「小さいフィルターで画像の特徴を拾い出す操作」程度の一言があると助かる。
-- `kernel_size=3` の「3」が何を意味するか（3×3 のフィルター）の説明が
-  details（Conv2d の引数の意味）に隠れている。本文に一言あると良い。
-- `padding=1` の意味（高さ・幅を変えない）も details 内にのみある。
-  コード直後に「padding=1 で H と W が変わらないよう端を埋めています」を追加推奨。
-- どこがROCm が「経路が大事になります」の1行のみで、具体的な言及がない。
-  MIOpen（AMD GPU 向けの畳み込みエンジン）の名前を出してリンクするか、
-  「rocBLAS（第3章）と同様に AMD GPU 専用の高速化経路があります」と言及するだけで
-  ROCm との繋がりが明確になる。
-- 1分演習は良好（出力チャネル数を変える）。
-
-改善候補:
-- 今日は何をしたい に「畳み込みは小さいフィルターで特徴を拾う操作」の1行を追加
-- コード直後に「padding=1 が何をするか」の簡単な補足
-- どこがROCm に MIOpen または rocBLAS との連続性を言及
-- セクション名「最小コード」を「確認コード」に統一
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続:
-  学習・推論の比較 → たたみこみ。「画像っぽいデータ」が突然出る。
-  → 「今日は何をしたい？」に「第6章では nn.Linear を使いましたが、
-    画像のように空間的な構造があるデータには Conv2d（たたみこみ）が使われます」と
-    橋渡しを追加。
-
-■ 新概念の飛躍チェック:
-  - 「たたみこみ」が何をする処理なのかの直感的説明がない。
-  → 「たたみこみは、小さなフィルター（窓）をデータの上で滑らせて
-    特徴を拾い出す操作です」を1行追加。
-  - padding=1 の意味が details 内のみ。kernel_size=3 も同様。
-  → コード直後に「kernel_size=3 は 3×3 の窓、padding=1 で端を埋めて
-    高さ・幅が変わらないようにしています」を1行追加。
-
-■ どこがROCm？が極薄:
-  → 第3章の rocBLAS と同様に「AMD GPU では MIOpen というたたみこみ用の
-    高速化エンジンが動いています（名前は覚えなくて大丈夫）」を追加すると具体性が出る。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第10章</p>
 		<h1>たたみこみを動かしてみたい</h1>
@@ -76,6 +18,7 @@ CANONICAL準拠:
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
+		<p>第6章では <span class="code-inline">nn.Linear</span> を使いましたが、画像のように「縦×横」の空間構造があるデータには <span class="code-inline">Conv2d</span>（たたみこみ）が使われます。たたみこみは、小さなフィルター（窓）をデータの上で滑らせて特徴を拾い出す操作です。</p>
 		<p><span class="code-inline">Conv2d</span> という部品を動かして、入力 shape と出力 shape を読めるようにします。いきなり画像認識の話を全部やるのではなく、まずは形の流れをつかむ章です。</p>
 
 		<p>畳み込みの shape は 4 つの数字で書きます。並び順は <strong>N, C, H, W</strong> です。</p>
@@ -109,7 +52,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -122,6 +65,7 @@ y = conv(x)
 print("入力 shape:", x.shape)
 print("出力 shape:", y.shape)</code></pre></div>
 
+		<p><span class="code-inline">kernel_size=3</span> は 3×3 の小窓でデータを走査します。<span class="code-inline">padding=1</span> は端に 0 を埋めて、高さ・幅が変わらないようにしています。</p>
 		<div class="output-example">入力 shape: torch.Size([1, 1, 5, 5])
 出力 shape: torch.Size([1, 2, 5, 5])</div>
 		<p>最初は 4 つの数字が並んでいると見られれば十分です。</p>
@@ -132,8 +76,14 @@ print("出力 shape:", y.shape)</code></pre></div>
 	</section>
 
 	<section class="content-section">
+		<h2>実行コマンド</h2>
+		<p>ファイルを <span class="code-inline">chapter10.py</span> という名前で保存したら、ターミナルで次のコマンドを実行します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python chapter10.py</code></pre></div>
+	</section>
+
+	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>畳み込みは、画像まわりでよく出る代表的な計算です。ROCm の下では、こうした定番の処理を速く動かすための経路が大事になります。</p>
+		<p>畳み込みは、画像まわりでよく出る代表的な計算です。AMD GPU では <strong>MIOpen</strong> というたたみこみ専用の高速化エンジンが動いています（名前は覚えなくて大丈夫です）。第3章の行列積と同様に、ROCm の下ではこうした定番の処理を速く走らせるための専用経路が用意されています。</p>
 	</section>
 
 	<section class="content-section">

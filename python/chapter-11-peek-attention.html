@@ -10,61 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-shape の表（x/y/weights の対応）と Q/K/V の簡潔な説明は良好。
-「数式を全部追う必要はない」という safe-box のメッセージは挫折経験者に有効。
-ただし概念の飛躍があり、前章（畳み込み）からの橋渡しが薄い。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、3行の shape）
-- どこがROCm: あり（薄め。「複数の重い計算が続けて走る場面」1行のみ）
-- つまずき: あり（embed_dim と shape の不一致への言及あり）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- `batch_first=True` の意味が説明なく登場。「このオプションを付けると shape が
-  (バッチ, token数, embed_dim) の順になります」という一言が必要。
-  付けない場合の shape（token, batch, dim）との違いを知らないと混乱しやすい。
-- `attn(x, x, x)` の3つの引数が同じ x であることへの疑問が生じやすいが、
-  本文では「Q/K/V ってなに？」セクションと「ここで出てきたPython」の details で
-  重複説明されている。どちらか一方に整理するとすっきりする。
-- `weights.shape: (1, 3, 3)` の「お互いをどれくらい見ているか」の説明は良いが、
-  3×3 の表が何を表すかを「トークン0がトークン0/1/2をそれぞれどれだけ見るか」と
-  具体化するとより直感的になる。
-- どこがROCm に「行列計算や softmax」の具体名が出ているのは良いが、
-  「これらは GPU 上で並列に走る」という一文があるとよい。
-- `num_heads=1` の制約（embed_dim が num_heads で割り切れること）への言及がなく、
-  num_heads を変える演習をすると突き当たる可能性がある（演習が token 数変更なので今は問題なし）。
-
-改善候補:
-- `batch_first=True` に「(バッチ, token数, embed_dim) の順で shape を指定する設定」の注釈
-- Q/K/V 説明を「Q/K/V ってなに？」セクションに一本化し、details の重複を整理
-- weights の (3, 3) について「各行が各 token の注目スコア」の具体例を追加
-- セクション名「最小コード」を「確認コード」に統一
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続:
-  たたみこみ → Attention。「画像系 → 系列系」という並びは自然だが、
-  その文脈が本文にない。
-  → 「第10章は画像向きの部品でしたが、この章は文章や系列データ向きの部品です」程度。
-
-■ 新概念の飛躍チェック:
-  - batch_first=True が無説明で登場。
-  → 「batch_first=True を付けると shape が（バッチ, token数, embed_dim）の順に
-    なります。付けないとバッチが2番目に来るので、ここでは付けておきます」を補足。
-  - Q/K/V の説明が「Q/K/V ってなに？」セクションと「ここで出てきたPython」内 details で重複。
-  → 本文セクションに一本化し、details 側を削除するのが自然。
-
-■ weights.shape の具体化:
-  → 「3×3 の各行は、その token が他の token をどれだけ注目したかを表します」1行。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第11章</p>
 		<h1>Attentionをのぞきたい</h1>
@@ -73,7 +18,7 @@ CANONICAL準拠:
 
 	<section class="content-section">
 		<h2>今日は何をしたい？</h2>
-		<p>Attention を全部理解するより先に、「入力が入って、重み付きの出力が返る」流れを形で見ます。ここでは <span class="code-inline">Q</span>、<span class="code-inline">K</span>、<span class="code-inline">V</span> の理屈を詰め込みすぎず、まずは 1 回動かしてみます。</p>
+		<p>第10章は画像向きの部品（Conv2d）でしたが、この章は文章や系列データ向きの部品です。Attention を全部理解するより先に、「入力が入って、重み付きの出力が返る」流れを形で見ます。ここでは <span class="code-inline">Q</span>、<span class="code-inline">K</span>、<span class="code-inline">V</span> の理屈を詰め込みすぎず、まずは 1 回動かしてみます。</p>
 
 		<p>データの流れはこうです。</p>
 		<div class="flow-steps">
@@ -95,7 +40,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 import torch.nn as nn
 
@@ -104,7 +49,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 attn = nn.MultiheadAttention(
     embed_dim=4,
     num_heads=1,
-    batch_first=True,
+    batch_first=True,  # shape を (バッチ, token数, embed_dim) の順にする設定
 ).to(device)
 
 x = torch.randn(1, 3, 4, device=device)
@@ -113,6 +58,8 @@ y, weights = attn(x, x, x)
 print("x      shape:", x.shape)
 print("y      shape:", y.shape)
 print("weights shape:", weights.shape)</code></pre></div>
+
+		<p><span class="code-inline">batch_first=True</span> を付けると shape が（バッチ, token数, embed_dim）の順になります。付けないとバッチが2番目に来るので、ここでは付けておきます。</p>
 
 		<div class="output-example">x      shape: torch.Size([1, 3, 4])
 y      shape: torch.Size([1, 3, 4])
@@ -139,11 +86,17 @@ weights shape: torch.Size([1, 3, 3])</div>
 				<td>token 3 × token 3 の注目スコア</td>
 			</tr>
 		</table>
-		<p><span class="code-inline">weights</span> が (3, 3) なのは、3 個の token が「お互いをどれくらい見ているか」を表しているからです。</p>
+		<p><span class="code-inline">weights</span> が (3, 3) なのは、3 個の token が「お互いをどれくらい見ているか」を表しているからです。3×3 の各行が「その token が他の token をどれだけ注目しているか」のスコアに対応します。</p>
 
 		<div class="safe-box">
 			<span class="code-inline">x.shape</span>、<span class="code-inline">y.shape</span>、<span class="code-inline">weights.shape</span> の 3 つが読めればこの章は OK です。数式を全部追う必要はありません。
 		</div>
+	</section>
+
+	<section class="content-section">
+		<h2>実行コマンド</h2>
+		<p>ファイルを <span class="code-inline">chapter11.py</span> という名前で保存したら、ターミナルで次のコマンドを実行します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python chapter11.py</code></pre></div>
 	</section>
 
 	<section class="content-section">
@@ -154,7 +107,7 @@ weights shape: torch.Size([1, 3, 3])</div>
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>Attention の中では、行列計算や softmax のような処理がいくつも重なります。ROCm の見方では、「複数の重い計算が続けて走る場面」と考えるとイメージしやすいです。</p>
+		<p>Attention の中では、行列計算や softmax のような処理がいくつも重なります。これらは GPU 上で並列に走るため、ROCm の得意な場面です。「複数の重い計算が GPU で同時に動いている」というイメージで読むと整理しやすいです。</p>
 	</section>
 
 	<section class="content-section">
@@ -163,11 +116,6 @@ weights shape: torch.Size([1, 3, 3])</div>
 			<li><span class="code-inline">y, weights = ...</span> — 2 つの戻り値を受け取る</li>
 			<li>キーワード引数で設定を明示</li>
 		</ul>
-
-		<details>
-			<summary>Q / K / V をもう少し（クリックで開く）</summary>
-			<p><span class="code-inline">attn(x, x, x)</span> の 3 つの引数は順に Query、Key、Value です。ここでは全部同じ <span class="code-inline">x</span> を入れています（Self-Attention）。「同じものを 3 回渡して注目度を計算する」と読めれば先に進めます。Query が「何を探したいか」、Key が「何を手がかりにするか」、Value が「何を返すか」に対応します。</p>
-		</details>
 	</section>
 
 	<section class="content-section">

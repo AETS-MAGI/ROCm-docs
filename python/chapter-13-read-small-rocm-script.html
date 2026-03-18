@@ -10,72 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-最終章として「device / shape / timing の3観点」という読み方のフレームワークを
-提示しており、着地点として適切。term-card による3観点の整理は良好。
-ただしコースの締めくくりとしての「振り返り」と「達成感の言語化」が薄い。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、3行。ただし sec の値は環境依存）
-- どこがROCm: あり（synchronize の ROCm での使われ方に言及。具体的で良い）
-- つまずき: あり（同期なし計測の誤りに言及）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- セクション名「最小コード」（CANONICAL では「確認コード」）。
-- `torch.cuda.synchronize()` が `if device.type == "cuda"` で囲まれている理由が
-  本文に書かれていない（details の「synchronize() の意味」に GPU 非同期の話はある）。
-  「CPU 実行のときは不要なので if で分けています」という一文を本文に追加すると良い。
-- 出力例の `sec: 0.0012` は GPU 環境での値だが、CPU 環境では大幅に異なる。
-  CPU 環境の出力例（sec が数十倍以上になる）を添えると、ROCm/GPU の効果を対比できる。
-- safe-box「ここまで来たら第1章からの全体を振り返るとよい復習になります」は良いが、
-  各章で学んだことのリスト（1〜13章のキーワード一覧）があると締めくくりとして機能する。
-  または python-index.html への「全体を振り返る」リンクがあると良い。
-- `a @ b` が 1024×1024 の行列積であることの意味（重い計算）への言及がない。
-  「なぜ 1024×1024 なのか」（GPUの能力を試すサイズとして選んでいる）を一言。
-- 1分演習（2048 に変える）は良好。「CPU 環境では時間がかかるかもしれません」の一言があると安心。
-
-改善候補:
-- CPU 環境の出力例を添える（sec の値が大幅に異なることを示す）
-- 1024×1024 を選んだ理由の一文を追加
-- 1分演習に「CPU では時間がかかる場合があります」を追記
-- safe-box の振り返り部分に python-index.html へのリンクを追加
-- セクション名「最小コード」を「確認コード」に統一
-- コース全体のまとめ（学んだキーワード一覧）を章末または safe-box に追加検討
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: デバッグ → 実験コードを読む。自然な流れ。
-
-■ コースの締めくくりとしての弱さ ★重要★:
-  - safe-box 「第1章から振り返るとよい復習に」は良い意図だが具体性がない。
-  → 各章で学んだキーワードの一覧を添えると「やりきった」感が出る。
-    例: 「第1章 GPU確認 / 第2章 shape / 第3章 行列積 / 第4章 tensor /
-    第5章 .to(device) / 第6章 model / 第7章 eval+no_grad / 第8章 学習 /
-    第9章 推論vs学習 / 第10章 Conv2d / 第11章 Attention /
-    第12章 エラー読み / 第13章 実験コード」
-  → python-index.html への「全体を振り返る」リンクもあると良い。
-
-■ CPU 環境との比較不足:
-  - 出力例が GPU（sec: 0.0012）のみ。CPU 環境では大幅に異なる値が出る。
-  → CPU 環境の出力例（例: sec: 0.05）を添えると GPU の効果を視覚化できる。
-
-■ 1024×1024 の意味:
-  → 「GPU の計算力を確かめやすいサイズとして選んでいます」を1行。
-
-■ 1分演習の補足:
-  → 「CPU 環境では時間がかかる場合があります」を添えると安心。
-
-■ synchronize() の if ガード:
-  - if device.type == "cuda" で囲んでいる理由が本文にない（details のみ）。
-  → 「CPU で実行するときは synchronize() は不要なので、
-    GPU のときだけ呼んでいます」を1行本文に追加。
-
-■ CANONICAL構造: セクション名「最小コード」。統一が必要。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第13章</p>
 		<h1>小さなROCm実験コードを1本読めるようになりたい</h1>
@@ -98,14 +32,16 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import time
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# 1024×1024 は GPU の計算力を確かめやすいサイズとして選んでいます
 a = torch.randn(1024, 1024, device=device)
 b = torch.randn(1024, 1024, device=device)
 
+# CPU で実行するときは synchronize() は不要なので、GPU のときだけ呼んでいます
 if device.type == "cuda":
     torch.cuda.synchronize()
 t0 = time.time()
@@ -117,14 +53,24 @@ print("device:", device)
 print("shape :", c.shape)
 print("sec   :", time.time() - t0)</code></pre></div>
 
+		<p>GPU 環境（ROCm）での出力例：</p>
 		<div class="output-example">device: cuda
 shape : torch.Size([1024, 1024])
 sec   : 0.0012</div>
+		<p>CPU 環境では sec の値が大きくなります（例: <span class="code-inline">sec: 0.05</span> 程度）。GPU と CPU の差がここに出ます。</p>
 		<p>最後の 3 行の <span class="code-inline">print</span> が、さきほどの 3 観点そのままです。「どこで」「何を」「どれくらいで」が読めれば、実験コードの入口として十分です。</p>
 
 		<div class="safe-box">
-			ここまで来たら、第1章からの全体を振り返るとよい復習になります。お疲れさまでした！
+			<p>ここまで来たら、第1章からの全体を振り返るとよい復習になります。お疲れさまでした！</p>
+			<p>第1章 GPU確認 → 第2章 配列 → 第3章 行列積 → 第4章 NumPy/Tensor → 第5章 .to(device) → 第6章 model → 第7章 eval+no_grad → 第8章 学習 → 第9章 推論vs学習 → 第10章 Conv2d → 第11章 Attention → 第12章 エラー読み → 第13章 実験コード</p>
+			<p><a href="./python-index.html">← コース一覧に戻って全体を振り返る</a></p>
 		</div>
+	</section>
+
+	<section class="content-section">
+		<h2>実行コマンド</h2>
+		<p>ファイルを <span class="code-inline">chapter13.py</span> という名前で保存したら、ターミナルで次のコマンドを実行します。</p>
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>python chapter13.py</code></pre></div>
 	</section>
 
 	<section class="content-section">
@@ -156,7 +102,7 @@ sec   : 0.0012</div>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p>行列サイズを <span class="code-inline">2048</span> に変えて、時間がどう変わるかを見てみましょう。shape はどう表示されるかも合わせて確認します。</p>
+		<p>行列サイズを <span class="code-inline">2048</span> に変えて、時間がどう変わるかを見てみましょう。shape はどう表示されるかも合わせて確認します。CPU 環境では時間がかかる場合があります。</p>
 	</section>
 
 	<nav class="chapter-nav">

@@ -10,65 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-第5章以降は明らかにスリムな構成。第1〜4章と比べてセクション数が少なく、
-説明の密度が急に下がる。初心者が読んだとき「ここから急に端折られた」と感じる可能性がある。
-
-CANONICAL準拠:
-- 実行コマンド: なし
-- 出力例: あり（output-example div、before/after の2行）
-- どこがROCm: あり（薄め。「"cuda" という名前が出る」の一行だけ）
-- つまずき: あり（device 不一致エラーの実例コードあり。これは良い）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- セクション名が CANONICAL の「確認コード」ではなく「最小コード」になっている。全章統一が望ましい。
-- 「今日は何をしたい？」セクションが1段落のみで短すぎる。
-  「CPU と GPU の違いは何か」の説明（イメージ）があると前章からの接続が滑らかになる。
-- 三項演算子 `"A" if 条件 else "B"` の説明が「ここで出てきたPython」の箇条書きだけで
-  コード例がない。初心者にとってはこの構文が初見になる可能性が高く、もう少し説明が欲しい。
-- どこがROCm セクションが「名前に引っ張られず〜」の1文のみで薄い。
-  「before: cpu → after: cuda:0 の cuda:0 が ROCm の AMD GPU を指している」という
-  具体的な繋がりを書くとよい。
-- GPU 環境がない場合に after も cpu のままになること、その場合も正常であることを
-  出力例として示すか、safe-box に補足するとよい（現状は GPU あり版のみ）。
-- 1分演習が「print(x) を足す」だけで発見がやや少ない。
-
-改善候補:
-- セクション名「最小コード」を「確認コード」に統一
-- 三項演算子の詳しい説明を details で追加
-- GPU なし環境の出力例（before: cpu / after: cpu）を追加
-- どこがROCm に「cuda:0 は ROCm の AMD GPU への接続口」を明記
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続:
-  第4章 device: cpu → 第5章 GPUに送る。論理は自然。
-  ただし Ch1-4 に比べて説明の密度が急落する。ここから全章で内容の厚みが薄くなる。
-  第5章は初めて GPU を実際に使う重要な章なので、むしろ厚くあるべき。
-
-■ 新概念の飛躍チェック ★重要★:
-  - "cuda" if torch.cuda.is_available() else "cpu" — 三項演算子が初出。
-    「ここで出てきたPython」の箇条書き1行だけでは不十分。
-  → 「A if 条件 else B は、条件が True なら A、そうでなければ B を返す書き方です」
-    程度の説明を本文かコード直後に追加。この構文は以降全章で繰り返し出るため、
-    初出のここで丁寧に拾っておくべき。
-
-■ GPU なし環境への配慮:
-  - 出力例が GPU 環境（after: cuda:0）のみ。CPU環境では before/after とも cpu になる。
-  → CPU 環境の出力例（before: cpu / after: cpu）も並記すると
-    GPU がない読者が「自分は壊れている」と不安にならない。
-
-■ どこがROCm？が極薄:
-  第5章は GPU を初めて使う章であり、「cuda:0 は ROCm 経由で AMD GPU につながっている」
-  「第1章で確認した GPU が、ここで初めて実際に仕事をする」という具体的な接続を書くべき場所。
-
-■ CANONICAL構造:
-  - セクション名「最小コード」。Ch1-4 は「確認コード」。全章での統一が必要。
-  - 「今日は何をしたい？」が1段落のみで短すぎる。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第5章</p>
 		<h1>データをGPUに送りたい</h1>
@@ -81,7 +22,7 @@ CANONICAL準拠:
 	</section>
 
 	<section class="content-section">
-		<h2>最小コード</h2>
+		<h2>確認コード</h2>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -91,9 +32,12 @@ print("before:", x.device)
 x = x.to(device)
 print("after :", x.device)</code></pre></div>
 
+		<p>このコードを <span class="code-inline">chapter05.py</span> として保存して、<span class="code-inline">python chapter05.py</span> で実行します。</p>
+
 		<p>GPU 環境なら、こう表示されます。</p>
 		<div class="output-example">before: cpu
 after : cuda:0</div>
+		<p>GPU がない環境では <span class="code-inline">after</span> も <span class="code-inline">cpu</span> のままになります。それはエラーではなく、CPU で実行されている正常な状態です。</p>
 		<p><span class="code-inline">before</span> と <span class="code-inline">after</span> を見比べるだけで、データがどこにあるかを追えるようになります。</p>
 
 		<div class="safe-box">
@@ -104,12 +48,13 @@ after : cuda:0</div>
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
 		<p>ROCm 版 PyTorch でも、GPU を指す場所で <span class="code-inline">"cuda"</span> という名前が出ます。名前に引っ張られず、「GPU 側へ送るための入口」と読むのがコツです。</p>
+		<p>出力の <span class="code-inline">cuda:0</span> は、ROCm 経由で接続されている AMD GPU の 0 番を指しています。第1章で <span class="code-inline">torch.cuda.is_available()</span> が <span class="code-inline">True</span> になっていた GPU が、ここで初めて実際にデータを受け取ります。</p>
 	</section>
 
 	<section class="content-section">
 		<h2>ここで出てきたPython</h2>
 		<ul class="point-list">
-			<li><span class="code-inline">"A" if 条件 else "B"</span> — 三項演算子で分岐</li>
+			<li><span class="code-inline">"A" if 条件 else "B"</span> — 三項演算子で分岐。条件が <span class="code-inline">True</span> なら <span class="code-inline">A</span>、そうでなければ <span class="code-inline">B</span> を返します。この章では「GPU があれば "cuda"、なければ "cpu"」を1行で書くために使っています。以降の章でも同じ書き方が繰り返し登場します。</li>
 			<li><span class="code-inline">.to(device)</span> — データの置き場所を変えるメソッド</li>
 		</ul>
 	</section>

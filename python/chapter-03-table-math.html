@@ -25,60 +25,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-全体的によく整った章。CANONICAL構造への準拠度は高い。
-「実行するとこう出ます」セクションあり、flow-steps で shape の流れが視覚的に分かりやすい。
-「なぜ内側が揃わないといけないの？」の details は数学苦手な読者に特に有効。
-
-CANONICAL準拠:
-- 実行コマンド: なし（独立セクションとして存在しない）
-- 出力例: あり（「実行するとこう出ます」セクション、具体的な数値付き）
-- どこがROCm: あり（rocBLAS への言及あり。具体的でよい）
-- つまずき: あり（「うまくいかなかったら」 + 「よくあるつまずき」の2段）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- 「行列の掛け算」という概念に対して「怖くない」という安心感の言葉がやや少ない。
-  冒頭の「今日は何をしたい？」では「結果の数字を全部追うより形に注目」とあるのは良い。
-- @ 記号の登場がコードブロックで先に出て、その後説明が来る順序。
-  「ここで出てきたPython」セクションより前にコードに @ が出るため、
-  Python 文法が未修の読者が「この記号は何？」と感じるタイミングが早い。
-  コードブロック直前に「@ は行列の掛け算を意味する記号です」の一文を追加するとよい。
-- 1分演習は「予想してから実行」形式で良好。ただし「import np を書く」忘れが起きやすく、
-  演習コードに import 文がないため初心者が詰まる可能性がある。
-- rocBLAS の説明は技術的には正確だが、初心者には唐突に感じるかもしれない。
-  「名前は今は覚えなくてよい」という一言があると安心できる。
-
-改善候補:
-- 「確認コード」セクション直前か、コードブロック直前に「@ は行列積を表す Python の記号です」を追加
-- 1分演習コードに import numpy as np を追加
-- rocBLAS の説明に「名前は今は覚えなくて大丈夫」を付記
-- 「うまくいかなかったら」と「よくあるつまずき」を1セクションに整理する候補
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: 「表を持つ」→「表どうしを計算する」で自然。良好。
-
-■ 新概念の飛躍チェック:
-  - @ 記号がコードブロック内で先に登場し、説明は「ここで出てきたPython」まで後回し。
-  → コードブロック直前に「@ は行列の掛け算を表す Python の記号です」を1行追加すると安心。
-
-■ 数学苦手・Python挫折者への配慮:
-  - 「行列の掛け算」というワードだけで拒否感が出る読者がいる。
-    冒頭の「結果の数字を全部追うより形に注目」は良いが、もう一押しして
-    「計算の中身は追わなくて大丈夫。入力と出力の shape だけ見れば OK」が
-    safe-box レベルで早く出ると安心度が上がる。
-  - rocBLAS の言及は正確だが初心者には唐突。
-  → 「（名前は今は覚えなくて大丈夫です）」を添えると安心。
-
-■ 演習コードの問題 ★重要★:
-  - import numpy as np が含まれていない。第2章と同じ問題。
-  → 演習コードに import 文を追加するか「続けて入力してください」と明記。
-
-■ CANONICAL構造: セクション名「確認コード」。Ch5以降「最小コード」と不統一。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第3章</p>
 		<h1>表どうしを計算したい</h1>
@@ -103,6 +49,7 @@ CANONICAL準拠:
 
 	<section class="content-section">
 		<h2>確認コード</h2>
+		<p>コード中に <span class="code-inline">@</span> という記号が出てきます。これは Python で「行列の掛け算（行列積）」を表す記号です。詳しい意味は後の「ここで出てきたPython」で説明します。</p>
 		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
 
 a = np.array([[1, 2, 3],
@@ -117,6 +64,7 @@ print("a.shape:", a.shape)
 print("b.shape:", b.shape)
 print("c.shape:", c.shape)
 print(c)</code></pre></div>
+		<p>このコードを <span class="code-inline">chapter03.py</span> として保存して、<span class="code-inline">python chapter03.py</span> と実行します。</p>
 		<p><span class="code-inline">a</span> は <span class="code-inline">(2, 3)</span>、<span class="code-inline">b</span> は <span class="code-inline">(3, 2)</span> です。結果の <span class="code-inline">c</span> は <span class="code-inline">(2, 2)</span> になります。</p>
 		<p><strong>shape のルール:</strong> <span class="code-inline">(m, n) @ (n, p) → (m, p)</span> — 内側の数字が一致していれば掛け算できます。</p>
 
@@ -157,7 +105,7 @@ c.shape: (2, 2)
 
 	<section class="content-section">
 		<h2>どこがROCm？</h2>
-		<p>この「表どうしを掛ける」計算は、PyTorch では <span class="code-inline">torch.matmul()</span> や同じ <span class="code-inline">@</span> 記号で書けます。そしてその裏では <strong>rocBLAS</strong>（AMD GPU 向けの行列計算エンジン）が動いています。</p>
+		<p>この「表どうしを掛ける」計算は、PyTorch では <span class="code-inline">torch.matmul()</span> や同じ <span class="code-inline">@</span> 記号で書けます。そしてその裏では <strong>rocBLAS</strong>（AMD GPU 向けの行列計算エンジン）が動いています（名前は今は覚えなくて大丈夫です）。</p>
 		<p>つまり <span class="code-inline">a @ b</span> という1行が、GPU 上では rocBLAS の高速な行列積カーネルに変換されて実行されます。ROCm を使う意味のひとつは、この変換経路が整備されていることです。</p>
 		<p>この章は CPU 上の NumPy ですが、次の章で PyTorch テンソルに移ると、同じ <span class="code-inline">@</span> の書き方のまま GPU 計算に接続できます。</p>
 	</section>
@@ -226,7 +174,9 @@ c.shape: (2, 2)
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>次の順で試しましょう。1) 先に <span class="code-inline">c.shape</span> を予想する。2) 実行して答え合わせ。3) 失敗したら内側次元を見直す。</p>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>a = np.array([[1, 2],
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
+
+a = np.array([[1, 2],
               [3, 4]], dtype=np.float32)   # (2, 2)
 b = np.array([[5],
               [6]], dtype=np.float32)      # (2, 1)

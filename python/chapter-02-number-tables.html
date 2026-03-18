@@ -25,61 +25,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-全体的によく作られた章。CANONICAL構造への準拠度は高い。
-「実行するとこう出ます」という独立セクションがあり、出力例が具体的で良好。
-KaTeX による行列の視覚化は初心者にとって有益。
-
-CANONICAL準拠:
-- 実行コマンド: なし（独立セクションとして存在しない）
-- 出力例: あり（「実行するとこう出ます」セクション、正確な出力）
-- どこがROCm: あり（薄め。「GPU計算の前に必要な土台」「float32 と ROCm の関係」detailsあり）
-- つまずき: あり（「うまくいかなかったら」パターン別 + 「よくあるつまずき」の2段構え）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- 実行コマンドが一切示されていない。「このコードをどうやって実行するか」が前提知識として扱われている。
-  第1章でも同様だが、第2章では第1章を読んだ前提が保証されているため影響は低い。
-  ただし chapter-02 から読み始める読者への案内がない。
-- KaTeX の行列表示は数学苦手な読者に対して若干ハードルになる可能性がある。
-  「これは見た目の補助なので読めなくて大丈夫」という一言があると安心できる。
-- 「うまくいかなかったら」と「よくあるつまずき」の2セクションが似た内容で重複気味。
-  統合するか、役割を明確に分けると読みやすくなる。
-- 「1分演習」は答えを伏せているが「答えは実行結果で確認」という形は良好。
-
-改善候補:
-- コード冒頭かセクション冒頭に「python chapter02.py のように実行します」を1行追加
-- KaTeX 行列の直前に「下は視覚的な補助です。読めなくても大丈夫」という一言を追加
-- 「うまくいかなかったら」と「よくあるつまずき」を1セクションに統合して冗長感を減らす
-- どこがROCm の説明をもう少し具体化（「次の章で GPU に乗せると何が変わるか」を先取り言及）
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続:
-  第1章で GPU 確認 → 第2章で「データの形」。接続自体は自然だが
-  「なぜ GPU の次にいきなり NumPy？」の橋渡しが1行あると滑らか。
-  → 「GPU で計算するには、まずデータを表の形で持つ必要があります」程度。
-
-■ 新概念の飛躍チェック:
-  - import numpy as np / np.array / dtype / shape — 4つ同時初出。
-  - details で as np と dtype を先に説明してあるのは良い配慮。
-
-■ 数学苦手・Python挫折者への配慮:
-  - KaTeX 行列表示が数学アレルギーを刺激する可能性あり。
-  → 「下の図は見た目の補助です。分からなくても大丈夫です」の1行を追加推奨。
-  - 「うまくいかなかったら」と「よくあるつまずき」が実質重複。統合すると読者の迷いが減る。
-
-■ 演習コードの問題 ★重要★:
-  - 1分演習のコードに import numpy as np が含まれていない。
-  - 初心者がこのブロックだけコピペすると NameError: name 'np' is not defined で止まる。
-  → 演習コードに import 文を追加するか「上のコードに続けて入力してください」と明記。
-
-■ CANONICAL構造:
-  - セクション名「確認コード」。Ch5以降の「最小コード」と不統一。
-  - 実行コマンド（python chapter02.py）の独立セクションなし。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第2章</p>
 		<h1>数字を表として持ちたい</h1>
@@ -123,6 +68,7 @@ print("shape:", x.shape)
 print("dtype:", x.dtype)
 print("rows:", x.shape[0])
 print("cols:", x.shape[1])</code></pre></div>
+		<p>このコードを <span class="code-inline">chapter02.py</span> として保存して、<span class="code-inline">python chapter02.py</span> と実行します。</p>
 		<p>この例では、2 行 3 列の表を 1 つのまとまりとして持っています。<span class="code-inline">(2, 3)</span> と見えたら、「2 行 3 列」と読めば大丈夫です。</p>
 
 		<!-- shape と行列の対応 -->
@@ -131,6 +77,7 @@ print("cols:", x.shape[1])</code></pre></div>
 			<span class="arrow">↔</span>
 			<span class="step">2行 × 3列の表</span>
 		</div>
+		<p><small>下の図は見た目の補助です。数学の記号が分からなくても大丈夫です。「2行3列の表」として眺めるだけで十分です。</small></p>
 		<div style="text-align: center; margin: 0 0 12px;">
 			<div style="font-size: 18px;">$$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$$</div>
 		</div>
@@ -228,7 +175,9 @@ cols: 3</div>
 	<section class="content-section">
 		<h2>1分演習</h2>
 		<p>次の順で試します。1) コードを見て <span class="code-inline">shape</span> を <strong>実行前に予想</strong> する。2) 実行して答え合わせする。3) <span class="code-inline">rows</span>/<span class="code-inline">cols</span> を print して確認する。</p>
-		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>y = np.array([[10, 20],
+		<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code>import numpy as np
+
+y = np.array([[10, 20],
               [30, 40],
               [50, 60]], dtype=np.float32)
 print("shape:", y.shape)</code></pre></div>

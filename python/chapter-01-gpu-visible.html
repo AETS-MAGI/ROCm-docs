@@ -10,55 +10,6 @@
 <main class="page">
 	<a class="back-link" href="./python-index.html">← Python and ROCm 教室へ戻る</a>
 
-<!--
-Claude review 2026-03-17:
-この章は概ね良好。CANONICAL構造への準拠度は全章中最も高い。
-第0章/Quickstart済み前提の info-box あり、出力例・torch.cuda 説明・つまずき・演習いずれも揃っている。
-実行コマンドセクションがないが、第1章は「確認コードを貼り付けて実行する」前提であり、
-ワンライナー版がつまずきのdetailsに入っている。不足感は低い。
-
-CANONICAL準拠:
-- 実行コマンド: 実質あり（ワンライナーをつまずきdetailsに記載）。独立セクションとしては存在しない
-- 出力例: あり（output-example div、現実的な値）
-- どこがROCm: あり（torch.cuda と HIP の関係まで説明）
-- つまずき: あり（HIP None / False / 偽 Device の三パターン）
-
-初心者・数学苦手・挫折経験者への懸念点:
-- ワンライナーが「つまずき」詳細の中に隠れているため、「どのコマンドで動かすのか」が本文から見えにくい。
-  ファイルに保存して python check.py で実行する手順を本文に一言加えると親切。
-- `sys.version.split()[0]` の解説は details 内にあるが、ファイル保存→実行の流れが省略されている。
-- 「1分演習」の内容がメモを促すだけで、手を動かす操作がない。次章に進む前に動かす演習を加えると完成度が上がる。
-
-改善候補:
-- 確認コード直後に「このファイルを check01.py として保存し、python check01.py で実行します」を1行追加
-- 1分演習に「HIP の値を変えたらどうなるか試す」などの能動的な操作を追加
-- safe-box の torch.cuda 説明は現状で良いが、詳細リンク（将来の Appendix A）があるとさらに良い
--->
-
-<!--
-[Copilot自己点検 2026-03-17 — CANONICAL準拠 & 初心者安心度の横断精査]
-
-■ 前章からの接続: N/A（初回章）。info-box で Quickstart/第0章済み前提を明示しており良好。
-
-■ 新概念の飛躍チェック:
-  - import / print / if / ドット記法が一度に登場するが、各概念の負荷は低く問題なし。
-  - sys.version.split()[0] は details に逃がしてあり適切。
-
-■ 数学苦手・Python挫折者への配慮:
-  - 数学要素なし。安心。
-  - 「コードをファイルに保存して python check01.py で実行する」手順が本文にない。
-    初心者が「このコードをどう動かすか」で詰まる可能性がある（ワンライナーは details 内にのみ）。
-  → 確認コード直後に「このコードを check01.py として保存し python check01.py で実行します」を1行追加推奨。
-
-■ CANONICAL構造:
-  - §7.2 の流れ（コード → ROCm接点 → Python → 演習）に準拠。
-  - セクション名「確認コード」。Ch5以降の「最小コード」と不統一。CANONICAL §7.2 は「最小コード」と記載。
-    全章で統一が必要（どちらにするか要判断）。
-
-■ 1分演習の質:
-  - 「メモしておきましょう」のみで能動的操作がない。
-  → 「print 行を1つ消して動かし、何が変わるか確認してみましょう」など手を動かす要素を推奨。
--->
 	<header class="chapter-hero">
 		<p class="eyebrow">第1章</p>
 		<h1>GPUが見えるか確かめたい</h1>
@@ -88,6 +39,8 @@ print("Device count:", torch.cuda.device_count())
 
 if torch.cuda.is_available():
     print("Device[0]:", torch.cuda.get_device_name(0))</code></pre></div>
+
+		<p>このコードを <span class="code-inline">check01.py</span> というファイル名で保存して、ターミナルで <span class="code-inline">python check01.py</span> と実行します。</p>
 
 		<p>実行すると、たとえばこう表示されます。</p>
 		<div class="output-example">Python: 3.14.3
@@ -166,7 +119,8 @@ Device[0]: AMD Radeon RX Vega</div>
 
 	<section class="content-section">
 		<h2>1分演習</h2>
-		<p><span class="code-inline">GPU available</span>、<span class="code-inline">HIP</span>、<span class="code-inline">Device count</span> の 3 つをメモしておきましょう。次章からテンソルを GPU に送る操作が出てくるので、出発点を把握しておくとエラーの切り分けが楽になります。</p>
+		<p>上のコードを実際に実行して、<span class="code-inline">GPU available</span>、<span class="code-inline">HIP</span>、<span class="code-inline">Device count</span> の 3 つを確認しましょう。</p>
+		<p>確認できたら、<strong>コードの <span class="code-inline">print("Device count:", ...)</span> の行を削除して</strong> もう一度実行してみましょう。何が変わりますか？ — 行を削除しても他の行は動くことが確認できれば完了です。</p>
 	</section>
 
 	<nav class="chapter-nav">
